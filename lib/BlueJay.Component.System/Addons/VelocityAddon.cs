@@ -1,26 +1,39 @@
-﻿using BlueJay.Component.System.Interfaces;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 
 namespace BlueJay.Component.System.Addons
 {
+  /// <summary>
+  /// Velocity addon to track the current velocity of the entity
+  /// </summary>
   public class VelocityAddon : Addon<VelocityAddon>
   {
+    /// <summary>
+    /// The current velocity of the addon
+    /// </summary>
     public Vector2 Velocity;
 
+    /// <summary>
+    /// Constuctor to build out the velocity based on the x and y positions
+    /// </summary>
+    /// <param name="x">The x velocity vector</param>
+    /// <param name="y">The y velocity vector</param>
     public VelocityAddon(int x, int y)
       : this(new Vector2(x, y)) { }
 
-    public VelocityAddon(Vector2 position)
+    /// <summary>
+    /// Constructor to build out the velocity addon based on a vecotr
+    /// </summary>
+    /// <param name="velocity">The starting velocity for this entity</param>
+    public VelocityAddon(Vector2 velocity)
     {
-      Velocity = position;
+      Velocity = velocity;
     }
 
+    /// <summary>
+    /// Overriden to string function is meant to give a quick and easy way to see
+    /// how this object looks while debugging
+    /// </summary>
+    /// <returns>Will return a debug string</returns>
     public override string ToString()
     {
       return $"Velocity | X: {Velocity.X}, Y: {Velocity.Y}";

@@ -1,35 +1,51 @@
-﻿using BlueJay.Core.Interfaces;
-using BlueJay.Component.System.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BlueJay.Component.System.Enums;
+﻿using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Component.System.Systems
 {
+  /// <summary>
+  /// The basic component system that sets up overridable methods without having to
+  /// implement all of them in the system class
+  /// </summary>
   public abstract class ComponentSystem : IComponentSystem
   {
-    public long Identifier { get; internal set; }
+    /// <summary>
+    /// The current addon key that is meant to act as a selector for the Draw/Update
+    /// methods with entities
+    /// </summary>
     public abstract long Key { get; }
 
-    public virtual SystemUpdateOrder UpdateOrder => SystemUpdateOrder.None;
-    public virtual SystemDrawOrder DrawOrder => SystemDrawOrder.None;
+    /// <summary>
+    /// The draw event that is called before all entitiy draw events for this system
+    /// </summary>
+    /// <param name="delta">The current delta for this frame</param>
+    public virtual void OnDraw(int delta) { }
 
-    public virtual void Draw(int delta)
-      { }
+    /// <summary>
+    /// The draw event that is called for each entity that was selected by the key
+    /// for this system
+    /// </summary>
+    /// <param name="delta">The current delta for this frame</param>
+    /// <param name="entity">The current entity that should be drawn</param>
+    public virtual void OnDraw(int delta, IEntity entity) { }
 
-    public virtual void Draw(int delta, IEntity entity)
-      { }
+    /// <summary>
+    /// Initialization event that should be called once for this system to initialize
+    /// things before moving forward
+    /// </summary>
+    public virtual void OnInitialize() { }
 
-    public virtual void Initialize()
-      { }
+    /// <summary>
+    /// The updat event that is called before all entity update events for this system
+    /// </summary>
+    /// <param name="delta">The current delta for this frame</param>
+    public virtual void OnUpdate(int delta) { }
 
-    public virtual void Update(int delta)
-      { }
-
-    public virtual void Update(int delta, IEntity entity)
-      { }
+    /// <summary>
+    /// The update event that is called for eeach entity that was selected by the key
+    /// for this system.
+    /// </summary>
+    /// <param name="delta">The current delta for this frame</param>
+    /// <param name="entity">The current entity that should be updated</param>
+    public virtual void OnUpdate(int delta, IEntity entity) { }
   }
 }

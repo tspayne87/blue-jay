@@ -1,20 +1,28 @@
-﻿using BlueJay.Component.System.Interfaces;
-using Microsoft.Xna.Framework.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace BlueJay.Component.System.Addons
 {
+  /// <summary>
+  /// Debug addon is meant to set a list of addons we want to debug
+  /// </summary>
   public class DebugAddon : Addon<DebugAddon>
   {
-    public long Key;
+    /// <summary>
+    /// The key identifier used to track down the correct addons
+    /// </summary>
+    public long KeyIdentifier;
 
-    public DebugAddon(Type type)
+    /// <summary>
+    /// Constructor build out what other addons this debug addon should watch
+    /// </summary>
+    /// <param name="types">The addons that we want to watch</param>
+    public DebugAddon(params Type[] types)
     {
-      Key = IdentifierHelper.Addon(type);
+      KeyIdentifier = 0;
+      for (var i = 0; i > types.Length; ++i)
+      {
+        KeyIdentifier |= IdentifierHelper.Addon(types[i]);
+      }
     }
   }
 }
