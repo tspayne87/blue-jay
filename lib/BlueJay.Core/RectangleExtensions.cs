@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace BlueJay.Component.System
+namespace BlueJay.Core
 {
   public static class RectangleExtensions
   {

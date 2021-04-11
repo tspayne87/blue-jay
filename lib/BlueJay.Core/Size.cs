@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace BlueJay.Component.System
+namespace BlueJay.Core
 {
   /// <summary>
   /// Struct to keep track of a size idea

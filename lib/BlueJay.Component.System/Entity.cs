@@ -29,11 +29,6 @@ namespace BlueJay.Component.System
     private readonly ContentManager _contentManager;
 
     /// <summary>
-    /// The scopped trigger system for this entity
-    /// </summary>
-    private readonly ITriggerSystem _triggerSystem;
-
-    /// <summary>
     /// The list of addons that are bound to this entity
     /// </summary>
     private List<IAddon> _addons = new List<IAddon>();
@@ -49,27 +44,16 @@ namespace BlueJay.Component.System
     public bool Active { get; set; } = true;
 
     /// <summary>
-    /// The current type of this entity, some very basic and broad entities are used for mouse manipulation
-    /// </summary>
-    public virtual EntityType Type => EntityType.Basic;
-
-    /// <summary>
-    /// Getter to get the trigger system so we can add items to it
-    /// </summary>
-    public ITriggerSystem Trigger => _triggerSystem;
-
-    /// <summary>
     /// Constructor to build out this entity through DI
     /// </summary>
     /// <param name="entityCollection">The current entity collection</param>
     /// <param name="serviceProvider">The current service provider so we can generate addons through DI</param>
     /// <param name="contentManager">The current content manager so we can load assets through the entity if needed</param>
-    public Entity(IEntityCollection entityCollection, IServiceProvider serviceProvider, ITriggerSystem triggerSystem, ContentManager contentManager)
+    public Entity(IEntityCollection entityCollection, IServiceProvider serviceProvider, ContentManager contentManager)
     {
       _entityCollection = entityCollection;
       _serviceProvider = serviceProvider;
       _contentManager = contentManager;
-      _triggerSystem = triggerSystem;
     }
 
     #region Lifecycle Methods
@@ -92,8 +76,7 @@ namespace BlueJay.Component.System
     {
       if (!_addons.Contains(addon))
       {
-        addon.SetTriggerSystem(_triggerSystem);
-        addon.LoadContent(_contentManager);
+        addon.OnLoad();
         _addons.Add(addon);
         _entityCollection.UpdateAddonTree(this);
       }
@@ -117,7 +100,7 @@ namespace BlueJay.Component.System
     /// </summary>
     public void LoadContent()
     {
-      foreach (var addon in _addons) addon.LoadContent(_contentManager);
+      foreach (var addon in _addons) addon.OnLoad();
     }
     #endregion
 
