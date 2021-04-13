@@ -8,8 +8,12 @@
     /// <summary>
     /// Helper method to process the current queue
     /// </summary>
-    /// <returns>Will return if we need to continue processing</returns>
-    bool ProcessCurrent();
+    void Update();
+
+    /// <summary>
+    /// Helper method to handle the draw event
+    /// </summary>
+    void Draw();
 
     /// <summary>
     /// Helper method to push whatever is in the defered queue into the current queue

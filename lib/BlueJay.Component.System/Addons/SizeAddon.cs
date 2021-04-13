@@ -1,4 +1,6 @@
-﻿namespace BlueJay.Component.System.Addons
+﻿using BlueJay.Core;
+
+namespace BlueJay.Component.System.Addons
 {
   /// <summary>
   /// Addon to track the size of the entity

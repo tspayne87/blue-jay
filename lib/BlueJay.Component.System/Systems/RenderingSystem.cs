@@ -36,7 +36,7 @@ namespace BlueJay.Component.System.Systems
     /// </summary>
     /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity that should be drawn</param>
-    public override void OnDraw(int delta, IEntity entity)
+    public override void OnDraw(IEntity entity)
     {
       var pc = entity.GetAddon<PositionAddon>();
       var tc = entity.GetAddon<TextureAddon>();

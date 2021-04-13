@@ -1,5 +1,4 @@
-﻿using BlueJay.Component.System.Enums;
-using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;

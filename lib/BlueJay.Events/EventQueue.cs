@@ -1,4 +1,5 @@
 ﻿using BlueJay.Events.Interfaces;
+using BlueJay.Events.Lifecycle;
 using System.Collections.Generic;
 
 namespace BlueJay.Events
@@ -50,8 +51,7 @@ namespace BlueJay.Events
     /// <summary>
     /// Helper method to process the current queue
     /// </summary>
-    /// <returns>Will return if we need to continue processing</returns>
-    public bool ProcessCurrent()
+    public void Update()
     {
       while (_current.Count > 0)
       {
@@ -64,7 +64,21 @@ namespace BlueJay.Events
           }
         }
       }
-      return true;
+    }
+
+    /// <summary>
+    /// Handle the draw event for the event queue
+    /// </summary>
+    public void Draw()
+    {
+      var evt = new Event<object>(new DrawEvent());
+      if (_handlers.ContainsKey(evt.Name))
+      {
+        for (var i = 0; i < _handlers[evt.Name].Count; ++i)
+        {
+          _handlers[evt.Name][i].Process(evt);
+        }
+      }
     }
 
     /// <summary>
@@ -72,6 +86,7 @@ namespace BlueJay.Events
     /// </summary>
     public void Tick()
     {
+      DispatchEvent(new UpdateEvent());
       while (_next.Count > 0)
       {
         _current.Enqueue(_next.Dequeue());

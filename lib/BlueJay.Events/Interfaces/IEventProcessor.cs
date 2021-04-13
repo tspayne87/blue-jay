@@ -8,7 +8,11 @@
     /// <summary>
     /// The process method is meant to process one tick of the game and all the events that should be processed at that time
     /// </summary>
-    /// <returns>Will return true if it should continue processing</returns>
-    bool Process();
+    void Update();
+
+    /// <summary>
+    /// The process method that will handle the draw event
+    /// </summary>
+    void Draw();
   }
 }

@@ -14,6 +14,11 @@ namespace BlueJay.Component.System.Systems
     private readonly IRenderer _renderer;
 
     /// <summary>
+    /// The delta service that is meant to be updated every frame
+    /// </summary>
+    private readonly IDeltaService _deltaService;
+
+    /// <summary>
     /// The current fps for the system
     /// </summary>
     private int _fps = 0;
@@ -37,19 +42,21 @@ namespace BlueJay.Component.System.Systems
     /// Constructor to build out the fps system
     /// </summary>
     /// <param name="renderer">The current renderer to print stuff on the screen</param>
-    public FPSSystem(IRenderer renderer)
+    /// <param name="deltaService">The current delta that gets updated every frame</param>
+    public FPSSystem(IRenderer renderer, IDeltaService deltaService)
     {
       _renderer = renderer;
+      _deltaService = deltaService;
     }
 
     /// <summary>
     /// Update event is meant to track how many times this method is called in a second
     /// </summary>
     /// <param name="delta">The current delta for this frame</param>
-    public override void OnUpdate(int delta)
+    public override void OnUpdate()
     {
       _updates++;
-      _countdown -= delta;
+      _countdown -= _deltaService.Delta;
       if (_countdown <= 0)
       {
         _fps = _updates;
@@ -62,7 +69,7 @@ namespace BlueJay.Component.System.Systems
     /// Draw event is meant to print the current fps to the screen
     /// </summary>
     /// <param name="delta">The current delta for this frame</param>
-    public override void OnDraw(int delta)
+    public override void OnDraw()
     {
       _renderer.DrawString($"fps: {_fps}", new Vector2(200, 10), Color.Black);
     }

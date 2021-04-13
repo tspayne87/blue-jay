@@ -18,15 +18,14 @@ namespace BlueJay.Component.System.Systems
     /// The draw event that is called before all entitiy draw events for this system
     /// </summary>
     /// <param name="delta">The current delta for this frame</param>
-    public virtual void OnDraw(int delta) { }
+    public virtual void OnDraw() { }
 
     /// <summary>
     /// The draw event that is called for each entity that was selected by the key
     /// for this system
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity that should be drawn</param>
-    public virtual void OnDraw(int delta, IEntity entity) { }
+    public virtual void OnDraw(IEntity entity) { }
 
     /// <summary>
     /// Initialization event that should be called once for this system to initialize
@@ -37,15 +36,13 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The updat event that is called before all entity update events for this system
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
-    public virtual void OnUpdate(int delta) { }
+    public virtual void OnUpdate() { }
 
     /// <summary>
     /// The update event that is called for eeach entity that was selected by the key
     /// for this system.
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity that should be updated</param>
-    public virtual void OnUpdate(int delta, IEntity entity) { }
+    public virtual void OnUpdate(IEntity entity) { }
   }
 }

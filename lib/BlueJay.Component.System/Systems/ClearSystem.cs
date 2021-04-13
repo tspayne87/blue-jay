@@ -38,7 +38,7 @@ namespace BlueJay.Component.System.Systems
     /// The draw method that will clear the screen
     /// </summary>
     /// <param name="delta">The current delta of the draw</param>
-    public override void OnDraw(int delta)
+    public override void OnDraw()
     {
       _graphicsDevice.Clear(_color);
     }

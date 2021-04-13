@@ -11,16 +11,14 @@
     /// <summary>
     /// The draw event that is called before all entitiy draw events for this system
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
-    void OnDraw(int delta);
+    void OnDraw();
 
     /// <summary>
     /// The draw event that is called for each entity that was selected by the key
     /// for this system
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity that should be drawn</param>
-    void OnDraw(int delta, IEntity entity);
+    void OnDraw(IEntity entity);
 
     /// <summary>
     /// Initialization event that should be called once for this system to initialize
@@ -31,15 +29,13 @@
     /// <summary>
     /// The updat event that is called before all entity update events for this system
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
-    void OnUpdate(int delta);
+    void OnUpdate();
 
     /// <summary>
     /// The update event that is called for eeach entity that was selected by the key
     /// for this system.
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity that should be updated</param>
-    void OnUpdate(int delta, IEntity entity);
+    void OnUpdate(IEntity entity);
   }
 }

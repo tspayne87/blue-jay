@@ -40,8 +40,7 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// We need to reset the y position on draw so we always draw in the same place
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
-    public override void OnDraw(int delta)
+    public override void OnDraw()
     {
       _y = 10;
     }
@@ -51,7 +50,7 @@ namespace BlueJay.Component.System.Systems
     /// </summary>
     /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity we are working with</param>
-    public override void OnDraw(int delta, IEntity entity)
+    public override void OnDraw(IEntity entity)
     {
       var dc = entity.GetAddon<DebugAddon>();
       var dAddons = entity.GetAddons(dc.KeyIdentifier);
