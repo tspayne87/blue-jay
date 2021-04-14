@@ -23,6 +23,8 @@ namespace BlueJay.Events
     /// </summary>
     public string Name { get; private set; }
 
+    public bool IsComplete { get; private set; }
+
     /// <summary>
     /// Constructor method to build out the event object with a easy way of doing it
     /// </summary>
@@ -33,6 +35,16 @@ namespace BlueJay.Events
       Data = data;
       Target = target;
       Name = data.GetType().Name;
+      IsComplete = false;
+    }
+
+    /// <summary>
+    /// Method is meant to stop the event cycle from moving forward and make sure that no other event listeners past the
+    /// one that called this method gets ran
+    /// </summary>
+    public void StopPropagation()
+    {
+      IsComplete = true;
     }
   }
 }

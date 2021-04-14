@@ -61,6 +61,12 @@ namespace BlueJay.Events
           for (var i = 0; i < _handlers[item.Name].Count; ++i)
           {
             _handlers[item.Name][i].Process(item);
+
+            // Break out of the look so we do not process any more handlers since stop propagation was called
+            if (item.IsComplete)
+            {
+              break;
+            }
           }
         }
       }

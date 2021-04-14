@@ -20,5 +20,16 @@
     /// The current name of the event
     /// </summary>
     string Name { get; }
+
+    /// <summary>
+    /// If this event is complete and needs to stop propagating
+    /// </summary>
+    bool IsComplete { get; }
+
+    /// <summary>
+    /// Method is meant to stop the event cycle from moving forward and make sure that no other event listeners past the
+    /// one that called this method gets ran
+    /// </summary>
+    void StopPropagation();
   }
 }
