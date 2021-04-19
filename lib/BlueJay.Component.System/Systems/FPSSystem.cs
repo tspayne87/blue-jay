@@ -1,5 +1,6 @@
 ﻿using BlueJay.Core.Interfaces;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Systems
 {
@@ -37,6 +38,11 @@ namespace BlueJay.Component.System.Systems
     /// Do not specify an entity and just use the based draw and update steps
     /// </summary>
     public override long Key => 0;
+
+    /// <summary>
+    /// The current layers that this system should be attached to
+    /// </summary>
+    public override List<string> Layers => new List<string>() { string.Empty };
 
     /// <summary>
     /// Constructor to build out the fps system

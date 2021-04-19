@@ -3,7 +3,7 @@ using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Component.System.Collections
 {
-  public class SystemCollection : List<IComponentSystem>, ISystemCollection
+  public class SystemCollection : List<IComponentSystem>
   {
   }
 }

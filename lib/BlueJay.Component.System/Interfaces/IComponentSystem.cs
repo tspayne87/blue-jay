@@ -1,4 +1,6 @@
-﻿namespace BlueJay.Component.System.Interfaces
+﻿using System.Collections.Generic;
+
+namespace BlueJay.Component.System.Interfaces
 {
   public interface IComponentSystem
   {
@@ -7,6 +9,11 @@
     /// methods with entities
     /// </summary>
     long Key { get; }
+
+    /// <summary>
+    /// The layers this system should process in
+    /// </summary>
+    List<string> Layers { get; }
 
     /// <summary>
     /// The draw event that is called before all entitiy draw events for this system

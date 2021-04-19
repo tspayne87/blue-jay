@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Systems
 {
@@ -22,6 +23,11 @@ namespace BlueJay.Component.System.Systems
     /// The Identifier for this system 0 is used if we do not care about the entities
     /// </summary>
     public override long Key => 0;
+
+    /// <summary>
+    /// The current layers that this system should be attached to
+    /// </summary>
+    public override List<string> Layers => new List<string>() { string.Empty };
 
     /// <summary>
     /// Constructor to build out the clear system and get it ready to clear on every frame

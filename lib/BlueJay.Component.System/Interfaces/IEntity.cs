@@ -18,6 +18,11 @@ namespace BlueJay.Component.System.Interfaces
     bool Active { get; set; }
 
     /// <summary>
+    /// The current layer that this is being bound too
+    /// </summary>
+    string Layer { get; set; }
+
+    /// <summary>
     /// Lifecycle hook is meant to load assets for this entity by passing them down to the addons
     /// </summary>
     void LoadContent();

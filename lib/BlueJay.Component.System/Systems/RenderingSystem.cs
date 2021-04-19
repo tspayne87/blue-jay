@@ -1,6 +1,7 @@
 ﻿using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
+using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Systems
 {
@@ -19,6 +20,8 @@ namespace BlueJay.Component.System.Systems
     /// for this system
     /// </summary>
     public override long Key => PositionAddon.Identifier | TextureAddon.Identifier;
+
+    public override List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor method is meant to build out the renderer system and inject

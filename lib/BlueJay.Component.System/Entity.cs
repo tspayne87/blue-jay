@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using BlueJay.Component.System.Collections;
 
 namespace BlueJay.Component.System
 {
@@ -15,17 +16,12 @@ namespace BlueJay.Component.System
     /// <summary>
     /// The current entity collection 
     /// </summary>
-    private readonly IEntityCollection _entityCollection;
+    private readonly LayerCollection _layerCollection;
 
     /// <summary>
     /// The service provider to build out objects from to handle DI
     /// </summary>
     private readonly IServiceProvider _serviceProvider;
-
-    /// <summary>
-    /// The current content manager needed to load various assets
-    /// </summary>
-    private readonly ContentManager _contentManager;
 
     /// <summary>
     /// The list of addons that are bound to this entity
@@ -43,16 +39,21 @@ namespace BlueJay.Component.System
     public bool Active { get; set; } = true;
 
     /// <summary>
+    /// The current layer that this is being bound too
+    /// </summary>
+    public string Layer { get; set; }
+
+    /// <summary>
     /// Constructor to build out this entity through DI
     /// </summary>
-    /// <param name="entityCollection">The current entity collection</param>
+    /// <param name="layerCollection">The current layer collection</param>
     /// <param name="serviceProvider">The current service provider so we can generate addons through DI</param>
-    /// <param name="contentManager">The current content manager so we can load assets through the entity if needed</param>
-    public Entity(IEntityCollection entityCollection, IServiceProvider serviceProvider, ContentManager contentManager)
+    /// <param name="layer">The layer this entity exists under</param>
+    public Entity(LayerCollection layerCollection, IServiceProvider serviceProvider, string layer)
     {
-      _entityCollection = entityCollection;
+      _layerCollection = layerCollection;
       _serviceProvider = serviceProvider;
-      _contentManager = contentManager;
+      Layer = layer;
     }
 
     #region Lifecycle Methods
@@ -77,7 +78,7 @@ namespace BlueJay.Component.System
       {
         addon.OnLoad();
         _addons.Add(addon);
-        _entityCollection.UpdateAddonTree(this);
+        _layerCollection[Layer].Entities.UpdateAddonTree(this);
       }
     }
 
@@ -90,7 +91,7 @@ namespace BlueJay.Component.System
       if (_addons.Remove(addon))
       {
         addon.OnRemove();
-        _entityCollection.UpdateAddonTree(this);
+        _layerCollection[Layer].Entities.UpdateAddonTree(this);
       }
     }
     

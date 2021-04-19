@@ -1,4 +1,5 @@
 using System;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,11 +18,31 @@ namespace BlueJay
     public static T AddEntity<T>(this IServiceProvider provider, params object[] parameters)
       where T : IEntity
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
+      var item = ActivatorUtilities.CreateInstance<T>(provider, "", parameters);
       item.LoadContent();
 
-      provider.GetRequiredService<IEntityCollection>()
-        .Add(item);
+      provider.GetRequiredService<LayerCollection>()
+        .AddEntity(item);
+      return item;
+    }
+
+    /// <summary>
+    /// Method is meant to add an entity to the entity collection and use DI to build out the object so that
+    /// services and other DI components can be injected properly into the class
+    /// </summary>
+    /// <typeparam name="T">The current object we are adding to the entity collection</typeparam>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="layer">The layer id that should be used when adding the entity</param>
+    /// <param name="parameters">The constructor parameters that do not exists in DI</param>
+    /// <returns>Will return the entity that was created and added to the collection</returns>
+    public static T AddEntity<T>(this IServiceProvider provider, string layer, params object[] parameters)
+      where T : IEntity
+    {
+      var item = ActivatorUtilities.CreateInstance<T>(provider, layer, parameters);
+      item.LoadContent();
+
+      provider.GetRequiredService<LayerCollection>()
+        .AddEntity(item, layer);
       return item;
     }
 
@@ -39,7 +60,7 @@ namespace BlueJay
       var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
       item.OnInitialize();
 
-      provider.GetRequiredService<ISystemCollection>()
+      provider.GetRequiredService<SystemCollection>()
         .Add(item);
       return item;
     }

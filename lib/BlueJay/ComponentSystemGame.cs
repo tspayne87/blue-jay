@@ -8,7 +8,6 @@ using BlueJay.Events.Interfaces;
 using BlueJay.Events;
 using BlueJay.Interfaces;
 using BlueJay.Views;
-using BlueJay.Component.System.Interfaces;
 using BlueJay.Component.System.Collections;
 
 namespace BlueJay
@@ -69,8 +68,8 @@ namespace BlueJay
       _serviceCollection.AddSingleton(GraphicsDevice);
       _serviceCollection.AddSingleton<IEventProcessor, EventProcessor>();
       _serviceCollection.AddSingleton<IViewCollection, ViewCollection>();
-      _serviceCollection.AddScoped<IEntityCollection, EntityCollection>();
-      _serviceCollection.AddScoped<ISystemCollection, SystemCollection>();
+      _serviceCollection.AddScoped<LayerCollection>();
+      _serviceCollection.AddScoped<SystemCollection>();
 
       ConfigureServices(_serviceCollection);
 

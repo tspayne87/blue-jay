@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Systems
 {
@@ -15,9 +16,13 @@ namespace BlueJay.Component.System.Systems
     public abstract long Key { get; }
 
     /// <summary>
+    /// The current layers that this system should be attached to
+    /// </summary>
+    public abstract List<string> Layers { get; }
+
+    /// <summary>
     /// The draw event that is called before all entitiy draw events for this system
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     public virtual void OnDraw() { }
 
     /// <summary>

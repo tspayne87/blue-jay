@@ -2,6 +2,7 @@
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
 using Microsoft.Xna.Framework;
+using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Systems
 {
@@ -26,6 +27,11 @@ namespace BlueJay.Component.System.Systems
     /// The key that should select the entities based on the addons
     /// </summary>
     public override long Key => DebugAddon.Identifier;
+
+    /// <summary>
+    /// The current layers that this system should be attached to
+    /// </summary>
+    public override List<string> Layers => new List<string>() { string.Empty };
 
     /// <summary>
     /// Constructor method to build out the system and inject the renderer into
