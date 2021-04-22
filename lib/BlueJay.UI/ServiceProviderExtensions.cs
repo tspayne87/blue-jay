@@ -1,6 +1,7 @@
 ﻿using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Addons;
+using BlueJay.UI.Systems;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -19,8 +20,7 @@ namespace BlueJay.UI
     public static T AddUIEntity<T>(this IServiceProvider provider, IEntity parent = null, params object[] parameters)
       where T : IEntity
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
-      item.LoadContent();
+      var item = provider.AddEntity<T>(UIStatic.LayerName, 15, parameters);
 
       // Add this item as a child to the parent
       if (parent != null)
@@ -29,10 +29,20 @@ namespace BlueJay.UI
         la?.Children.Add(item);
       }
 
-      item.Add<LineageAddon>(parent);
-      provider.GetRequiredService<LayerCollection>()
-        .AddEntity(item, UIStatic.LayerName, 15);
+      item.Add(new LineageAddon(parent));
       return item;
+    }
+
+    /// <summary>
+    /// Method is meant to add all the UI systems in their correct orders
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <returns>Will return the entity that was created and added to the collection</returns>
+    public static IServiceProvider AddUISystems(this IServiceProvider provider)
+    {
+      provider.AddComponentSystem<UINinePatchTextureSystem>();
+      provider.AddComponentSystem<UIPositionSystem>();
+      return provider;
     }
   }
 }

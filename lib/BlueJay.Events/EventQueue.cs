@@ -7,22 +7,22 @@ namespace BlueJay.Events
   /// <summary>
   /// The event queue is meant to handle the current queue and reset to handle the next defered queue
   /// </summary>
-  public class EventQueue : IEventQueue, IEventQueueProcessor
+  public class EventQueue
   {
     /// <summary>
     /// The current queue we are working with on any particular frame
     /// </summary>
-    private Queue<IEvent<object>> _current = new Queue<IEvent<object>>();
+    private Queue<IEvent> _current = new Queue<IEvent>();
 
     /// <summary>
     /// The next queue that should store the defered events that should be handled in the next frame
     /// </summary>
-    private Queue<IEvent<object>> _next = new Queue<IEvent<object>>();
+    private Queue<IEvent> _next = new Queue<IEvent>();
 
     /// <summary>
     /// All the handlers we are dealing with when processing events
     /// </summary>
-    private Dictionary<string, List<IEventListener<object>>> _handlers = new Dictionary<string, List<IEventListener<object>>>();
+    private Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
 
     /// <summary>
     /// Helper method is meant to dispatch events, this will defer them to the next frame for the event queue and will not be processed
@@ -44,8 +44,8 @@ namespace BlueJay.Events
     public void AddEventListener<T>(IEventListener<T> handler)
     {
       var name = typeof(T).Name;
-      if (!_handlers.ContainsKey(name)) _handlers[name] = new List<IEventListener<object>>();
-      _handlers[name].Add(handler as IEventListener<object>);
+      if (!_handlers.ContainsKey(name)) _handlers[name] = new List<IEventListener>();
+      _handlers[name].Add(handler);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ namespace BlueJay.Events
     /// </summary>
     public void Draw()
     {
-      var evt = new Event<object>(new DrawEvent());
+      var evt = new Event<DrawEvent>(new DrawEvent());
       if (_handlers.ContainsKey(evt.Name))
       {
         for (var i = 0; i < _handlers[evt.Name].Count; ++i)

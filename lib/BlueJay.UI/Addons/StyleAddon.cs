@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Addons;
+using BlueJay.Core;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay.UI.Addons

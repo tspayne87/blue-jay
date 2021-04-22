@@ -1,15 +1,14 @@
 ﻿using BlueJay.Component.System.Collections;
-using BlueJay.Component.System.Interfaces;
+using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
-using System.Linq;
 
 namespace BlueJay
 {
   /// <summary>
   /// Main lifecycle listener to hook in the component system into the event system
   /// </summary>
-  public class UpdateEventListener : IEventListener<UpdateEvent>
+  public class UpdateEventListener : EventListener<UpdateEvent>
   {
     /// <summary>
     /// The current layer collection
@@ -36,7 +35,7 @@ namespace BlueJay
     /// Process method is meant to handle the update event and send that update to all systems in the system
     /// </summary>
     /// <param name="evt">The current update event we are working with</param>
-    public void Process(IEvent<UpdateEvent> evt)
+    public override void Process(IEvent<UpdateEvent> evt)
     {
       for (var i = 0; i < _systemCollection.Count; ++i)
       {
@@ -46,7 +45,7 @@ namespace BlueJay
         {
           for (var j = 0; j < _layerCollection.Count; ++j)
           {
-            if (_systemCollection[i].Layers.Contains(_layerCollection[j].Id))
+            if (_systemCollection[i].Layers.Count == 0 || _systemCollection[i].Layers.Contains(_layerCollection[j].Id))
             {
               var entities = _layerCollection[j].Entities.GetByKey(_systemCollection[i].Key);
               for (var k = 0; k < entities.Count; ++k)

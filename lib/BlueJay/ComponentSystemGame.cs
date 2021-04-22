@@ -62,12 +62,16 @@ namespace BlueJay
     /// </summary>
     protected override void LoadContent()
     {
+      // All singletons that will never really change
       _serviceCollection.AddSingleton(this);
       _serviceCollection.AddSingleton(Content);
       _serviceCollection.AddSingleton(Window);
       _serviceCollection.AddSingleton(GraphicsDevice);
-      _serviceCollection.AddSingleton<IEventProcessor, EventProcessor>();
       _serviceCollection.AddSingleton<IViewCollection, ViewCollection>();
+
+      // Scopped collections that will be used in each view when processing
+      _serviceCollection.AddScoped<IEventProcessor, EventProcessor>();
+      _serviceCollection.AddScoped<EventQueue>();
       _serviceCollection.AddScoped<LayerCollection>();
       _serviceCollection.AddScoped<SystemCollection>();
 

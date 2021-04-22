@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlueJay.Component.System\BlueJay.Component.System.csproj" />
+    <ProjectReference Include="..\BlueJay\BlueJay.csproj" />
   </ItemGroup>
 
 </Project>

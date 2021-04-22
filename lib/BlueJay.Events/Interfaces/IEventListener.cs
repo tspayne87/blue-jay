@@ -1,10 +1,24 @@
 ﻿namespace BlueJay.Events.Interfaces
 {
   /// <summary>
+  /// Basic event listener that does not require a type mainly used internally to store
+  /// the event triggers
+  /// </summary>
+  public interface IEventListener
+  {
+    /// <summary>
+    /// Helper method is meant to handle the internal event processing and pass it along to the abstracted process
+    /// method
+    /// </summary>
+    /// <param name="evt">The event that is being processed</param>
+    void Process(IEvent evt);
+  }
+
+  /// <summary>
   /// Interface to handle events when they come in
   /// </summary>
   /// <typeparam name="T">The type of event we are working with</typeparam>
-  public interface IEventListener<T>
+  public interface IEventListener<T> : IEventListener
   {
     /// <summary>
     /// The event that we should be processing when it is triggered

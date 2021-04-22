@@ -9,6 +9,12 @@ namespace BlueJay.Interfaces
   public interface IView
   {
     /// <summary>
+    /// Initialization method is meant to set a new scope for the DI and have the view configure that provider once it has been created
+    /// </summary>
+    /// <param name="serviceProvider">The current service provider we are working with</param>
+    void Initialize(IServiceProvider serviceProvider);
+
+    /// <summary>
     /// The draw method is meant to draw data to the screen
     /// </summary>
     void Draw();

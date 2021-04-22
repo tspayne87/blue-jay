@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace BlueJay.UI.Addons
 {
+  /// <summary>
+  /// Lineage addon that tracks the parent and childrent entity connections
+  /// </summary>
   public class LineageAddon : Addon<LineageAddon>
   {
     /// <summary>
@@ -23,6 +26,15 @@ namespace BlueJay.UI.Addons
     public LineageAddon(IEntity parent)
     {
       Parent = parent;
+      Children = new List<IEntity>();
+    }
+
+    /// <summary>
+    /// The constructor for the lineage
+    /// </summary>
+    public LineageAddon()
+    {
+      Parent = null;
       Children = new List<IEntity>();
     }
   }

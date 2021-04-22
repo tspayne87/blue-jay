@@ -1,4 +1,5 @@
 ﻿using BlueJay.Core.Interfaces;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay.Core.Renderers
@@ -29,9 +30,9 @@ namespace BlueJay.Core.Renderers
     /// <summary>
     /// The begin set to start the batch that should be drawn
     /// </summary>
-    public override void Begin()
+    public override void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, Matrix? transformMatrix = null)
     {
-      Batch.Begin(transformMatrix: _camera.GetTransformMatrix);
+      Batch.Begin(sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, _camera.GetTransformMatrix);
     }
   }
 }

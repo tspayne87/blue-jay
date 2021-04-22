@@ -48,12 +48,10 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <param name="layerCollection">The current layer collection</param>
     /// <param name="serviceProvider">The current service provider so we can generate addons through DI</param>
-    /// <param name="layer">The layer this entity exists under</param>
-    public Entity(LayerCollection layerCollection, IServiceProvider serviceProvider, string layer)
+    public Entity(LayerCollection layerCollection, IServiceProvider serviceProvider)
     {
       _layerCollection = layerCollection;
       _serviceProvider = serviceProvider;
-      Layer = layer;
     }
 
     #region Lifecycle Methods
@@ -65,7 +63,14 @@ namespace BlueJay.Component.System
     public void Add<T>(params object[] parameters)
       where T : IAddon
     {
-      Add(ActivatorUtilities.CreateInstance<T>(_serviceProvider, parameters));
+      if (parameters.Length == 0)
+      {
+        Add(Activator.CreateInstance<T>());
+      }
+      else
+      {
+        Add(ActivatorUtilities.CreateInstance<T>(_serviceProvider, parameters));
+      }
     }
 
     /// <summary>
