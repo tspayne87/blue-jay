@@ -14,6 +14,12 @@ namespace BlueJay.Component.System.Addons
     public Rectangle Bounds;
 
     /// <summary>
+    /// Basic bounds addon to create a basic bounds addon
+    /// </summary>
+    public BoundsAddon()
+      : this(new Rectangle()) { }
+
+    /// <summary>
     /// Constructor method is meant to help with the creation of the bounds addon
     /// </summary>
     /// <param name="x">The current x coordinate</param>

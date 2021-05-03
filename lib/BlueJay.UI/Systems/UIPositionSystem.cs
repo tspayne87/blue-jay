@@ -40,7 +40,8 @@ namespace BlueJay.UI.Systems
 
       // If we have a parent we need to add the position so we are bound to the parent
       var ppa = la.Parent.GetAddon<PositionAddon>();
-      pa.Position += ppa.Position;
+      var psa = la.Parent.GetAddon<StyleAddon>();
+      pa.Position += ppa.Position + new Vector2(psa.CurrentStyle.Padding ?? 0);
     }
   }
 }

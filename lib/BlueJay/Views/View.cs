@@ -1,5 +1,6 @@
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
+using BlueJay.Events.Lifecycle;
 using BlueJay.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -33,9 +34,8 @@ namespace BlueJay.Views
       _scope = serviceProvider.CreateScope();
 
       // Add basic listeners for the queue
-      var queue = ServiceProvider.GetRequiredService<EventQueue>();
-      queue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(ServiceProvider));
-      queue.AddEventListener(ActivatorUtilities.CreateInstance<DrawEventListener>(ServiceProvider));
+      ServiceProvider.AddEventListener<UpdateEventListener, UpdateEvent>();
+      ServiceProvider.AddEventListener<DrawEventListener, DrawEvent>();
       ConfigureProvider(ServiceProvider);
     }
 

@@ -1,8 +1,9 @@
-﻿using BlueJay.Component.System.Collections;
-using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Events.Mouse;
+using BlueJay.Systems;
 using BlueJay.UI.Addons;
+using BlueJay.UI.EventListeners;
 using BlueJay.UI.Systems;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace BlueJay.UI
@@ -40,8 +41,29 @@ namespace BlueJay.UI
     /// <returns>Will return the entity that was created and added to the collection</returns>
     public static IServiceProvider AddUISystems(this IServiceProvider provider)
     {
-      provider.AddComponentSystem<UINinePatchTextureSystem>();
+      // Add Component systems
+      provider.AddComponentSystem<UIStyleBoundsSystem>();
       provider.AddComponentSystem<UIPositionSystem>();
+      provider.AddComponentSystem<UIStyleBoundsTriggerSystem>();
+
+      // Add event listeners
+      provider.AddEventListener<UIStyleUpdateListener, StyleUpdateEvent>();
+      provider.AddEventListener<UITextStyleUpdateListener, StyleUpdateEvent>();
+      return provider;
+    }
+
+    /// <summary>
+    /// Method is meant to add in mouse support for UI elements
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <returns>Will return the entity that was created and added to the collection</returns>
+    public static IServiceProvider AddUIMouseSupport(this IServiceProvider provider)
+    {
+      // Add the mouse system if it has not been added
+      provider.AddComponentSystem<MouseSystem>();
+
+      // Add the event listener
+      provider.AddEventListener<UIMouseMoveListener, MouseMoveEvent>();
       return provider;
     }
   }

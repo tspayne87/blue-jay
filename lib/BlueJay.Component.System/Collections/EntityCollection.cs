@@ -47,6 +47,11 @@ namespace BlueJay.Component.System.Collections
       UpdateCache(item, CacheInsertType.Upsert);
     }
 
+    public IEntity this[int i]
+    {
+      get { return _collection[i]; }
+    }
+
     private void UpdateCache(IEntity item, CacheInsertType type)
     {
       foreach(var cache in _entityQueryCache)

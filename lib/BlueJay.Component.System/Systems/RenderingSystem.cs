@@ -21,6 +21,9 @@ namespace BlueJay.Component.System.Systems
     /// </summary>
     public override long Key => PositionAddon.Identifier | TextureAddon.Identifier;
 
+    /// <summary>
+    /// The current layers that this system should be attached to
+    /// </summary>
     public override List<string> Layers => new List<string>();
 
     /// <summary>

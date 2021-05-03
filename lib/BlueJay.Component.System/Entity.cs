@@ -63,13 +63,16 @@ namespace BlueJay.Component.System
     public void Add<T>(params object[] parameters)
       where T : IAddon
     {
-      if (parameters.Length == 0)
-      {
-        Add(Activator.CreateInstance<T>());
-      }
-      else
+      try
       {
         Add(ActivatorUtilities.CreateInstance<T>(_serviceProvider, parameters));
+      }
+      catch (InvalidOperationException e)
+      {
+        if (parameters.Length != 0) throw e;
+
+        // If we are dealing with no parameters lets try to just create the instance with using the basic constructor
+        Add(Activator.CreateInstance<T>());
       }
     }
 

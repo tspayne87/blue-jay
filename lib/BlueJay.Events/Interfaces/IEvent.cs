@@ -6,11 +6,6 @@
   public interface IEvent
   {
     /// <summary>
-    /// The current target the event came from
-    /// </summary>
-    object Target { get; }
-
-    /// <summary>
     /// The current name of the event
     /// </summary>
     string Name { get; }
@@ -19,6 +14,11 @@
     /// If this event is complete and needs to stop propagating
     /// </summary>
     bool IsComplete { get; }
+
+    /// <summary>
+    /// The current target we are working with
+    /// </summary>
+    object Target { get; }
 
     /// <summary>
     /// Method is meant to stop the event cycle from moving forward and make sure that no other event listeners past the

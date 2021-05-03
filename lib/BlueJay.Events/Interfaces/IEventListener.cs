@@ -12,6 +12,13 @@
     /// </summary>
     /// <param name="evt">The event that is being processed</param>
     void Process(IEvent evt);
+
+    /// <summary>
+    /// Helper method to determine if we should process this event listener
+    /// </summary>
+    /// <param name="evt">The event that is being processed</param>
+    /// <returns>Will return a boolean determining if we should process the event listener</returns>
+    bool ShouldProcess(IEvent evt);
   }
 
   /// <summary>

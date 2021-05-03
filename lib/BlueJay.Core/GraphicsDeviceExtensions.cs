@@ -22,5 +22,26 @@ namespace BlueJay.Core
       rectangle.SetData(data);
       return rectangle;
     }
+
+    /// <summary>
+    /// Helper method to build out a basic nine patch based on the background color and border color
+    /// </summary>
+    /// <param name="graphics">The graphics device we need to render with</param>
+    /// <param name="background">The background color for this nine patch</param>
+    /// <param name="border">The border color for this nine patch</param>
+    /// <returns>Will return the generated nine patch</returns>
+    public static NinePatch GenerateNinePatch(this GraphicsDevice graphics, Color background, Color? border = null)
+    {
+      border = border ?? Color.Black;
+
+      var rectangle = new Texture2D(graphics, 3, 3);
+      rectangle.SetData(new Color[] {
+        border.Value, border.Value, border.Value,
+        border.Value, background,   border.Value,
+        border.Value, border.Value, border.Value,
+      });
+
+      return new NinePatch(rectangle);
+    }
   }
 }

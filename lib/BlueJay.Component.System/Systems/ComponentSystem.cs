@@ -39,7 +39,7 @@ namespace BlueJay.Component.System.Systems
     public virtual void OnInitialize() { }
 
     /// <summary>
-    /// The updat event that is called before all entity update events for this system
+    /// The update event that is called before all entity update events for this system
     /// </summary>
     public virtual void OnUpdate() { }
 

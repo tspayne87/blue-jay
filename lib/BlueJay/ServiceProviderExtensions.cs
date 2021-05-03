@@ -1,6 +1,8 @@
 using System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Events;
+using BlueJay.Events.Interfaces;
 using BlueJay.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -105,6 +107,20 @@ namespace BlueJay
       provider.GetRequiredService<IViewCollection>()
         .Add(item);
       return item;
+    }
+
+    /// <summary>
+    /// Method is meant to add an event listener based on the event to the event queue for processing
+    /// </summary>
+    /// <typeparam name="T">The event Listener implementation that should be used</typeparam>
+    /// <typeparam name="K">The event we are wanting to add the queue to</typeparam>
+    /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
+    /// <param name="parameters">The constructor parameters that do not exists in D</param>
+    public static void AddEventListener<T, K>(this IServiceProvider provider, params object[] parameters)
+      where T : IEventListener<K>
+    {
+      var eventQueue = provider.GetRequiredService<EventQueue>();
+      eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<T>(provider));
     }
   }
 }

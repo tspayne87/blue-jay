@@ -1,5 +1,6 @@
 ﻿using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
+using System;
 using System.Collections.Generic;
 
 namespace BlueJay.Events
@@ -30,10 +31,13 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="evt">The event that is being triggered</param>
-    /// <param name="target">The current object that this event is targeting</param>
     public void DispatchEvent<T>(T evt, object target = null)
     {
-      _next.Enqueue(new Event<object>(evt, target));
+      var name = typeof(T).Name;
+      if (_handlers.ContainsKey(name) && _handlers[name].Count > 0)
+      {
+        _next.Enqueue(new Event<T>(evt, target));
+      }
     }
 
     /// <summary>
@@ -49,6 +53,18 @@ namespace BlueJay.Events
     }
 
     /// <summary>
+    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
+    /// with events that get dispatched
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <param name="target">The target this callback should be attached to</param>
+    public void AddEventListener<T>(Func<T, bool> callback, object target = null)
+    {
+      AddEventListener(new CallbackListener<T>(callback, target));
+    }
+
+    /// <summary>
     /// Helper method to process the current queue
     /// </summary>
     public void Update()
@@ -60,12 +76,15 @@ namespace BlueJay.Events
         {
           for (var i = 0; i < _handlers[item.Name].Count; ++i)
           {
-            _handlers[item.Name][i].Process(item);
-
-            // Break out of the look so we do not process any more handlers since stop propagation was called
-            if (item.IsComplete)
+            if (_handlers[item.Name][i].ShouldProcess(item))
             {
-              break;
+              _handlers[item.Name][i].Process(item);
+
+              // Break out of the look so we do not process any more handlers since stop propagation was called
+              if (item.IsComplete)
+              {
+                break;
+              }
             }
           }
         }
@@ -82,7 +101,10 @@ namespace BlueJay.Events
       {
         for (var i = 0; i < _handlers[evt.Name].Count; ++i)
         {
-          _handlers[evt.Name][i].Process(evt);
+          if (_handlers[evt.Name][i].ShouldProcess(evt))
+          {
+            _handlers[evt.Name][i].Process(evt);
+          }
         }
       }
     }

@@ -12,6 +12,7 @@ namespace BlueJay.App
     public BlueJayAppGame()
     {
       Content.RootDirectory = "Content";
+      Window.AllowUserResizing = true;
       IsMouseVisible = true;
     }
 
