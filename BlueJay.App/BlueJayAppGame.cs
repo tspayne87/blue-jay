@@ -25,7 +25,7 @@ namespace BlueJay.App
 
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
-      serviceProvider.AddView<TitleView>();
+      serviceProvider.AddView<BreakOutView>();
     }
   }
 }

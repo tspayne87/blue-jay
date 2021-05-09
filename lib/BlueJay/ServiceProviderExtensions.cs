@@ -21,12 +21,7 @@ namespace BlueJay
     public static T AddEntity<T>(this IServiceProvider provider, params object[] parameters)
       where T : IEntity
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, "", parameters);
-      item.LoadContent();
-
-      provider.GetRequiredService<LayerCollection>()
-        .AddEntity(item);
-      return item;
+      return provider.AddEntity<T>(string.Empty, 0, parameters);
     }
 
     /// <summary>
@@ -41,12 +36,7 @@ namespace BlueJay
     public static T AddEntity<T>(this IServiceProvider provider, string layer, params object[] parameters)
       where T : IEntity
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, layer, parameters);
-      item.LoadContent();
-
-      provider.GetRequiredService<LayerCollection>()
-        .AddEntity(item, layer);
-      return item;
+      return provider.AddEntity<T>(layer, 0, parameters);
     }
 
     /// <summary>

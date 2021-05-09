@@ -21,7 +21,7 @@ namespace BlueJay.App.Views
 
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
-      serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
+      serviceProvider.AddComponentSystem<ClearSystem>(Color.Red);
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
 
@@ -29,6 +29,7 @@ namespace BlueJay.App.Views
       serviceProvider.AddComponentSystem<FPSSystem>();
 
       // Create layout and a button
+      // <div><div><btn></btn></div></div>
       var parent = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.33f, TopOffset = 50, HorizontalAlign = HorizontalAlign.Center });
       var button = serviceProvider.AddContainer(
         new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), WidthPercentage = 1, Height = 50, Padding = 13 },
