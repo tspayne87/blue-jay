@@ -12,6 +12,12 @@ namespace BlueJay.Component.System.Addons
     /// </summary>
     public Color Color;
 
+    /// <summary>
+    /// Basic contructor is meant to build out a default addon for color
+    /// </summary>
+    public ColorAddon()
+      : this(Color.White) { }
+
 
     /// <summary>
     /// Constructor to build out the color addon

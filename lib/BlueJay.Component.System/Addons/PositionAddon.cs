@@ -13,6 +13,12 @@ namespace BlueJay.Component.System.Addons
     public Vector2 Position { get; set; }
 
     /// <summary>
+    /// Basic constructor to build out the position for the addon
+    /// </summary>
+    public PositionAddon()
+      : this(Vector2.Zero) { }
+
+    /// <summary>
     /// Constructor to build out position for the addon
     /// </summary>
     /// <param name="position">The position that should be assigned to the entity</param>

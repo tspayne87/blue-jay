@@ -58,9 +58,19 @@ namespace BlueJay.Core.Interfaces
     void DrawRectangle(int width, int height, Vector2 position, Color color);
 
     /// <summary>
+    /// Method is meant to draw a rectangle to the screen
+    /// </summary>
+    /// <param name="ninePatch">The nine patch that should be used when processing</param>
+    /// <param name="width">The width of the rectangle that should be drawn</param>
+    /// <param name="height">The height of the rectangle that should be drawn</param>
+    /// <param name="position">The position of the rectangle</param>
+    /// <param name="color">The color of the rectangle</param>
+    void DrawRectangle(NinePatch ninePatch, int width, int height, Vector2 position, Color color);
+
+    /// <summary>
     /// The begin set to start the batch that should be drawn
     /// </summary>
-    void Begin();
+    void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, Matrix? transformMatrix = null);
 
     /// <summary>
     /// The end of the sprite batch that should be drawn

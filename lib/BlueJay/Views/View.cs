@@ -1,4 +1,6 @@
+using BlueJay.Events;
 using BlueJay.Events.Interfaces;
+using BlueJay.Events.Lifecycle;
 using BlueJay.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,7 +15,7 @@ namespace BlueJay.Views
     /// <summary>
     /// The scope we are currently working with
     /// </summary>
-    private readonly IServiceScope _scope;
+    private IServiceScope _scope;
 
     /// <summary>
     /// Getter to get the current service provider based on the scope
@@ -21,12 +23,19 @@ namespace BlueJay.Views
     protected IServiceProvider ServiceProvider => _scope.ServiceProvider;
 
     /// <summary>
-    /// Constructor method is meant to set a new scope for the DI and have the view configure that provider once it has been created
+    /// Initialization method is meant to set a new scope for the DI and have the view configure that provider once it has been created
     /// </summary>
     /// <param name="serviceProvider">The current service provider we are working with</param>
-    public View(IServiceProvider serviceProvider)
+    public void Initialize(IServiceProvider serviceProvider)
     {
+      // Lock to only allow the scope to be created once
+      if (_scope != null) throw new ArgumentException("Scope has already been created", nameof(_scope));
+
       _scope = serviceProvider.CreateScope();
+
+      // Add basic listeners for the queue
+      ServiceProvider.AddEventListener<UpdateEventListener, UpdateEvent>();
+      ServiceProvider.AddEventListener<DrawEventListener, DrawEvent>();
       ConfigureProvider(ServiceProvider);
     }
 

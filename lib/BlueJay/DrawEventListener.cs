@@ -1,33 +1,33 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System.Collections;
+using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
-using System.Linq;
 
 namespace BlueJay
 {
   /// <summary>
   /// Main lifecycle listener to hook into the draw event
   /// </summary>
-  public class DrawEventListener : IEventListener<DrawEvent>
+  public class DrawEventListener : EventListener<DrawEvent>
   {
-    /// <summary>
-    /// The current entity collection
-    /// </summary>
-    private readonly IEntityCollection _entityCollection;
-
     /// <summary>
     /// The current system collection
     /// </summary>
-    private readonly ISystemCollection _systemCollection;
+    private readonly SystemCollection _systemCollection;
+
+    /// <summary>
+    /// The current layer collection
+    /// </summary>
+    private readonly LayerCollection _layerCollection;
 
     /// <summary>
     /// Constructor to build out the update event
     /// </summary>
-    /// <param name="entityCollection">The entity collection we are working with</param>
+    /// <param name="layerCollection">The entity collection we are working with</param>
     /// <param name="systemCollection">The current system collection we are working with</param>
-    public DrawEventListener(IEntityCollection entityCollection, ISystemCollection systemCollection)
+    public DrawEventListener(LayerCollection layerCollection, SystemCollection systemCollection)
     {
-      _entityCollection = entityCollection;
+      _layerCollection = layerCollection;
       _systemCollection = systemCollection;
     }
 
@@ -35,20 +35,26 @@ namespace BlueJay
     /// Process method is meant to handle the update event and send that update to all systems in the system
     /// </summary>
     /// <param name="evt">The current update event we are working with</param>
-    public void Process(IEvent<DrawEvent> evt)
+    public override void Process(IEvent<DrawEvent> evt)
     {
-      foreach (var system in _systemCollection)
+      for (var i = 0; i < _systemCollection.Count; ++i)
       {
-        system.OnDraw();
+        _systemCollection[i].OnDraw();
 
-        if (system.Key != 0)
+        if (_systemCollection[i].Key != 0)
         {
-          var entities = _entityCollection.GetByKey(system.Key).ToArray();
-          for (var i = 0; i < entities.Length; ++i)
+          for (var j = 0; j < _layerCollection.Count; ++j)
           {
-            if (entities[i].Active)
+            if (_systemCollection[i].Layers.Count == 0 || _systemCollection[i].Layers.Contains(_layerCollection[j].Id))
             {
-              system.OnDraw(entities[i]);
+              var entities = _layerCollection[j].Entities.GetByKey(_systemCollection[i].Key);
+              for (var k = 0; k < entities.Count; ++k)
+              {
+                if (entities[k].Active)
+                {
+                  _systemCollection[i].OnDraw(entities[k]);
+                }
+              }
             }
           }
         }

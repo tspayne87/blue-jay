@@ -47,6 +47,15 @@ namespace BlueJay.Component.System.Addons
     }
 
     /// <summary>
+    /// Constructor to build out a basic texture addon
+    /// </summary>
+    public TextureAddon()
+    {
+      Texture = null;
+      _assetName = string.Empty;
+    }
+
+    /// <summary>
     /// The on load event that should load the texture into existance before rendering
     /// </summary>
     public override void OnLoad()

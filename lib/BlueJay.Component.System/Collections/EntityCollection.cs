@@ -4,7 +4,7 @@ using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Component.System.Collections
 {
-  public class EntityCollection : IEntityCollection
+  public class EntityCollection
   {
     private int _entityCount = 0;
     public List<IEntity> _collection = new List<IEntity>();
@@ -21,21 +21,7 @@ namespace BlueJay.Component.System.Collections
       UpdateCache(item, CacheInsertType.Add);
     }
 
-    public void Clear()
-    {
-      _collection.Clear();
-      _entityQueryCache.Clear();
-    }
-
-    public void CopyTo(IEntity[] array, int arrayIndex)
-    {
-      _collection.CopyTo(array, arrayIndex);
-
-      foreach(var item in array)
-        UpdateCache(item, CacheInsertType.Add);
-    }
-
-    public IEnumerable<IEntity> GetByKey(long key, bool includeInActive = false)
+    public List<IEntity> GetByKey(long key, bool includeInActive = false)
     {
       if (!_entityQueryCache.ContainsKey(key))
       {
@@ -61,9 +47,10 @@ namespace BlueJay.Component.System.Collections
       UpdateCache(item, CacheInsertType.Upsert);
     }
 
-    public bool Contains(IEntity item) => _collection.Contains(item);
-    public IEnumerator<IEntity> GetEnumerator() => _collection.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
+    public IEntity this[int i]
+    {
+      get { return _collection[i]; }
+    }
 
     private void UpdateCache(IEntity item, CacheInsertType type)
     {
