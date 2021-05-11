@@ -10,4 +10,10 @@ namespace BlueJay.App.Games.Breakout
     public const string PaddleLayer = "PaddleLayer";
     public const string BallLayer = "BallLayer";
   }
+
+  public static class BlockConsts
+  {
+    public const int Amount = 5;
+    public const int Padding = 5;
+  }
 }

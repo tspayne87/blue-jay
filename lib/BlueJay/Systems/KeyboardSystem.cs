@@ -57,12 +57,17 @@ namespace BlueJay.Systems
         if (keyState == KeyState.Down && !pair.Value)
         {
           _queue.DispatchEvent(new KeyboardDownEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
+          _queue.DispatchEvent(new KeyboardPressEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
           _pressed[pair.Key] = true;
         }
         else if (keyState == KeyState.Up && pair.Value)
         {
           _queue.DispatchEvent(new KeyboardUpEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
           _pressed[pair.Key] = false;
+        }
+        else if (keyState == KeyState.Down && pair.Value)
+        {
+          _queue.DispatchEvent(new KeyboardPressEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
         }
       }
     }
