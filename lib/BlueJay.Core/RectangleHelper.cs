@@ -1,12 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BlueJay.Core
 {
+  /// <summary>
+  /// Set of rectangle helper functions
+  /// </summary>
   public static class RectangleHelper
   {
+    /// <summary>
+    /// Helper method is meant to be a basic way of determining what side was hit if an intersection occured
+    /// </summary>
+    /// <param name="self">The entity we want to check against the target</param>
+    /// <param name="target">The target we need to check which side was hit</param>
+    /// <returns>Will return a side that was hit or none if nothing was hit or if we are inside the rectangle</returns>
     public static RectangleSide SideIntersection(Rectangle self, Rectangle target)
     {
       var check = Rectangle.Intersect(self, target);
@@ -20,6 +26,9 @@ namespace BlueJay.Core
     }
   }
 
+  /// <summary>
+  /// The side that was hit if an intersection occurs
+  /// </summary>
   public enum RectangleSide
   {
     Top, Right, Bottom, Left, None

@@ -10,6 +10,13 @@ namespace BlueJay.App.Games.Breakout.Factories
 {
   public static class BlockFactory
   {
+    /// <summary>
+    /// Factory method is meant to create a block entity and add addons to that
+    /// entity for processing in the game
+    /// </summary>
+    /// <param name="provider">The service provider we need to add the entities and systems to</param>
+    /// <param name="index">The index this block should be set as</param>
+    /// <returns>The entity that was created</returns>
     public static IEntity AddBlock(this IServiceProvider provider, int index)
     {
       var entity = provider.AddEntity<Entity>(LayerNames.BlockLayer);

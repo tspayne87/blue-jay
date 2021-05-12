@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BlueJay.App.Games.Breakout
+﻿namespace BlueJay.App.Games.Breakout
 {
+  /// <summary>
+  /// The constant layer names so we can group the different entities to various layers
+  /// </summary>
   public static class LayerNames
   {
     public const string BlockLayer = "BlockLayer";
@@ -11,6 +10,9 @@ namespace BlueJay.App.Games.Breakout
     public const string BallLayer = "BallLayer";
   }
 
+  /// <summary>
+  /// The basic constants that are used for creating blocks on the top of the screen
+  /// </summary>
   public static class BlockConsts
   {
     public const int Amount = 5;

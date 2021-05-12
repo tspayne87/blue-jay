@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BlueJay.App.Games.Breakout
+﻿namespace BlueJay.App.Games.Breakout
 {
+  /// <summary>
+  /// The types of entities that exist in the breakout game
+  /// </summary>
   public enum EntityType
   {
     Paddle, Block, Ball
