@@ -21,7 +21,7 @@ namespace BlueJay.App.Views
 
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
-      serviceProvider.AddComponentSystem<ClearSystem>(Color.Red);
+      serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
 

@@ -2,6 +2,7 @@ using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
 using BlueJay.Interfaces;
+using BlueJay.Systems;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -32,6 +33,9 @@ namespace BlueJay.Views
       if (_scope != null) throw new ArgumentException("Scope has already been created", nameof(_scope));
 
       _scope = serviceProvider.CreateScope();
+
+      // Add a basic system that will be used by most games
+      ServiceProvider.AddComponentSystem<ViewportSystem>();
 
       // Add basic listeners for the queue
       ServiceProvider.AddEventListener<UpdateEventListener, UpdateEvent>();

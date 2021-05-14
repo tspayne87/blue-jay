@@ -3,6 +3,7 @@ using BlueJay.App.Games.Breakout.EventListeners;
 using BlueJay.App.Games.Breakout.Factories;
 using BlueJay.App.Games.Breakout.Systems;
 using BlueJay.Component.System.Systems;
+using BlueJay.Events;
 using BlueJay.Events.Keyboard;
 using BlueJay.Systems;
 using BlueJay.Views;
@@ -42,7 +43,6 @@ namespace BlueJay.App.Views
       // Processing systems
       serviceProvider.AddComponentSystem<KeyboardSystem>();
       serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
-      serviceProvider.AddComponentSystem<StretchBoundsSystem>();
       serviceProvider.AddComponentSystem<ClampPositionSystem>();
       serviceProvider.AddComponentSystem<BallSystem>();
 
@@ -53,6 +53,7 @@ namespace BlueJay.App.Views
       serviceProvider.AddEventListener<KeyboardPressEventListener, KeyboardPressEvent>();
       serviceProvider.AddEventListener<StartBallEventListener, StartBallEvent>();
       serviceProvider.AddEventListener<EndGameEventListener, EndGameEvent>();
+      serviceProvider.AddEventListener<StretchBoundsViewportChangeListener, ViewportChangeEvent>();
 
       // Add Game Entities
       serviceProvider.AddPaddle();

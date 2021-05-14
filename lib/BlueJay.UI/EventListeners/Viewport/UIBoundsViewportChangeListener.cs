@@ -1,56 +1,57 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
-using BlueJay.Component.System.Systems;
 using BlueJay.Events;
+using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 
-namespace BlueJay.UI.Systems
+namespace BlueJay.UI.EventListeners.Viewport
 {
   /// <summary>
-  /// System is meant to process the bounds based on the style of the entity
+  /// Event listener will watch for changes in the viewport and do basic updates to the starting of the bounds of each
+  /// UI entity
   /// </summary>
-  public class UIStyleBoundsSystem : ComponentSystem
+  public class UIBoundsViewportChangeListener : EventListener<ViewportChangeEvent>
   {
     /// <summary>
-    /// The current graphic device we are working with
+    /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
     /// </summary>
-    private readonly GraphicsDevice _graphics;
+    private readonly LayerCollection _layers;
 
     /// <summary>
-    /// The key that we should filter on for this system to work with
+    /// Constructor to injection the layer collection into the listener
     /// </summary>
-    public override long Key => LineageAddon.Identifier | StyleAddon.Identifier;
-
-    /// <summary>
-    /// The layers this system should be working on
-    /// </summary>
-    public override List<string> Layers => new List<string>() { UIStatic.LayerName };
-
-    /// <summary>
-    /// Constructor to build out the UI style bounds system
-    /// </summary>
-    /// <param name="graphics"></param>
-    public UIStyleBoundsSystem(GraphicsDevice graphics)
+    /// <param name="layers">The layer collection we are currently working with</param>
+    public UIBoundsViewportChangeListener(LayerCollection layers)
     {
-      _graphics = graphics;
+      _layers = layers;
     }
 
     /// <summary>
-    /// Update event that will process the bounds object based on the styles given
+    /// The event that we should be processing when it is triggered
+    /// </summary>
+    /// <param name="evt">The current event object that was triggered</param>
+    public override void Process(IEvent<ViewportChangeEvent> evt)
+    {
+      for (var i = 0; i < _layers[UIStatic.LayerName].Entities.Count; ++i)
+      {
+        ProcessEntity(_layers[UIStatic.LayerName].Entities[i], evt.Data);
+      }
+    }
+
+    /// <summary>
+    /// Process method is meant to update the bounds to a specific entity
     /// </summary>
     /// <param name="entity">The entity we are processing</param>
-    public override void OnUpdate(IEntity entity)
+    /// <param name="evt">The event that triggered the change to the UI</param>
+    private void ProcessEntity(IEntity entity, ViewportChangeEvent evt)
     {
       var la = entity.GetAddon<LineageAddon>();
       var sa = entity.GetAddon<StyleAddon>();
       var psa = la.Parent?.GetAddon<StyleAddon>();
 
-      var pWidth = (psa?.CalculatedBounds.Width ?? _graphics.Viewport.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
-      var pHeight = (psa?.CalculatedBounds.Height ?? _graphics.Viewport.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+      var pWidth = (psa?.CalculatedBounds.Width ?? evt.Current.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+      var pHeight = (psa?.CalculatedBounds.Height ?? evt.Current.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
 
       // Process Height Properties
       if (sa.CurrentStyle.Height != null) sa.CalculatedBounds.Height = sa.CurrentStyle.Height.Value;
@@ -93,7 +94,7 @@ namespace BlueJay.UI.Systems
       if (sa.CurrentStyle.LeftOffset != null) sa.CalculatedBounds.X = sa.CurrentStyle.LeftOffset.Value;
       else
       {
-        switch(sa.CurrentStyle.HorizontalAlign)
+        switch (sa.CurrentStyle.HorizontalAlign)
         {
           case HorizontalAlign.Center:
             sa.CalculatedBounds.X = (pWidth - sa.CalculatedBounds.Width) / 2;

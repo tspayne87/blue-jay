@@ -1,8 +1,10 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Events;
 using BlueJay.Events.Mouse;
 using BlueJay.Systems;
 using BlueJay.UI.Addons;
 using BlueJay.UI.EventListeners;
+using BlueJay.UI.EventListeners.Viewport;
 using BlueJay.UI.Systems;
 using System;
 
@@ -42,11 +44,12 @@ namespace BlueJay.UI
     public static IServiceProvider AddUISystems(this IServiceProvider provider)
     {
       // Add Component systems
-      provider.AddComponentSystem<UIStyleBoundsSystem>();
       provider.AddComponentSystem<UIPositionSystem>();
-      provider.AddComponentSystem<UIStyleBoundsTriggerSystem>();
 
       // Add event listeners
+      provider.AddEventListener<UIBoundsViewportChangeListener, ViewportChangeEvent>(0);
+      provider.AddEventListener<UIBoundsTriggerViewportChangeListener, ViewportChangeEvent>();
+
       provider.AddEventListener<UIStyleUpdateListener, StyleUpdateEvent>();
       provider.AddEventListener<UITextStyleUpdateListener, StyleUpdateEvent>();
       return provider;
