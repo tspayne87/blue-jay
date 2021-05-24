@@ -1,9 +1,11 @@
 ﻿using BlueJay.App.Games.Breakout.Addons;
 using BlueJay.Component.System.Addons;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Component.System.Systems;
 using BlueJay.Core.Interfaces;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
 namespace BlueJay.App.Games.Breakout.Systems
@@ -17,6 +19,26 @@ namespace BlueJay.App.Games.Breakout.Systems
     /// The renderer that should be used for the breakout
     /// </summary>
     private readonly IRenderer _renderer;
+
+    /// <summary>
+    /// The layer collection that has all the entities in the game at the moment
+    /// </summary>
+    private readonly LayerCollection _layers;
+
+    /// <summary>
+    /// The game service that is meant to process the different states of the game
+    /// </summary>
+    private readonly BreakoutGameService _service;
+
+    /// <summary>
+    /// The global font that should be used
+    /// </summary>
+    private readonly SpriteFont _font;
+
+    /// <summary>
+    /// The graphics that are bound to the screen
+    /// </summary>
+    private readonly GraphicsDevice _graphics;
 
     /// <summary>
     /// The current addon key that is meant to act as a selector for the Draw/Update
@@ -33,9 +55,46 @@ namespace BlueJay.App.Games.Breakout.Systems
     /// Constructor is meant to inject the renderer into the system for processing
     /// </summary>
     /// <param name="renderer">The renderer that should be used for the breakout</param>
-    public BreakoutRenderingSystem(IRenderer renderer)
+    /// <param name="font">The global font</param>
+    /// <param name="graphics">The graphics for the screen</param>
+    /// <param name="layers">The layers we are working with</param>
+    /// <param name="service">The current service that represents the game</param>
+    public BreakoutRenderingSystem(IRenderer renderer, LayerCollection layers, BreakoutGameService service, SpriteFont font, GraphicsDevice graphics)
     {
       _renderer = renderer;
+      _layers = layers;
+      _service = service;
+      _font = font;
+      _graphics = graphics;
+    }
+
+    /// <summary>
+    /// The draw event that is called before all entitiy draw events for this system
+    /// </summary>
+    public override void OnDraw()
+    {
+      // Calculate the text that should exist on the screen
+      var txt = string.Empty;
+      if (_layers[LayerNames.BallLayer]?.Entities.Count == 0)
+      {
+        txt = $"Game Over\n\nScore: {_service.Score}";
+      }
+      else if (_layers[LayerNames.BallLayer]?.Entities.Count == 1)
+      {
+        var baa = _layers[LayerNames.BallLayer].Entities[0].GetAddon<BallActiveAddon>();
+        if (!baa.IsActive)
+        {
+          txt = $"Round {_service.Round} Start\nPress Space To Start";
+        }
+      }
+
+      // If text exist we need to render it
+      if (txt.Length > 0)
+      {
+        var bounds = _font.MeasureString(txt);
+        var pos = new Vector2((_graphics.Viewport.Width - bounds.X) / 2f, (_graphics.Viewport.Height - bounds.Y) / 2f);
+        _renderer.DrawString(txt, pos, Color.Black);
+      }
     }
 
     /// <summary>

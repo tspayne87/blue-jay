@@ -17,5 +17,6 @@
   {
     public const int Amount = 5;
     public const int Padding = 5;
+    public const int TopOffset = 50;
   }
 }

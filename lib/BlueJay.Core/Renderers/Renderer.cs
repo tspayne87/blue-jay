@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
 namespace BlueJay.Core.Renderers
 {
@@ -122,6 +123,24 @@ namespace BlueJay.Core.Renderers
     }
 
     /// <summary>
+    /// Method is meant to draw the list of particles to the scene
+    /// </summary>
+    /// <param name="texture">The texture that should be used for the particles</param>
+    /// <param name="particles">The particles that should be rendered</param>
+    public virtual void DrawParticles(Texture2D texture, List<Particle> particles)
+    {
+      if (particles.Count > 0)
+      {
+        Begin();
+        for (var i = 0; i < particles.Count; ++i)
+        {
+          Batch.Draw(texture, particles[i].Position, particles[i].Color);
+        }
+        End();
+      }
+    }
+
+    /// <summary>
     /// Method is meant to draw a rectangle to the screen
     /// </summary>
     /// <param name="ninePatch">The nine patch that should be used when processing</param>
@@ -131,14 +150,11 @@ namespace BlueJay.Core.Renderers
     /// <param name="color">The color of the rectangle</param>
     public void DrawRectangle(NinePatch ninePatch, int width, int height, Vector2 position, Color color)
     {
-      if (width % ninePatch.Break.X != 0) throw new ArgumentException("Width needs to have a 0 modulas of the ninepatch width", nameof(width));
-      if (height % ninePatch.Break.Y != 0) throw new ArgumentException("Height needs to have a 0 modulas of the ninepatch height", nameof(height));
-
       var innerHeight = height - (ninePatch.Break.Y * 2);
       var innerWidth = width - (ninePatch.Break.X * 2);
 
-      var heightLength = innerHeight / ninePatch.Break.Y;
-      var widthLength = innerWidth / ninePatch.Break.X;
+      var heightLength = (int)Math.Ceiling(innerHeight / (float)ninePatch.Break.Y);
+      var widthLength = (int)Math.Ceiling(innerWidth / (float)ninePatch.Break.X);
 
       Begin();
       // Draw four corners
@@ -146,6 +162,22 @@ namespace BlueJay.Core.Renderers
       Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, 0), ninePatch.Break), ninePatch.TopRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
       Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 1f);
       Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+
+      // Draw middle of rectangle
+      for (var y = 0; y < heightLength; ++y)
+      {
+        var yPos = ninePatch.Break.Y + (y * ninePatch.Break.Y);
+
+        // Fill in middle
+        for (var x = 0; x < widthLength; ++x)
+        {
+          Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(ninePatch.Break.X + (x * ninePatch.Break.X), yPos), ninePatch.Break), ninePatch.Middle, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+        }
+
+        // Draw left and right lines
+        Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, yPos), ninePatch.Break), ninePatch.MiddleLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+        Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, yPos), ninePatch.Break), ninePatch.MiddleRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+      }
 
       // Draw top and bottom lines
       for (var i = 0; i < widthLength; ++i)
@@ -155,22 +187,12 @@ namespace BlueJay.Core.Renderers
         Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(xPos, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.Bottom, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
       }
 
-      // Draw middle of rectangle
-      for (var y = 0; y < heightLength; ++y)
-      {
-        // Draw left and right lines
-        var yPos = ninePatch.Break.Y + (y * ninePatch.Break.Y);
-        Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, yPos), ninePatch.Break), ninePatch.MiddleLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-        Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, yPos), ninePatch.Break), ninePatch.MiddleRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+      // Draw four corners
+      Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint(), ninePatch.Break), ninePatch.TopLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+      Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, 0), ninePatch.Break), ninePatch.TopRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+      Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+      Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
 
-        // Fill in middle
-        for (var x = 0; x < widthLength; ++x)
-        {
-          Batch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(ninePatch.Break.X + (x * ninePatch.Break.X), yPos), ninePatch.Break), ninePatch.Middle, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-        }
-      }
-
-      
       End();
     }
 

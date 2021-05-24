@@ -6,12 +6,12 @@ using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
 
-namespace BlueJay.UI.EventListeners.Viewport
+namespace BlueJay.UI.EventListeners.UIUpdate
 {
   /// <summary>
   /// Clear trigger is meant to send out event messages and clean up the bounds before rendering
   /// </summary>
-  public class UIBoundsTriggerViewportChangeListener : EventListener<ViewportChangeEvent>
+  public class UIBoundsTriggerUIUpdateEventListener : EventListener<UIUpdateEvent>
   {
     /// <summary>
     /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
@@ -27,7 +27,7 @@ namespace BlueJay.UI.EventListeners.Viewport
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UIBoundsTriggerViewportChangeListener(LayerCollection layers, EventQueue eventQueue)
+    public UIBoundsTriggerUIUpdateEventListener(LayerCollection layers, EventQueue eventQueue)
     {
       _layers = layers;
       _eventQueue = eventQueue;
@@ -37,7 +37,7 @@ namespace BlueJay.UI.EventListeners.Viewport
     /// The event that we should be processing when it is triggered
     /// </summary>
     /// <param name="evt">The current event object that was triggered</param>
-    public override void Process(IEvent<ViewportChangeEvent> evt)
+    public override void Process(IEvent<UIUpdateEvent> evt)
     {
       for (var i = 0; i < _layers[UIStatic.LayerName].Entities.Count; ++i)
       {

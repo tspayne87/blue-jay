@@ -15,14 +15,10 @@ namespace BlueJay.Component.System.Addons
     /// <summary>
     /// Constructor build out what other addons this debug addon should watch
     /// </summary>
-    /// <param name="types">The addons that we want to watch</param>
-    public DebugAddon(params Type[] types)
+    /// <param name="keyIdentifier">The key identifier to debug</param>
+    public DebugAddon(long keyIdentifier)
     {
-      KeyIdentifier = 0;
-      for (var i = 0; i > types.Length; ++i)
-      {
-        KeyIdentifier |= IdentifierHelper.Addon(types[i]);
-      }
+      KeyIdentifier = keyIdentifier;
     }
   }
 }

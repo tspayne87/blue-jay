@@ -5,6 +5,7 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
+using BlueJay.UI;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.App.Games.Breakout.EventListeners
@@ -13,7 +14,7 @@ namespace BlueJay.App.Games.Breakout.EventListeners
   /// The stretch bounds system is meant to move and stretch bounds in the system to make it look
   /// like the screen is the whole game
   /// </summary>
-  public class StretchBoundsViewportChangeListener : EventListener<ViewportChangeEvent>
+  public class UpdateBoundsEventListener : EventListener<UpdateBoundsEvent>
   {
     /// <summary>
     /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
@@ -29,7 +30,7 @@ namespace BlueJay.App.Games.Breakout.EventListeners
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public StretchBoundsViewportChangeListener(LayerCollection layers, EventQueue eventQueue)
+    public UpdateBoundsEventListener(LayerCollection layers, EventQueue eventQueue)
     {
       _layers = layers;
       _eventQueue = eventQueue;
@@ -39,13 +40,16 @@ namespace BlueJay.App.Games.Breakout.EventListeners
     /// The event that we should be processing when it is triggered
     /// </summary>
     /// <param name="evt">The current event object that was triggered</param>
-    public override void Process(IEvent<ViewportChangeEvent> evt)
+    public override void Process(IEvent<UpdateBoundsEvent> evt)
     {
       for (var i = 0; i < _layers.Count; ++i)
       {
-        for (var j = 0; j < _layers[i].Entities.Count; ++j)
+        if (_layers[i].Id != UIStatic.LayerName)
         {
-          ProcessEntity(_layers[i].Entities[j], evt.Data);
+          for (var j = 0; j < _layers[i].Entities.Count; ++j)
+          {
+            ProcessEntity(_layers[i].Entities[j], evt.Data);
+          }
         }
       }
     }
@@ -55,7 +59,7 @@ namespace BlueJay.App.Games.Breakout.EventListeners
     /// for this system.
     /// </summary>
     /// <param name="entity">The current entity that should be updated</param>
-    public void ProcessEntity(IEntity entity, ViewportChangeEvent evt)
+    public void ProcessEntity(IEntity entity, UpdateBoundsEvent evt)
     {
       var ta = entity.GetAddon<TypeAddon>();
       var ba = entity.GetAddon<BoundsAddon>();
@@ -65,15 +69,15 @@ namespace BlueJay.App.Games.Breakout.EventListeners
         case EntityType.Block:
           { // We want to reshape the blocks to fit the screen
             var bia = entity.GetAddon<BlockIndexAddon>();
-            var size = new Size((evt.Current.Width - (BlockConsts.Padding * (BlockConsts.Amount + 1))) / BlockConsts.Amount, evt.Current.Height / 15);
-            var position = new Point((bia.Index % BlockConsts.Amount) * (size.Width + BlockConsts.Padding) + BlockConsts.Padding, (bia.Index / BlockConsts.Amount) * (size.Height + BlockConsts.Padding) + 30);
+            var size = new Size((evt.Size.Width - (BlockConsts.Padding * (BlockConsts.Amount + 1))) / BlockConsts.Amount, evt.Size.Height / 15);
+            var position = new Point((bia.Index % BlockConsts.Amount) * (size.Width + BlockConsts.Padding) + BlockConsts.Padding, (bia.Index / BlockConsts.Amount) * (size.Height + BlockConsts.Padding) + BlockConsts.TopOffset);
             ba.Bounds = new Rectangle(position, size.ToPoint());
           }
           break;
         case EntityType.Paddle:
           { // We want to reshape the paddle to fit the screen
-            var size = new Size(evt.Current.Width / 7, 20);
-            var position = new Point(ba.Bounds.X, evt.Current.Height - (evt.Current.Height / 10));
+            var size = new Size(evt.Size.Width / 7, 20);
+            var position = new Point(ba.Bounds.X, evt.Size.Height - (evt.Size.Height / 10));
             ba.Bounds = new Rectangle(position, size.ToPoint());
           }
           break;

@@ -43,30 +43,34 @@ namespace BlueJay.App.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<KeyboardPressEvent> evt)
     {
-      var paddle = _layerCollection[LayerNames.PaddleLayer].Entities[0];
-      var ba = paddle.GetAddon<BoundsAddon>();
-
-      switch(evt.Data.Key)
+      if (_layerCollection[LayerNames.PaddleLayer].Entities.Count == 1)
       {
-        case Keys.A: // Move left if A is pressed
-        case Keys.Left:
-          ba.Bounds = ba.Bounds.Add(new Vector2(-10, 0));
-          break;
-        case Keys.D: // Move right if D is pressed
-        case Keys.Right:
-          ba.Bounds = ba.Bounds.Add(new Vector2(10, 0));
-          break;
-        case Keys.Space:
-          { // Trigger an event to start the game if the ball is not active
-            var ball = _layerCollection[LayerNames.BallLayer].Entities[0];
-            var baa = ball.GetAddon<BallActiveAddon>();
-            if (!baa.IsActive)
-            {
-              baa.IsActive = true;
-              _eventQueue.DispatchEvent(new StartBallEvent() { Ball = ball });
+        var paddle = _layerCollection[LayerNames.PaddleLayer].Entities[0];
+        var ba = paddle.GetAddon<BoundsAddon>();
+
+        switch (evt.Data.Key)
+        {
+          case Keys.A: // Move left if A is pressed
+          case Keys.Left:
+            ba.Bounds = ba.Bounds.Add(new Vector2(-10, 0));
+            break;
+          case Keys.D: // Move right if D is pressed
+          case Keys.Right:
+            ba.Bounds = ba.Bounds.Add(new Vector2(10, 0));
+            break;
+          case Keys.Space:
+            if (_layerCollection[LayerNames.BallLayer].Entities.Count == 1)
+            { // Trigger an event to start the game if the ball is not active
+              var ball = _layerCollection[LayerNames.BallLayer].Entities[0];
+              var baa = ball.GetAddon<BallActiveAddon>();
+              if (!baa.IsActive)
+              {
+                baa.IsActive = true;
+                _eventQueue.DispatchEvent(new StartBallEvent() { Ball = ball });
+              }
             }
-          }
-          break;
+            break;
+        }
       }
     }
   }

@@ -44,6 +44,8 @@ namespace BlueJay.Systems
 
     /// <summary>
     /// The update event that is called before all entity update events for this system
+    /// 
+    /// Add Check to see if ctrl/shift/alt are being pressed for modifiers to pass to event
     /// </summary>
     public override void OnUpdate()
     {

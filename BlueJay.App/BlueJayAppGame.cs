@@ -1,4 +1,5 @@
-﻿using BlueJay.App.Views;
+﻿using BlueJay.App.Games.Breakout;
+using BlueJay.App.Views;
 using BlueJay.Core.Interfaces;
 using BlueJay.Core.Renderers;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,10 +22,13 @@ namespace BlueJay.App
       serviceCollection.AddSingleton(Content.Load<SpriteFont>("TestFont"));
       serviceCollection.AddSingleton<SpriteBatch>();
       serviceCollection.AddSingleton<IRenderer, Renderer>();
+
+      serviceCollection.AddScoped<BreakoutGameService>();
     }
 
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
+      serviceProvider.AddView<TitleView>();
       serviceProvider.AddView<BreakOutView>();
     }
   }

@@ -15,6 +15,16 @@ namespace BlueJay.Interfaces
     void Initialize(IServiceProvider serviceProvider);
 
     /// <summary>
+    /// The enter method is meant to trigger when this view is set as the current
+    /// </summary>
+    void Enter();
+
+    /// <summary>
+    /// The leave method is meant to trigger when a new current view is set
+    /// </summary>
+    void Leave();
+
+    /// <summary>
     /// The draw method is meant to draw data to the screen
     /// </summary>
     void Draw();

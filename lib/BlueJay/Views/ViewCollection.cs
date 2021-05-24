@@ -16,9 +16,23 @@ namespace BlueJay.Views
     private List<IView> _collection = new List<IView>();
 
     /// <summary>
+    /// The current view that was assigned
+    /// </summary>
+    private IView _current;
+
+    /// <summary>
     /// The current rendering view
     /// </summary>
-    public IView Current { get; private set; }
+    public IView Current
+    {
+      get => _current;
+      private set
+      {
+        _current?.Leave();
+        _current = value;
+        _current?.Enter();
+      }
+    }
 
     /// <summary>
     /// The number of views that have been added to the collection

@@ -65,5 +65,15 @@ namespace BlueJay.Views
     {
       ServiceProvider.GetRequiredService<IEventProcessor>().Update();
     }
+
+    /// <summary>
+    /// The enter method is meant to trigger when this view is set as the current
+    /// </summary>
+    public virtual void Enter() { }
+
+    /// <summary>
+    /// The leave method is meant to trigger when a new current view is set
+    /// </summary>
+    public virtual void Leave() { }
   }
 }

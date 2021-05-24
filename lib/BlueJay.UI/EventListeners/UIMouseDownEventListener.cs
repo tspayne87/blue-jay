@@ -4,15 +4,11 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Mouse;
-using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.UI.EventListeners
 {
-  /// <summary>
-  /// Event listener to watch the mouse movements to interact with the UI entities
-  /// </summary>
-  public class UIMouseMoveListener : EventListener<MouseMoveEvent>
+  public class UIMouseDownEventListener : EventListener<MouseDownEvent>
   {
     /// <summary>
     /// The layer collection to grab the UI elements from the screen
@@ -29,7 +25,7 @@ namespace BlueJay.UI.EventListeners
     /// </summary>
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
-    public UIMouseMoveListener(LayerCollection layers, EventQueue eventQueue)
+    public UIMouseDownEventListener(LayerCollection layers, EventQueue eventQueue)
     {
       _layers = layers;
       _eventQueue = eventQueue;
@@ -49,41 +45,17 @@ namespace BlueJay.UI.EventListeners
     /// The event that we should be processing when it is triggered
     /// </summary>
     /// <param name="evt">The current event object that was triggered</param>
-    public override void Process(IEvent<MouseMoveEvent> evt)
+    public override void Process(IEvent<MouseDownEvent> evt)
     {
-      IEntity hoverEntity = null; // The current hover entity that was found in the system
-
-      // Iterate over all entities so we can find the hover entity and reset hovering if needed
+      // Iterate over all entities so we can find the entity we need to fire the click event on
       var entities = _layers[UIStatic.LayerName].Entities;
       for (var i = entities.Count - 1; i >= 0; --i)
       {
         var entity = entities[i];
-        var sa = entity.GetAddon<StyleAddon>();
-        if (sa.Hovering)
-          _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
-        sa.Hovering = false;
-        if (hoverEntity == null && Contains(entity, evt.Data.Position))
+        if (Contains(entity, evt.Data.Position))
         {
-          hoverEntity = entity;
-        }
-      }
-
-      // If we found a hover entity we want to loop through the lineage and update the hovering flag
-      if (hoverEntity != null)
-      {
-        _eventQueue.DispatchEvent(evt.Data, hoverEntity);
-
-        var sa = hoverEntity.GetAddon<StyleAddon>();
-        var la = hoverEntity.GetAddon<LineageAddon>();
-        while (sa != null && la != null && hoverEntity != null)
-        {
-          if (!sa.Hovering)
-            _eventQueue.DispatchEvent(new StyleUpdateEvent(hoverEntity));
-          sa.Hovering = true;
-
-          hoverEntity = la.Parent;
-          la = hoverEntity?.GetAddon<LineageAddon>();
-          sa = hoverEntity?.GetAddon<StyleAddon>();
+          _eventQueue.DispatchEvent(evt.Data, entity);
+          break;
         }
       }
     }

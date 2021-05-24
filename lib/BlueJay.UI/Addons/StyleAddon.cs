@@ -16,6 +16,11 @@ namespace BlueJay.UI.Addons
     public Style HoverStyle { get; set; }
 
     /// <summary>
+    /// The current grid position this item should be in
+    /// </summary>
+    public Point GridPosition { get; set; }
+
+    /// <summary>
     /// The current style that we should be using
     /// </summary>
     public Style CurrentStyle => Hovering && HoverStyle != null ? HoverStyle : Style;
@@ -24,6 +29,11 @@ namespace BlueJay.UI.Addons
     /// If this style needs to change based on hovering status
     /// </summary>
     public bool Hovering { get; set; }
+
+    /// <summary>
+    /// The amount of style updates that have occured
+    /// </summary>
+    public int StyleUpdates { get; set; }
 
     /// <summary>
     /// The current calculated bounds for this frame
@@ -55,6 +65,17 @@ namespace BlueJay.UI.Addons
       if (HoverStyle != null)
         HoverStyle.Parent = Style;
       CalculatedBounds = Rectangle.Empty;
+      StyleUpdates = 0;
+    }
+
+    /// <summary>
+    /// Overriden to string function is meant to give a quick and easy way to see
+    /// how this object looks while debugging
+    /// </summary>
+    /// <returns>Will return a debug string</returns>
+    public override string ToString()
+    {
+      return $"StyleUpdates: {StyleUpdates}";
     }
   }
 }
