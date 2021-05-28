@@ -1,8 +1,10 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Events;
 using BlueJay.Events.Mouse;
 using BlueJay.Systems;
 using BlueJay.UI.Addons;
 using BlueJay.UI.EventListeners;
+using BlueJay.UI.EventListeners.UIUpdate;
 using BlueJay.UI.Systems;
 using System;
 
@@ -42,13 +44,19 @@ namespace BlueJay.UI
     public static IServiceProvider AddUISystems(this IServiceProvider provider)
     {
       // Add Component systems
-      provider.AddComponentSystem<UIStyleBoundsSystem>();
       provider.AddComponentSystem<UIPositionSystem>();
-      provider.AddComponentSystem<UIStyleBoundsTriggerSystem>();
 
       // Add event listeners
-      provider.AddEventListener<UIStyleUpdateListener, StyleUpdateEvent>();
-      provider.AddEventListener<UITextStyleUpdateListener, StyleUpdateEvent>();
+      provider.AddEventListener<UIGridCalculationUIUpdateEventListener, UIUpdateEvent>();
+      provider.AddEventListener<UISizeUIUpdateEventListener, UIUpdateEvent>();
+      provider.AddEventListener<UITextUIUpdateEventListener, UIUpdateEvent>();
+      provider.AddEventListener<UIHeightUIUpdateEventListener, UIUpdateEvent>();
+      provider.AddEventListener<UIPositionUIUpdateEventListener, UIUpdateEvent>();
+      provider.AddEventListener<UIBoundsTriggerUIUpdateEventListener, UIUpdateEvent>();
+
+      provider.AddEventListener<ViewportChangeEventListener, ViewportChangeEvent>();
+
+      provider.AddEventListener<UIStyleUpdateEventListener, StyleUpdateEvent>();
       return provider;
     }
 
@@ -63,7 +71,8 @@ namespace BlueJay.UI
       provider.AddComponentSystem<MouseSystem>();
 
       // Add the event listener
-      provider.AddEventListener<UIMouseMoveListener, MouseMoveEvent>();
+      provider.AddEventListener<UIMouseMoveEventListener, MouseMoveEvent>();
+      provider.AddEventListener<UIMouseDownEventListener, MouseDownEvent>();
       return provider;
     }
   }

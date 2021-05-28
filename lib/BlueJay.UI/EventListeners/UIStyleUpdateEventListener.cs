@@ -8,7 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay.UI.EventListeners
 {
-  public class UIStyleUpdateListener : EventListener<StyleUpdateEvent>
+  /// <summary>
+  /// Method is meant to build out the texture for the ninepatch
+  /// </summary>
+  public class UIStyleUpdateEventListener : EventListener<StyleUpdateEvent>
   {
     /// <summary>
     /// The current graphic device we are working with
@@ -25,7 +28,7 @@ namespace BlueJay.UI.EventListeners
     /// </summary>
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="renderer">The renderer to add things to the graphics device</param>
-    public UIStyleUpdateListener(GraphicsDevice graphics, IRenderer renderer)
+    public UIStyleUpdateEventListener(GraphicsDevice graphics, IRenderer renderer)
     {
       _graphics = graphics;
       _renderer = renderer;
@@ -58,6 +61,7 @@ namespace BlueJay.UI.EventListeners
         _renderer.DrawRectangle(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
         _graphics.SetRenderTarget(null);
 
+        sa.StyleUpdates++;
         ta.Texture = target;
       }
     }

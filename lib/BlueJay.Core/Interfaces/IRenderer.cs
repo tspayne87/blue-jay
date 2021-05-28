@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace BlueJay.Core.Interfaces
 {
@@ -47,6 +48,13 @@ namespace BlueJay.Core.Interfaces
     /// <param name="color">The color that should be spliced into the sprite being drawn</param>
     /// <param name="effects">The effect that should be used on the sprite being drawn</param>
     void DrawFrame(Texture2D texture, Vector2 position, int rows, int columns, int frame, Color color, SpriteEffects? effects);
+
+    /// <summary>
+    /// Method is meant to draw the list of particles to the scene
+    /// </summary>
+    /// <param name="texture">The texture that should be used for the particles</param>
+    /// <param name="particles">The particles that should be rendered</param>
+    void DrawParticles(Texture2D texture, List<Particle> particles);
 
     /// <summary>
     /// Method is meant to draw a rectangle to the screen

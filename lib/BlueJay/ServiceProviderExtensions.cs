@@ -21,12 +21,7 @@ namespace BlueJay
     public static T AddEntity<T>(this IServiceProvider provider, params object[] parameters)
       where T : IEntity
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, "", parameters);
-      item.LoadContent();
-
-      provider.GetRequiredService<LayerCollection>()
-        .AddEntity(item);
-      return item;
+      return provider.AddEntity<T>(string.Empty, 0, parameters);
     }
 
     /// <summary>
@@ -41,12 +36,7 @@ namespace BlueJay
     public static T AddEntity<T>(this IServiceProvider provider, string layer, params object[] parameters)
       where T : IEntity
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, layer, parameters);
-      item.LoadContent();
-
-      provider.GetRequiredService<LayerCollection>()
-        .AddEntity(item, layer);
-      return item;
+      return provider.AddEntity<T>(layer, 0, parameters);
     }
 
     /// <summary>
@@ -121,6 +111,19 @@ namespace BlueJay
     {
       var eventQueue = provider.GetRequiredService<EventQueue>();
       eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<T>(provider));
+    }
+
+    /// <summary>
+    /// Method is meant to add an event listener based on the event to the event queue for processing
+    /// </summary>
+    /// <typeparam name="T">The event Listener implementation that should be used</typeparam>
+    /// <typeparam name="K">The event we are wanting to add the queue to</typeparam>
+    /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
+    /// <param name="parameters">The constructor parameters that do not exists in D</param>
+    public static void AddEventListener<T>(this IServiceProvider provider, Func<T, bool> callback, object target = null)
+    {
+      var eventQueue = provider.GetRequiredService<EventQueue>();
+      eventQueue.AddEventListener(callback, target);
     }
   }
 }

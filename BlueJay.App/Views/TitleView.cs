@@ -7,6 +7,10 @@ using BlueJay.UI.Factories;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using BlueJay.Core;
+using BlueJay.Component.System.Interfaces;
+using BlueJay.Events.Mouse;
+using Microsoft.Extensions.DependencyInjection;
+using BlueJay.Interfaces;
 
 namespace BlueJay.App.Views
 {
@@ -29,18 +33,39 @@ namespace BlueJay.App.Views
       serviceProvider.AddComponentSystem<FPSSystem>();
 
       // Create layout and a button
-      var parent = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.33f, TopOffset = 50, HorizontalAlign = HorizontalAlign.Center });
-      var button = serviceProvider.AddContainer(
-        new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), WidthPercentage = 1, Height = 50, Padding = 13 },
+      var container = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.66f, TopOffset = 50, HorizontalAlign = HorizontalAlign.Center, GridColumns = 3, ColumnGap = new Point(5, 5), NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 });
+
+      serviceProvider.AddText("BlueJay Component System", new Style() { ColumnSpan = 3, Padding = 15 }, container);
+
+
+      var views = serviceProvider.GetRequiredService<IViewCollection>();
+      AddButton(serviceProvider, "Breakout", container, evt =>
+      {
+        views.SetCurrent<BreakOutView>();
+        return true;
+      });
+      AddButton(serviceProvider, "Tetris", container, evt =>
+      {
+        // TODO: Set Current to Tetris
+        return true;
+      }, new Style() { ColumnOffset = 1 });
+    }
+
+    private IEntity AddButton(IServiceProvider serviceProvider, string text, IEntity parent, Func<MouseDownEvent, bool> callback, Style style = null)
+    {
+      var baseStyle = new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 };
+      baseStyle.Parent = style;
+      var btn = serviceProvider.AddContainer(
+        baseStyle,
         new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_Hover_NinePatch")) },
         parent
       );
-      serviceProvider.AddText("Hello World", button);
+      var txt = serviceProvider.AddText(text, btn);
 
-      // Create a second layout with a button
-      var parent2 = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.5f, TopOffset = 200, HorizontalAlign = HorizontalAlign.Center });
-      var button2 = serviceProvider.AddContainer(new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), WidthPercentage = 1, Height = 150, Padding = 13 }, parent2);
-      serviceProvider.AddText("Hello World With a Long Set Of Words to Cause an Overflow", button2);
+      // Add Event Listeners to both
+      serviceProvider.AddEventListener(callback, btn);
+      serviceProvider.AddEventListener(callback, txt);
+      return btn;
     }
   }
 }

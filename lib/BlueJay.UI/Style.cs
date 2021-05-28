@@ -1,5 +1,6 @@
 ﻿using BlueJay.Core;
 using Microsoft.Xna.Framework;
+using System;
 
 namespace BlueJay.UI
 {
@@ -18,6 +19,10 @@ namespace BlueJay.UI
     private Color? _textColor = null;
     private TextAlign? _textAlign = null;
     private TextBaseline? _textBaseline = null;
+    public int? _gridColumns = null;
+    public Point? _columnGap = null;
+    public int? _columnSpan = null;
+    public int? _columnOffset = null;
 
     public Style Parent { get; set; }
 
@@ -40,5 +45,10 @@ namespace BlueJay.UI
     public Color? TextColor { get => _textColor ?? Parent?.TextColor; set => _textColor = value; }
     public TextAlign? TextAlign { get => _textAlign ?? Parent?.TextAlign; set => _textAlign = value; }
     public TextBaseline? TextBaseline { get => _textBaseline ?? Parent?.TextBaseline; set => _textBaseline = value; }
+
+    public int GridColumns { get => _gridColumns ?? Parent?.GridColumns ?? 1; set => _gridColumns = value; }
+    public Point ColumnGap { get => _columnGap ?? Parent?.ColumnGap ?? Point.Zero; set => _columnGap = value; }
+    public int ColumnSpan { get => _columnSpan ?? Parent?.ColumnSpan ?? 1; set => _columnSpan = Math.Max(value, 0); }
+    public int ColumnOffset { get => _columnOffset ?? Parent?.ColumnOffset ?? 0; set => _columnOffset = Math.Max(value, 0); }
   }
 }

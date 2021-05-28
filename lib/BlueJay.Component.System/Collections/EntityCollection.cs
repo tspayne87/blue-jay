@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using BlueJay.Component.System.Interfaces;
@@ -47,6 +48,15 @@ namespace BlueJay.Component.System.Collections
       UpdateCache(item, CacheInsertType.Upsert);
     }
 
+    public void Clear()
+    {
+      var items = _collection.ToArray();
+      for (var i = 0; i < items.Length; ++i)
+      {
+        Remove(items[i]);
+      }
+    }
+
     public IEntity this[int i]
     {
       get { return _collection[i]; }
@@ -65,5 +75,10 @@ namespace BlueJay.Component.System.Collections
     }
 
     private enum CacheInsertType { Add, Remove, Upsert };
+
+    public object ToArray()
+    {
+      throw new NotImplementedException();
+    }
   }
 }

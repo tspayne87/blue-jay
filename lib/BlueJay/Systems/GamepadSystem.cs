@@ -15,11 +15,6 @@ namespace BlueJay.Systems
   public class GamepadSystem : ComponentSystem
   {
     /// <summary>
-    /// The current event queue that should process events
-    /// </summary>
-    private readonly EventQueue _queue;
-
-    /// <summary>
     /// The list of all the player indexes in the system
     /// </summary>
     private readonly Dictionary<PlayerIndex, GamePadHandler> _handlers;
@@ -40,7 +35,6 @@ namespace BlueJay.Systems
     /// <param name="queue">The event queue we will be dispatching events too</param>
     public GamepadSystem(EventQueue queue)
     {
-      _queue = queue;
       _handlers = new Dictionary<PlayerIndex, GamePadHandler>()
       {
         { PlayerIndex.One, new GamePadHandler(queue) },

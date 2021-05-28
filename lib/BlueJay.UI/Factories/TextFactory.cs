@@ -14,9 +14,9 @@ namespace BlueJay.UI.Factories
     /// </summary>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="text">The text that should be used to render for this node</param>
-    public static void AddText(this IServiceProvider provider, string text)
+    public static IEntity AddText(this IServiceProvider provider, string text)
     {
-      provider.AddText(text, new Style(), null);
+      return provider.AddText(text, new Style(), null);
     }
 
     /// <summary>
@@ -25,9 +25,9 @@ namespace BlueJay.UI.Factories
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="text">The text that should be used to render for this node</param>
     /// <param name="style">The styles that should be included on this text node</param>
-    public static void AddText(this IServiceProvider provider, string text, Style style)
+    public static IEntity AddText(this IServiceProvider provider, string text, Style style)
     {
-      provider.AddText(text, style, null);
+      return provider.AddText(text, style, null);
     }
 
     /// <summary>
@@ -36,9 +36,9 @@ namespace BlueJay.UI.Factories
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="text">The text that should be used to render for this node</param>
     /// <param name="parent">The parent this text node should have</param>
-    public static void AddText(this IServiceProvider provider, string text, IEntity parent)
+    public static IEntity AddText(this IServiceProvider provider, string text, IEntity parent)
     {
-      provider.AddText(text, new Style(), parent);
+      return provider.AddText(text, new Style(), parent);
     }
 
     /// <summary>
@@ -48,12 +48,10 @@ namespace BlueJay.UI.Factories
     /// <param name="text">The text that should be used to render for this node</param>
     /// <param name="style">The styles that should be included on this text node</param>
     /// <param name="parent">The parent this text node should have</param>
-    public static void AddText(this IServiceProvider provider, string text, Style style, IEntity parent)
+    public static IEntity AddText(this IServiceProvider provider, string text, Style style, IEntity parent)
     {
       var entity = provider.AddUIEntity<Entity>(parent);
       style.HorizontalAlign = style.HorizontalAlign ?? HorizontalAlign.Center;
-      style.HeightPercentage = style.HeightPercentage ?? 1;
-      style.WidthPercentage = style.WidthPercentage ?? 1;
       style.TextAlign = style.TextAlign ?? TextAlign.Center;
       style.TextBaseline = style.TextBaseline ?? TextBaseline.Center;
 
@@ -63,6 +61,8 @@ namespace BlueJay.UI.Factories
       entity.Add<PositionAddon>();
       entity.Add<ColorAddon>(Color.Black);
       entity.Add<BoundsAddon>();
+
+      return entity;
     }
   }
 }

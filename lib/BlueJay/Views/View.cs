@@ -2,6 +2,7 @@ using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
 using BlueJay.Interfaces;
+using BlueJay.Systems;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -33,6 +34,9 @@ namespace BlueJay.Views
 
       _scope = serviceProvider.CreateScope();
 
+      // Add a basic system that will be used by most games
+      ServiceProvider.AddComponentSystem<ViewportSystem>();
+
       // Add basic listeners for the queue
       ServiceProvider.AddEventListener<UpdateEventListener, UpdateEvent>();
       ServiceProvider.AddEventListener<DrawEventListener, DrawEvent>();
@@ -61,5 +65,15 @@ namespace BlueJay.Views
     {
       ServiceProvider.GetRequiredService<IEventProcessor>().Update();
     }
+
+    /// <summary>
+    /// The enter method is meant to trigger when this view is set as the current
+    /// </summary>
+    public virtual void Enter() { }
+
+    /// <summary>
+    /// The leave method is meant to trigger when a new current view is set
+    /// </summary>
+    public virtual void Leave() { }
   }
 }

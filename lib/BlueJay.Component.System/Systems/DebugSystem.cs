@@ -31,7 +31,7 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The current layers that this system should be attached to
     /// </summary>
-    public override List<string> Layers => new List<string>() { string.Empty };
+    public override List<string> Layers => new List<string>() { };
 
     /// <summary>
     /// Constructor method to build out the system and inject the renderer into
@@ -62,7 +62,7 @@ namespace BlueJay.Component.System.Systems
       var dAddons = entity.GetAddons(dc.KeyIdentifier);
       foreach (var addon in dAddons)
       {
-        _renderer.DrawString(addon.ToString(), new Vector2(10, _y), Color.White);
+        _renderer.DrawString(addon.ToString(), new Vector2(10, _y), Color.Black);
         _y += 20;
       }
     }
