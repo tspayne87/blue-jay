@@ -1,5 +1,6 @@
-﻿using BlueJay.Component.System.Addons;
-using BlueJay.Core.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Addons;
+using BlueJay.Component.System.Collections;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
@@ -21,14 +22,14 @@ namespace BlueJay.UI.EventListeners
     /// <summary>
     /// The renderer so we can render the ninepatch to a renderable target
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly RendererCollection _renderer;
 
     /// <summary>
     /// Constructor to build out the event listener to update the texture for the ninepatch
     /// </summary>
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="renderer">The renderer to add things to the graphics device</param>
-    public UIStyleUpdateEventListener(GraphicsDevice graphics, IRenderer renderer)
+    public UIStyleUpdateEventListener(GraphicsDevice graphics, RendererCollection renderer)
     {
       _graphics = graphics;
       _renderer = renderer;
@@ -58,7 +59,7 @@ namespace BlueJay.UI.EventListeners
         var target = new RenderTarget2D(_graphics, ba.Bounds.Width, ba.Bounds.Height);
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
-        _renderer.DrawRectangle(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
+        _renderer[RendererName.Default].DrawRectangle(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
         _graphics.SetRenderTarget(null);
 
         sa.StyleUpdates++;

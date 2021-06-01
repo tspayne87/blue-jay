@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Addons;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
 using Microsoft.Xna.Framework;
@@ -15,7 +16,7 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The current renderer so we can render data to the screen
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly RendererCollection _renderer;
 
     /// <summary>
     /// The current y position so we can offset the debug information so it can be
@@ -38,7 +39,7 @@ namespace BlueJay.Component.System.Systems
     /// the class
     /// </summary>
     /// <param name="renderer"></param>
-    public DebugSystem(IRenderer renderer)
+    public DebugSystem(RendererCollection renderer)
     {
       _renderer = renderer;
     }
@@ -62,7 +63,7 @@ namespace BlueJay.Component.System.Systems
       var dAddons = entity.GetAddons(dc.KeyIdentifier);
       foreach (var addon in dAddons)
       {
-        _renderer.DrawString(addon.ToString(), new Vector2(10, _y), Color.Black);
+        _renderer[RendererName.Default].DrawString(addon.ToString(), new Vector2(10, _y), Color.Black);
         _y += 20;
       }
     }

@@ -11,6 +11,8 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Mouse;
 using Microsoft.Extensions.DependencyInjection;
 using BlueJay.Interfaces;
+using BlueJay.Component.System.Collections;
+using BlueJay.Component.System;
 
 namespace BlueJay.App.Views
 {
@@ -29,7 +31,7 @@ namespace BlueJay.App.Views
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
 
-      serviceProvider.AddComponentSystem<RenderingSystem>();
+      serviceProvider.AddComponentSystem<RenderingSystem>(serviceProvider.GetRequiredService<RendererCollection>()[RendererName.Default]);
       serviceProvider.AddComponentSystem<FPSSystem>();
 
       // Create layout and a button

@@ -74,6 +74,7 @@ namespace BlueJay
       _serviceCollection.AddScoped<EventQueue>();
       _serviceCollection.AddScoped<LayerCollection>();
       _serviceCollection.AddScoped<SystemCollection>();
+      _serviceCollection.AddScoped<RendererCollection>();
 
       ConfigureServices(_serviceCollection);
 
