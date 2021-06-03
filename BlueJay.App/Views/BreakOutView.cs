@@ -47,6 +47,11 @@ namespace BlueJay.App.Views
     /// <param name="serviceProvider">The service provider we need to add the entities and systems to</param>
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
+      // Add Fonts
+      serviceProvider.AddSpriteFont("Default", _contentManager.Load<SpriteFont>("TestFont"));
+      var fontTexture = _contentManager.Load<Texture2D>("Bitmap-Font");
+      serviceProvider.AddTextureFont("Default", new TextureFont(fontTexture, 3, 24));
+
       // Processing systems
       serviceProvider.AddComponentSystem<KeyboardSystem>();
       serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
@@ -72,18 +77,18 @@ namespace BlueJay.App.Views
       serviceProvider.AddPaddle();
 
       // Add the UI elements for the game
-      var container = serviceProvider.AddContainer(new Style() { GridColumns = 2, ColumnGap = new Point(5, 5) });
+      var container = serviceProvider.AddContainer(new Style() { GridColumns = 5, ColumnGap = new Point(5, 5) });
       var views = serviceProvider.GetRequiredService<IViewCollection>();
       AddButton(serviceProvider, "Back To Title", container, evt =>
       {
         views.SetCurrent<TitleView>();
         return true;
-      }, new Style() { Width = 200 });
+      }, new Style() { ColumnSpan = 2 });
 
-      var dataContainer = serviceProvider.AddContainer(new Style() { GridColumns = 3, ColumnGap = new Point(10, 10) }, container);
-      serviceProvider.AddText("Round: 0", dataContainer);
-      serviceProvider.AddText("Balls: 0", dataContainer);
-      serviceProvider.AddText("Score: 0", dataContainer);
+      var dataContainer = serviceProvider.AddContainer(new Style() { GridColumns = 3, ColumnGap = new Point(10, 10), ColumnSpan = 3 }, container);
+      serviceProvider.AddText("Round:0", new Style() { TextureFont = "Default" }, dataContainer);
+      serviceProvider.AddText("Balls:0", new Style() { TextureFont = "Default" }, dataContainer);
+      serviceProvider.AddText("Score:0", new Style() { TextureFont = "Default" }, dataContainer);
     }
 
     /// <summary>
@@ -118,7 +123,7 @@ namespace BlueJay.App.Views
         new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_Hover_NinePatch")) },
         parent
       );
-      var txt = serviceProvider.AddText(text, btn);
+      var txt = serviceProvider.AddText(text, new Style() { TextureFont = "Default" }, btn);
 
       // Add Event Listeners to both
       serviceProvider.AddEventListener(callback, btn);

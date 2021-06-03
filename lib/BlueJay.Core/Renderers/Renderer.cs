@@ -12,11 +12,6 @@ namespace BlueJay.Core.Renderers
   public class Renderer : IRenderer
   {
     /// <summary>
-    /// The current basic font that should be used when drawing a string
-    /// </summary>
-    private readonly SpriteFont _font;
-
-    /// <summary>
     /// The current pixel that should be used to render rectangles
     /// </summary>
     private readonly Texture2D _pixel;
@@ -31,28 +26,56 @@ namespace BlueJay.Core.Renderers
     /// </summary>
     /// <param name="graphics">The graphics device to create a rectangle from</param>
     /// <param name="batch">The sprite batch that will be used to render stuff to the screen</param>
-    /// <param name="font">The global font</param>
-    public Renderer(GraphicsDevice graphics, SpriteBatch batch, SpriteFont font)
+    public Renderer(GraphicsDevice graphics, SpriteBatch batch)
     {
       Batch = batch;
-      _font = font;
       _pixel = graphics.CreateRectangle(1, 1, Color.White);
     }
 
     /// <summary>
     /// Method is meant to draw a string to a place on the screen
     /// </summary>
+    /// <param name="font">The sprite font to use when drawing the text</param>
     /// <param name="text">The text that should be printed out</param>
     /// <param name="position">The position of the text</param>
     /// <param name="color">The color of the text</param>
-    public virtual void DrawString(string text, Vector2 position, Color color)
+    public virtual void DrawString(SpriteFont font, string text, Vector2 position, Color color)
     {
-      if (_font != null)
+      Begin();
+      Batch.DrawString(font, text, position, color);
+      End();
+    }
+
+    /// <summary>
+    /// Method is meant to draw a string to a place on the screen
+    /// </summary>
+    /// <param name="font">The texture font that is meant to render the text with</param>
+    /// <param name="text">The text that should be printed out</param>
+    /// <param name="position">The position of the text</param>
+    /// <param name="color">The color of the text</param>
+    /// <param name="size">The size of the font being used</param>
+    public virtual void DrawString(TextureFont font, string text, Vector2 position, Color color, int size = 1)
+    {
+      Begin(samplerState: SamplerState.PointClamp);
+      var pos = position;
+      for (var i = 0; i < text.Length; ++i)
       {
-        Begin();
-        Batch.DrawString(_font, text, position, color);
-        End();
+        if (text[i] == '\n')
+        {
+          pos = new Vector2(position.X, pos.Y + (font.Height * size));
+        }
+        else if (text[i] == ' ')
+        {
+          pos += new Vector2((font.Width * size), 0);
+        }
+        else
+        {
+          var bounds = font.GetBounds(text[i]);
+          Batch.Draw(font.Texture, pos, bounds, color, 0f, Vector2.Zero, size, SpriteEffects.None, 0f);
+          pos += new Vector2(font.Width * size, 0);
+        }
       }
+      End();
     }
 
     /// <summary>
