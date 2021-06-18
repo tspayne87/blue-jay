@@ -16,7 +16,7 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The current renderer so we can render data to the screen
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly RendererCollection _renderer;
 
     /// <summary>
     /// The global fonts that will be used to render on the screen
@@ -49,7 +49,7 @@ namespace BlueJay.Component.System.Systems
     /// the class
     /// </summary>
     /// <param name="renderer"></param>
-    public DebugSystem(IRenderer renderer, FontCollection fonts, string fontKey)
+    public DebugSystem(RendererCollection renderer, FontCollection fonts, string fontKey)
     {
       _renderer = renderer;
       _fontKey = fontKey;
@@ -75,7 +75,7 @@ namespace BlueJay.Component.System.Systems
       var dAddons = entity.GetAddons(dc.KeyIdentifier);
       foreach (var addon in dAddons)
       {
-        _renderer.DrawString(_fonts.SpriteFonts[_fontKey], addon.ToString(), new Vector2(10, _y), Color.Black);
+        _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[_fontKey], addon.ToString(), new Vector2(10, _y), Color.Black);
         _y += 20;
       }
     }

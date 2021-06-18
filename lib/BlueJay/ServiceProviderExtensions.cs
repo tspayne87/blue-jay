@@ -1,6 +1,7 @@
 using System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
@@ -60,6 +61,24 @@ namespace BlueJay
 
       provider.GetRequiredService<LayerCollection>()
         .AddEntity(item, layer, weight);
+      return item;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="provider"></param>
+    /// <param name="key"></param>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    public static T AddRenderer<T>(this IServiceProvider provider, string key, params object[] parameters)
+      where T : IRenderer
+    {
+      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
+
+      provider.GetRequiredService<RendererCollection>()
+        .Add(key, item);
       return item;
     }
 

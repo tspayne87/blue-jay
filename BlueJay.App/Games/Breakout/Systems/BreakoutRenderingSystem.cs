@@ -1,4 +1,5 @@
 ﻿using BlueJay.App.Games.Breakout.Addons;
+using BlueJay.Component.System;
 using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
@@ -18,7 +19,7 @@ namespace BlueJay.App.Games.Breakout.Systems
     /// <summary>
     /// The renderer that should be used for the breakout
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly RendererCollection _renderer;
 
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
@@ -59,7 +60,7 @@ namespace BlueJay.App.Games.Breakout.Systems
     /// <param name="layers">The layers we are working with</param>
     /// <param name="service">The current service that represents the game</param>
     /// <param name="fonts">The global collection of fonts</param>
-    public BreakoutRenderingSystem(IRenderer renderer, LayerCollection layers, BreakoutGameService service, GraphicsDevice graphics, FontCollection fonts)
+    public BreakoutRenderingSystem(RendererCollection renderer, LayerCollection layers, BreakoutGameService service, GraphicsDevice graphics, FontCollection fonts)
     {
       _renderer = renderer;
       _layers = layers;
@@ -93,7 +94,7 @@ namespace BlueJay.App.Games.Breakout.Systems
       {
         var bounds = _fonts.TextureFonts["Default"].MeasureString(txt);
         var pos = new Vector2((_graphics.Viewport.Width - bounds.X) / 2f, (_graphics.Viewport.Height - bounds.Y) / 2f);
-        _renderer.DrawString(_fonts.TextureFonts["Default"], txt, pos, Color.Black);
+        _renderer[RendererName.Default].DrawString(_fonts.TextureFonts["Default"], txt, pos, Color.Black);
       }
     }
 
@@ -110,19 +111,19 @@ namespace BlueJay.App.Games.Breakout.Systems
       switch(ta.Type)
       {
         case EntityType.Paddle: // Draw the paddle to the screen
-          _renderer.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), Color.Blue);
+          _renderer[RendererName.Default].DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), Color.Blue);
           break;
         case EntityType.Ball:
           { // Load the texture and color of the ball and draw it to the screen
             var txa = entity.GetAddon<TextureAddon>();
             var ca = entity.GetAddon<ColorAddon>();
-            _renderer.Draw(txa.Texture, new Vector2(ba.Bounds.X, ba.Bounds.Y), ca?.Color ?? Color.Black);
+            _renderer[RendererName.Default].Draw(txa.Texture, new Vector2(ba.Bounds.X, ba.Bounds.Y), ca?.Color ?? Color.Black);
           }
           break;
         case EntityType.Block:
           { // Load the block index to get the color and draw it to the screen
             var bia = entity.GetAddon<BlockIndexAddon>();
-            _renderer.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), bia?.Color ?? Color.Black);
+            _renderer[RendererName.Default].DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), bia?.Color ?? Color.Black);
           }
           break;
       }

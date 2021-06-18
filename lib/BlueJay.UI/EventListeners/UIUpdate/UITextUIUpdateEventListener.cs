@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
@@ -28,7 +29,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <summary>
     /// The renderer so we can render the ninepatch to a renderable target
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly RendererCollection _renderer;
 
     /// <summary>
     /// The global sprite font that should be used
@@ -39,7 +40,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, IRenderer renderer, FontCollection fonts)
+    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, RendererCollection renderer, FontCollection fonts)
     {
       _layers = layers;
       _renderer = renderer;
@@ -129,9 +130,9 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
         if (!string.IsNullOrEmpty(sa.Style.Font) && _fonts.SpriteFonts.ContainsKey(sa.Style.Font))
-          _renderer.DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
+          _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
         else if (!string.IsNullOrEmpty(sa.Style.TextureFont) && _fonts.TextureFonts.ContainsKey(sa.Style.TextureFont))
-          _renderer.DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize);
+          _renderer[RendererName.Default].DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize);
         _graphics.SetRenderTarget(null);
 
         ta.Texture = target;
