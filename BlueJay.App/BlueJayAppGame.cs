@@ -8,9 +8,10 @@ using System;
 
 namespace BlueJay.App
 {
-  public class BlueJayAppGame : ComponentSystemGame
+  [Obsolete]
+  public class BlueJayAppGameOb : ComponentSystemGame
   {
-    public BlueJayAppGame()
+    public BlueJayAppGameOb()
     {
       Content.RootDirectory = "Content";
       Window.AllowUserResizing = true;

@@ -81,7 +81,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         }
 
         var spaceBounds = _font.MeasureString(" ");
-        var words = txt.Text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var words = txt.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         var lines = new List<string>();
         var result = string.Empty;
         for (var i = 0; i < words.Length; ++i)

@@ -51,9 +51,8 @@ namespace BlueJay.Core
     /// </summary>
     /// <param name="other">The other object</param>
     /// <returns>Will return true if the to sizes are equal</returns>
-    public bool Equals([AllowNull] Size other)
+    public bool Equals(Size other)
     {
-      if (other == null) return false;
       return Width == other.Width && Height == other.Height;
     }
 
