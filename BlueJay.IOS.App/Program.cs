@@ -1,5 +1,5 @@
 ﻿using System;
-using BlueJay.Common.App;
+using BlueJay.Content.App;
 using Foundation;
 using UIKit;
 

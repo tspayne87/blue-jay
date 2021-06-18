@@ -15,7 +15,7 @@ using BlueJay.Systems;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System;
 
-namespace BlueJay.Common.App.Views
+namespace BlueJay.Content.App.Views
 {
   public class TitleView : View
   {

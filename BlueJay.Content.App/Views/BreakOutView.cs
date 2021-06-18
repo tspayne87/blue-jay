@@ -1,7 +1,7 @@
-﻿using BlueJay.Common.App.Games.Breakout;
-using BlueJay.Common.App.Games.Breakout.EventListeners;
-using BlueJay.Common.App.Games.Breakout.Factories;
-using BlueJay.Common.App.Games.Breakout.Systems;
+﻿using BlueJay.Content.App.Games.Breakout;
+using BlueJay.Content.App.Games.Breakout.EventListeners;
+using BlueJay.Content.App.Games.Breakout.Factories;
+using BlueJay.Content.App.Games.Breakout.Systems;
 using BlueJay.Component.System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
@@ -22,7 +22,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace BlueJay.Common.App.Views
+namespace BlueJay.Content.App.Views
 {
   /// <summary>
   /// Breakout game broken up into a view to handle the entities in a scoped manner

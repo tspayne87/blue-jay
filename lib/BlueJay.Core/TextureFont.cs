@@ -67,7 +67,7 @@ namespace BlueJay.Core
     /// <returns>The bounds of the letter found, empty if letter was not found</returns>
     public Rectangle GetBounds(char letter)
     {
-      var index = _alphabet.IndexOf(letter, StringComparison.OrdinalIgnoreCase);
+      var index = _alphabet.IndexOf(letter.ToString(), StringComparison.OrdinalIgnoreCase);
       if (index == -1) return Rectangle.Empty;
       return new Rectangle((index % _cols) * Width, (index / _cols) * Height, Width, Height);
     }

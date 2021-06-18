@@ -1,4 +1,4 @@
-﻿using BlueJay.Common.App.Games.Breakout.Addons;
+﻿using BlueJay.Content.App.Games.Breakout.Addons;
 using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace BlueJay.Common.App.Games.Breakout.Systems
+namespace BlueJay.Content.App.Games.Breakout.Systems
 {
   /// <summary>
   /// Rendering system is meant to render all the elements to the screen every frame
