@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
@@ -28,7 +29,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <summary>
     /// The renderer so we can render the ninepatch to a renderable target
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly RendererCollection _renderer;
 
     /// <summary>
     /// The global sprite font that should be used
@@ -39,7 +40,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, IRenderer renderer, SpriteFont font)
+    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, RendererCollection renderer, SpriteFont font)
     {
       _layers = layers;
       _renderer = renderer;
@@ -127,7 +128,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
-        _renderer.DrawString(result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
+        _renderer[RendererName.Default].DrawString(result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
         _graphics.SetRenderTarget(null);
 
         ta.Texture = target;

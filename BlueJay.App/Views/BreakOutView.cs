@@ -2,6 +2,8 @@
 using BlueJay.App.Games.Breakout.EventListeners;
 using BlueJay.App.Games.Breakout.Factories;
 using BlueJay.App.Games.Breakout.Systems;
+using BlueJay.Component.System;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Component.System.Systems;
 using BlueJay.Core;
@@ -57,8 +59,8 @@ namespace BlueJay.App.Views
 
       // Rendering systems
       serviceProvider.AddComponentSystem<BreakoutRenderingSystem>();
-      serviceProvider.AddComponentSystem<RenderingSystem>();
-      serviceProvider.AddComponentSystem<ParticleSystem>();
+      serviceProvider.AddComponentSystem<RenderingSystem>(serviceProvider.GetRequiredService<RendererCollection>()[RendererName.Default]);
+      serviceProvider.AddComponentSystem<ParticleSystem>(serviceProvider.GetRequiredService<RendererCollection>()[RendererName.Default]);
 
       // Add event listeners that could happen in the system
       serviceProvider.AddEventListener<KeyboardPressEventListener, KeyboardPressEvent>();
