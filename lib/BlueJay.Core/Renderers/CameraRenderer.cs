@@ -21,8 +21,8 @@ namespace BlueJay.Core.Renderers
     /// <param name="batch">The sprite batch that will be used to render stuff to the screen</param>
     /// <param name="font">The global font</param>
     /// <param name="camera">The current camera that should be used when starting the process</param>
-    public CameraRenderer(GraphicsDevice graphics, SpriteBatch batch, SpriteFont font, ICamera camera)
-      : base(graphics, batch, font)
+    public CameraRenderer(GraphicsDevice graphics, SpriteBatch batch, ICamera camera)
+      : base(graphics, batch)
     {
       _camera = camera;
     }

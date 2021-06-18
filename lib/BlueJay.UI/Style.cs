@@ -19,10 +19,13 @@ namespace BlueJay.UI
     private Color? _textColor = null;
     private TextAlign? _textAlign = null;
     private TextBaseline? _textBaseline = null;
-    public int? _gridColumns = null;
-    public Point? _columnGap = null;
-    public int? _columnSpan = null;
-    public int? _columnOffset = null;
+    private int? _gridColumns = null;
+    private Point? _columnGap = null;
+    private int? _columnSpan = null;
+    private int? _columnOffset = null;
+    private string _font = null;
+    private string _textureFont = null;
+    private int? _textureFontSize = null;
 
     public Style Parent { get; set; }
 
@@ -50,5 +53,9 @@ namespace BlueJay.UI
     public Point ColumnGap { get => _columnGap ?? Parent?.ColumnGap ?? Point.Zero; set => _columnGap = value; }
     public int ColumnSpan { get => _columnSpan ?? Parent?.ColumnSpan ?? 1; set => _columnSpan = Math.Max(value, 0); }
     public int ColumnOffset { get => _columnOffset ?? Parent?.ColumnOffset ?? 0; set => _columnOffset = Math.Max(value, 0); }
+
+    public string Font { get => _font ?? Parent?.Font; set => _font = value; }
+    public string TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
+    public int TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize ?? 1; set => _textureFontSize = Math.Max(value, 1); }
   }
 }
