@@ -62,17 +62,17 @@ namespace BlueJay.App.Games.Breakout
     /// <summary>
     /// The current score the player has
     /// </summary>
-    public int Score { get => _score; set { _score = value; SetText(_scoreEntity, $"Score: {value}"); } }
+    public int Score { get => _score; set { _score = value; SetText(_scoreEntity, $"Score:{value}"); } }
 
     /// <summary>
     /// The current round the player is on
     /// </summary>
-    public int Round { get => _round; set { _round = value; SetText(_roundEntity, $"Round: {value}"); } }
+    public int Round { get => _round; set { _round = value; SetText(_roundEntity, $"Round:{value}"); } }
 
     /// <summary>
     /// The number of balls that the player currently has available to them
     /// </summary>
-    public int Balls { get => _balls; set { _balls = value; SetText(_ballEntity, $"Balls: {Math.Max(value, 0)}"); } }
+    public int Balls { get => _balls; set { _balls = value; SetText(_ballEntity, $"Balls:{Math.Max(value, 0)}"); } }
 
     /// <summary>
     /// Constructor to build out the service for the breakout game

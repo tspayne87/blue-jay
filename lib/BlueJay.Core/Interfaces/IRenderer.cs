@@ -17,10 +17,21 @@ namespace BlueJay.Core.Interfaces
     /// <summary>
     /// Method is meant to draw a string to a place on the screen
     /// </summary>
+    /// <param name="font">The sprite font to use when drawing the text</param>
     /// <param name="text">The text that should be printed out</param>
     /// <param name="position">The position of the text</param>
     /// <param name="color">The color of the text</param>
-    void DrawString(string text, Vector2 position, Color color);
+    void DrawString(SpriteFont font, string text, Vector2 position, Color color);
+
+    /// <summary>
+    /// Method is meant to draw a string to a place on the screen
+    /// </summary>
+    /// <param name="font">The texture font that is meant to render the text with</param>
+    /// <param name="text">The text that should be printed out</param>
+    /// <param name="position">The position of the text</param>
+    /// <param name="color">The color of the text</param>
+    /// <param name="size">The size of the font being used</param>
+    void DrawString(TextureFont font, string text, Vector2 position, Color color, int size = 1);
 
     /// <summary>
     /// Method is meant to draw a texture to the screen at a certain position

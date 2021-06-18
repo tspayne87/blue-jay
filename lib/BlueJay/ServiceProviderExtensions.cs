@@ -1,10 +1,13 @@
 using System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Interfaces;
+using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay
 {
@@ -62,6 +65,24 @@ namespace BlueJay
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="provider"></param>
+    /// <param name="key"></param>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    public static T AddRenderer<T>(this IServiceProvider provider, string key, params object[] parameters)
+      where T : IRenderer
+    {
+      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
+
+      provider.GetRequiredService<RendererCollection>()
+        .Add(key, item);
+      return item;
+    }
+
+    /// <summary>
     /// Method is meant to add a system to the system collection and use DI to build out the object so that
     /// services and other DI components can be injected properly into the class
     /// </summary>
@@ -97,6 +118,30 @@ namespace BlueJay
       provider.GetRequiredService<IViewCollection>()
         .Add(item);
       return item;
+    }
+
+    /// <summary>
+    /// Add a global sprit font
+    /// </summary>
+    /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
+    /// <param name="key">The key to use for this font lookup</param>
+    /// <param name="font">The font we are anting to save globally</param>
+    public static void AddSpriteFont(this IServiceProvider provider, string key, SpriteFont font)
+    {
+      provider.GetRequiredService<FontCollection>()
+        .SpriteFonts[key] = font;
+    }
+
+    /// <summary>
+    /// Add a global texture font
+    /// </summary>
+    /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
+    /// <param name="key">The key to use for this font lookup</param>
+    /// <param name="font">The font we are wanting to save globally</param>
+    public static void AddTextureFont(this IServiceProvider provider, string key, TextureFont font)
+    {
+      provider.GetRequiredService<FontCollection>()
+        .TextureFonts[key] = font;
     }
 
     /// <summary>
