@@ -21,6 +21,16 @@ namespace BlueJay.Component.System.Systems
     private readonly IDeltaService _deltaService;
 
     /// <summary>
+    /// The collection of global fonts
+    /// </summary>
+    private readonly FontCollection _fonts;
+
+    /// <summary>
+    /// The current font key
+    /// </summary>
+    private readonly string _fontKey;
+
+    /// <summary>
     /// The current fps for the system
     /// </summary>
     private int _fps = 0;
@@ -50,10 +60,14 @@ namespace BlueJay.Component.System.Systems
     /// </summary>
     /// <param name="renderer">The current renderer to print stuff on the screen</param>
     /// <param name="deltaService">The current delta that gets updated every frame</param>
-    public FPSSystem(RendererCollection renderer, IDeltaService deltaService)
+    /// <param name="fontKey">The key for creating the font key</param>
+    /// <param name="fonts">The fonts collection that we should look up sprite fonts</param>
+    public FPSSystem(RendererCollection renderer, IDeltaService deltaService, FontCollection fonts, string fontKey)
     {
       _renderer = renderer;
       _deltaService = deltaService;
+      _fonts = fonts;
+      _fontKey = fontKey;
     }
 
     /// <summary>
@@ -78,7 +92,7 @@ namespace BlueJay.Component.System.Systems
     /// <param name="delta">The current delta for this frame</param>
     public override void OnDraw()
     {
-      _renderer[RendererName.Default].DrawString($"fps: {_fps}", new Vector2(200, 10), Color.Black);
+      _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[_fontKey], $"fps: {_fps}", new Vector2(200, 10), Color.Black);
     }
   }
 }

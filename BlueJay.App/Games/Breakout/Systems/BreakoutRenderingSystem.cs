@@ -32,14 +32,14 @@ namespace BlueJay.App.Games.Breakout.Systems
     private readonly BreakoutGameService _service;
 
     /// <summary>
-    /// The global font that should be used
-    /// </summary>
-    private readonly SpriteFont _font;
-
-    /// <summary>
     /// The graphics that are bound to the screen
     /// </summary>
     private readonly GraphicsDevice _graphics;
+
+    /// <summary>
+    /// The collection of fonts
+    /// </summary>
+    private readonly FontCollection _fonts;
 
     /// <summary>
     /// The current addon key that is meant to act as a selector for the Draw/Update
@@ -56,17 +56,17 @@ namespace BlueJay.App.Games.Breakout.Systems
     /// Constructor is meant to inject the renderer into the system for processing
     /// </summary>
     /// <param name="renderer">The renderer that should be used for the breakout</param>
-    /// <param name="font">The global font</param>
     /// <param name="graphics">The graphics for the screen</param>
     /// <param name="layers">The layers we are working with</param>
     /// <param name="service">The current service that represents the game</param>
-    public BreakoutRenderingSystem(RendererCollection renderer, LayerCollection layers, BreakoutGameService service, SpriteFont font, GraphicsDevice graphics)
+    /// <param name="fonts">The global collection of fonts</param>
+    public BreakoutRenderingSystem(RendererCollection renderer, LayerCollection layers, BreakoutGameService service, GraphicsDevice graphics, FontCollection fonts)
     {
       _renderer = renderer;
       _layers = layers;
       _service = service;
-      _font = font;
       _graphics = graphics;
+      _fonts = fonts;
     }
 
     /// <summary>
@@ -92,9 +92,9 @@ namespace BlueJay.App.Games.Breakout.Systems
       // If text exist we need to render it
       if (txt.Length > 0)
       {
-        var bounds = _font.MeasureString(txt);
+        var bounds = _fonts.TextureFonts["Default"].MeasureString(txt);
         var pos = new Vector2((_graphics.Viewport.Width - bounds.X) / 2f, (_graphics.Viewport.Height - bounds.Y) / 2f);
-        _renderer[RendererName.Default].DrawString(txt, pos, Color.Black);
+        _renderer[RendererName.Default].DrawString(_fonts.TextureFonts["Default"], txt, pos, Color.Black);
       }
     }
 

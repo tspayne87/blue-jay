@@ -27,17 +27,23 @@ namespace BlueJay.App.Views
 
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
+      // Add Fonts
+      serviceProvider.AddSpriteFont("Default", _contentManager.Load<SpriteFont>("TestFont"));
+      var fontTexture = _contentManager.Load<Texture2D>("Bitmap-Font");
+      serviceProvider.AddTextureFont("Default", new TextureFont(fontTexture, 3, 24));
+
+      // Add Processor Systems
       serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
 
       serviceProvider.AddComponentSystem<RenderingSystem>(serviceProvider.GetRequiredService<RendererCollection>()[RendererName.Default]);
-      serviceProvider.AddComponentSystem<FPSSystem>();
+      serviceProvider.AddComponentSystem<FPSSystem>("Default");
 
       // Create layout and a button
       var container = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.66f, TopOffset = 50, HorizontalAlign = HorizontalAlign.Center, GridColumns = 3, ColumnGap = new Point(5, 5), NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 });
 
-      serviceProvider.AddText("BlueJay Component System", new Style() { ColumnSpan = 3, Padding = 15 }, container);
+      serviceProvider.AddText("BlueJay Component System", new Style() { ColumnSpan = 3, Padding = 15, TextureFont = "Default", TextureFontSize = 2 }, container);
 
 
       var views = serviceProvider.GetRequiredService<IViewCollection>();
@@ -62,7 +68,7 @@ namespace BlueJay.App.Views
         new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_Hover_NinePatch")) },
         parent
       );
-      var txt = serviceProvider.AddText(text, btn);
+      var txt = serviceProvider.AddText(text, new Style() { TextureFont = "Default" }, btn);
 
       // Add Event Listeners to both
       serviceProvider.AddEventListener(callback, btn);
