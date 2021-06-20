@@ -42,7 +42,7 @@ namespace BlueJay.Systems
     /// <summary>
     /// The current layers that this system should be attached to
     /// </summary>
-    public override List<string> Layers => new List<string>() { string.Empty };
+    public override List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor is meant to initialize the mouse system so we can start processing the mouse events to the system

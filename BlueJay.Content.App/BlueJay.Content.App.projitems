@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>6efba8a9-a407-4029-bdd0-651d22a87386</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>BlueJay.Content.App</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BlueJayAppGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\BallActiveAddon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\BlockIndexAddon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\TypeAddon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\BreakoutGameService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EntityType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\KeyboardPressEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\LostBallEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\NextRoundEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\StartBallEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\TouchMoveEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\TouchUpEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\UpdateBoundsEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\ViewportChangeEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Factories\BallFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Factories\BlockFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Factories\PaddleFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\LostBallEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\NextRoundEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\StartBallEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Systems\BallSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Systems\BreakoutRenderingSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Systems\ClampPositionSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\UpdateBoundsEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\BreakOutView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\TitleView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+  </ItemGroup>
+</Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
   </PropertyGroup>
@@ -18,9 +18,6 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" />
-  </ItemGroup>
-  <ItemGroup>
     <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
@@ -28,7 +25,11 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Core\BlueJay.Core.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Events\BlueJay.Events.csproj" />
     <ProjectReference Include="..\lib\BlueJay.UI\BlueJay.UI.csproj" />
     <ProjectReference Include="..\lib\BlueJay\BlueJay.csproj" />
   </ItemGroup>
+  <Import Project="..\BlueJay.Content.App\BlueJay.Content.App.projitems" Label="Shared" />
 </Project>

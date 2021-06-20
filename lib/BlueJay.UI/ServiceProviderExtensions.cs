@@ -1,6 +1,7 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Mouse;
+using BlueJay.Events.Touch;
 using BlueJay.Systems;
 using BlueJay.UI.Addons;
 using BlueJay.UI.EventListeners;
@@ -73,6 +74,21 @@ namespace BlueJay.UI
       // Add the event listener
       provider.AddEventListener<UIMouseMoveEventListener, MouseMoveEvent>();
       provider.AddEventListener<UIMouseDownEventListener, MouseDownEvent>();
+      return provider;
+    }
+
+    /// <summary>
+    /// Method is meant to add in touch support for UI elements
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <returns>Will return the entity that was created and added to the collection</returns>
+    public static IServiceProvider AddUITouchSupport(this IServiceProvider provider)
+    {
+      // Add the mouse system if it has not been added
+      provider.AddComponentSystem<TouchSystem>();
+
+      // Add the event listener
+      provider.AddEventListener<UITouchDownEventListener, TouchDownEvent>();
       return provider;
     }
   }

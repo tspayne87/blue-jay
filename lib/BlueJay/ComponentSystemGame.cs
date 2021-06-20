@@ -33,15 +33,18 @@ namespace BlueJay
     /// </summary>
     private DeltaService _deltaService;
 
+    protected GraphicsDeviceManager GraphicsManager { get; private set; }
+
     /// <summary>
     /// Constructore for the game to build out the graphice device manager as wellas start the service collection and delta
     /// services
     /// </summary>
     public ComponentSystemGame()
     {
+      GraphicsManager = new GraphicsDeviceManager(this);
       _deltaService = new DeltaService();
       _serviceCollection = new ServiceCollection()
-        .AddSingleton<IGraphicsDeviceService>(new GraphicsDeviceManager(this))
+        .AddSingleton<IGraphicsDeviceService>(GraphicsManager)
         .AddSingleton<IDeltaService>(_deltaService);
     }
 

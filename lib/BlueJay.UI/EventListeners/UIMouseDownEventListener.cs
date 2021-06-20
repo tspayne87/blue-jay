@@ -54,7 +54,7 @@ namespace BlueJay.UI.EventListeners
         var entity = entities[i];
         if (Contains(entity, evt.Data.Position))
         {
-          _eventQueue.DispatchEvent(evt.Data, entity);
+          _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position }, entity);
           break;
         }
       }
