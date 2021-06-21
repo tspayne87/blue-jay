@@ -14,18 +14,34 @@ using BlueJay.Interfaces;
 using BlueJay.Systems;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System;
+using BlueJay.UI.Components;
+using BlueJay.Content.App.Components;
 
 namespace BlueJay.Content.App.Views
 {
+  /// <summary>
+  /// The title view to switch between sample games for BlueJay
+  /// </summary>
   public class TitleView : View
   {
+    /// <summary>
+    /// The content manger meant to load the one texture used by breakout
+    /// </summary>
     public readonly ContentManager _contentManager;
 
+    /// <summary>
+    /// Constructor is meant to inject the global content manger into the system
+    /// </summary>
     public TitleView(ContentManager contentManager)
     {
       _contentManager = contentManager;
     }
 
+    /// <summary>
+    /// Configuration method is meant to add in all the systems that this game will use and bootstrap the game with entities
+    /// that will be used by the game and its systems
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to add the entities and systems to</param>
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       // Add Fonts
@@ -42,40 +58,71 @@ namespace BlueJay.Content.App.Views
       serviceProvider.AddComponentSystem<RenderingSystem>(serviceProvider.GetRequiredService<RendererCollection>()[RendererName.Default]);
       serviceProvider.AddComponentSystem<FPSSystem>("Default");
 
-      // Create layout and a button
-      var container = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.66f, TopOffset = 50, HorizontalAlign = HorizontalAlign.Center, GridColumns = 3, ColumnGap = new Point(5, 5), NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 });
+      serviceProvider.AddUIComponent<TitleViewComponent>();
+    }
 
-      serviceProvider.AddText("BlueJay Component System", new Style() { ColumnSpan = 3, Padding = 15, TextureFont = "Default", TextureFontSize = 2 }, container);
+    /// <summary>
+    /// The basic title view
+    /// </summary>
+    [View(@"
+<container style=""WidthPercentage: 0.66; TopOffset: 50; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 13"">
+  <text style=""ColumnSpan: 3; Padding: 15; TextureFont: Default; TextureFontSize: 2"">BlueJay Component System</text>
 
+  <button onSelect=""OnBreakoutClick"">{{BreakoutTitle}}</button>
+  <button onSelect=""OnTetrisClick"">{{TetrisTitle}}</button>
+</container>
+    ")]
+    [Component(typeof(Button))]
+    private class TitleViewComponent
+    {
+      /// <summary>
+      /// The view collection we will use to transition between games
+      /// </summary>
+      private IViewCollection _views;
 
-      var views = serviceProvider.GetRequiredService<IViewCollection>();
-      AddButton(serviceProvider, "Breakout", container, evt =>
+      /// <summary>
+      /// The breakout title we should be using for breakout
+      /// </summary>
+      public ReactiveProperty<string> BreakoutTitle;
+
+      /// <summary>
+      /// The Tetris title we are using for this component
+      /// </summary>
+      public ReactiveProperty<string> TetrisTitle;
+
+      /// <summary>
+      /// Constructor is meant to bootstrap the component
+      /// </summary>
+      /// <param name="views">The views collection we need to switch between views</param>
+      public TitleViewComponent(IViewCollection views)
       {
-        views.SetCurrent<BreakOutView>();
+        _views = views;
+
+        BreakoutTitle = new ReactiveProperty<string>("Breakout");
+        TetrisTitle = new ReactiveProperty<string>("Tetris");
+      }
+
+      /// <summary>
+      /// Callback method that is triggered when the user clicks the element in the component
+      /// </summary>
+      /// <param name="evt">The select event</param>
+      /// <returns>will return true to continue propegation</returns>
+      public bool OnBreakoutClick(SelectEvent evt)
+      {
+        _views.SetCurrent<BreakOutView>();
         return true;
-      });
-      AddButton(serviceProvider, "Tetris", container, evt =>
+      }
+
+      /// <summary>
+      /// Callback method that is triggered when the user clicks the element in the component
+      /// </summary>
+      /// <param name="evt">The select event</param>
+      /// <returns>will return true to continue propegation</returns>
+      public bool OnTetrisClick(SelectEvent evt)
       {
         // TODO: Set Current to Tetris
         return true;
-      }, new Style() { ColumnOffset = 1 });
-    }
-
-    private IEntity AddButton(IServiceProvider serviceProvider, string text, IEntity parent, Func<SelectEvent, bool> callback, Style style = null)
-    {
-      var baseStyle = new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 };
-      baseStyle.Parent = style;
-      var btn = serviceProvider.AddContainer(
-        baseStyle,
-        new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_Hover_NinePatch")) },
-        parent
-      );
-      var txt = serviceProvider.AddText(text, new Style() { TextureFont = "Default" }, btn);
-
-      // Add Event Listeners to both
-      serviceProvider.AddEventListener(callback, btn);
-      serviceProvider.AddEventListener(callback, txt);
-      return btn;
+      }
     }
   }
 }

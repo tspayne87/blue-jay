@@ -2,6 +2,7 @@
 using BlueJay.Content.App.Views;
 using BlueJay.Core.Interfaces;
 using BlueJay.Core.Renderers;
+using BlueJay.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +21,7 @@ namespace BlueJay.Content.App
 
     protected override void ConfigureServices(IServiceCollection serviceCollection)
     {
+      serviceCollection.AddUI();
       serviceCollection.AddSingleton(Content.Load<SpriteFont>("TestFont"));
       serviceCollection.AddSingleton<SpriteBatch>();
       serviceCollection.AddSingleton<IRenderer, Renderer>();
