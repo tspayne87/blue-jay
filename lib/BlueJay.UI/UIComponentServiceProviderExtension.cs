@@ -1,121 +1,153 @@
 ﻿using BlueJay.Component.System.Interfaces;
-using BlueJay.Core;
-using BlueJay.Events;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Components;
-using BlueJay.UI.Factories;
+using BlueJay.UI.Components.Common;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace BlueJay.UI
 {
   public static class UIComponentServiceProviderExtension
   {
-    private static Regex ExpressionRegex = new Regex(@"{{([^}]+)}}");
+    /// <summary>
+    /// The set of global objects defined by the project
+    /// </summary>
+    internal static List<Type> Globals = new List<Type>() { typeof(Container), typeof(Slot) };
 
-    public static IServiceProvider AddUIComponent<T>(this IServiceProvider provider, params object[] parameters)
+    /// <summary>
+    /// Method is meant to add a UI component to the system
+    /// </summary>
+    /// <typeparam name="T">The current UI component we need to process for the system</typeparam>
+    /// <param name="provider">The service provider we need to process the component with</param>
+    /// <returns>Will return the generated root element for the component</returns>
+    public static IEntity AddUIComponent<T>(this IServiceProvider provider)
     {
-      var view = (ViewAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ViewAttribute));
-      var collection = provider.GetRequiredService<UIComponentCollection>();
-      if (view != null && view.View.ChildNodes.Count == 1)
-      {
-        var component = ActivatorUtilities.CreateInstance<T>(provider, parameters);
-        GenerateItem(view.View.ChildNodes[0], provider, component);
-        collection.Add(component);
-      }
-
-      return provider;
+      return AddUIComponent(provider, typeof(T));
     }
 
-    private static IServiceProvider AddUIComponent(IServiceProvider provider, Type type, params object[] parameters)
+    /// <summary>
+    /// Internal add ui component that is meant to take a basic type on translate that type to a component
+    /// </summary>
+    /// <param name="provider">The service provider we need to process the component with</param>
+    /// <param name="type">The current UI component we need to process for the system</param>
+    /// <returns>Will return the generated root element for the component</returns>
+    internal static IEntity AddUIComponent(IServiceProvider provider, Type type)
     {
       var view = (ViewAttribute)Attribute.GetCustomAttribute(type, typeof(ViewAttribute));
+      var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
       var collection = provider.GetRequiredService<UIComponentCollection>();
+      IEntity entity = null;
       if (view != null && view.View.ChildNodes.Count == 1)
       {
-        var component = ActivatorUtilities.CreateInstance(provider, type, parameters);
-        GenerateItem(view.View.ChildNodes[0], provider, component);
-        collection.Add(component);
+        var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
+        instance.Initialize(view.View.ChildNodes[0], null, null);
+        entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, null);
+        collection.Add(instance);
       }
 
-      return provider;
+      return entity;
     }
 
-    private static void GenerateItem<T>(XmlNode node, IServiceProvider provider, T component, IEntity parent = null)
+    /// <summary>
+    /// Internal add ui component that is meant to take a basic type on translate that type to a component
+    /// </summary>
+    /// <param name="provider">The service provider we need to process the component with</param>
+    /// <param name="type">The current UI component we need to process for the system</param>
+    /// <param name="parentInstance">The parent instance we are processing</param>
+    /// <param name="node">The current node we are processing for the component type</param>
+    /// <returns>Will return the generated root element for the component</returns>
+    internal static IEntity AddUIComponent(IServiceProvider provider, Type type, UIComponent parentInstance, XmlNode node)
     {
-      var contentManager = provider.GetRequiredService<ContentManager>();
-      var style = node.Attributes?["style"]?.GenerateStyle(contentManager);
-      var hoverStyle = node.Attributes?["hoverStyle"]?.GenerateStyle(contentManager);
+      var view = (ViewAttribute)Attribute.GetCustomAttribute(type, typeof(ViewAttribute));
+      var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
+      var collection = provider.GetRequiredService<UIComponentCollection>();
       IEntity entity = null;
-      switch(node.Name)
+      if (view != null && view.View.ChildNodes.Count == 1)
       {
-        case "container":
-          entity = GenerateContainer(provider, style, hoverStyle, parent);
-          break;
-        case "text":
-          entity = GenerateText(node, provider, style, component, parent);
-          break;
-        default:
-          break;
+        var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
+        instance.Initialize(node, parentInstance, null);
+        entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parentInstance.Root);
+        collection.Add(instance);
       }
 
-      if (entity != null)
-      {
-        var onClick = node.Attributes == null ? null : node.Attributes["onSelect"]?.InnerText;
-        if (!string.IsNullOrEmpty(onClick) && entity != null)
-        {
-          var method = typeof(T).GetMethod(onClick);
-          provider.AddEventListener<SelectEvent>(x => (bool)method.Invoke(component, new object[] { x }), entity);
-        }
-
-        for (var i = 0; i < node.ChildNodes.Count; ++i)
-        {
-          GenerateItem(node.ChildNodes[i], provider, component, entity);
-        }
-      }
+      return entity;
     }
 
-    private static IEntity GenerateContainer(IServiceProvider provider, Style style, Style hoverStyle, IEntity parent)
+    /// <summary>
+    /// Helper method is meant to generate an item based on the xml node and the instance of the component
+    /// </summary>
+    /// <param name="node">The xml node representing the UI component being generated</param>
+    /// <param name="provider">The service provider we need to process the component with</param>
+    /// <param name="components">The components that are used in the xml</param>
+    /// <param name="instance">The current UI component instance we need to process</param>
+    /// <param name="parentInstance">The parent instance of the UI component</param>
+    /// <param name="parent">The current parent we are processing</param>
+    /// <returns>Will return the generated root entity based on the xml</returns>
+    internal static IEntity GenerateItem(XmlNode node, IServiceProvider provider, IEnumerable<Type> components, UIComponent instance, UIComponent parentInstance, IEntity parent = null)
     {
-      if (style == null && hoverStyle == null) return provider.AddContainer(new Style(), parent);
-      else if (hoverStyle != null) return provider.AddContainer(style, hoverStyle, parent);
-      return provider.AddContainer(style, parent);
-    }
-
-    private static IEntity GenerateText(XmlNode node, IServiceProvider provider, Style style, object component, IEntity parent)
-    {
-      var txt = node.InnerText;
-      var field = component.GetType().GetField(node.InnerText.Replace("{{", string.Empty).Replace("}}", string.Empty));
-      if (ExpressionRegex.IsMatch(txt))
+      IEntity entity = null;
+      var componentType = components.FirstOrDefault(x => x.Name.Equals(node.Name, StringComparison.OrdinalIgnoreCase));
+      if (node.Name == "#text") componentType = typeof(Text);
+      if (componentType != null)
       {
-        var eventQueue = provider.GetRequiredService<EventQueue>();
-        var graphics = provider.GetRequiredService<GraphicsDevice>();
-
-        var entity = provider.AddText(ExpressionRegex.TranslateText(txt, component), style, parent);
-        foreach (var prop in ExpressionRegex.GetReactiveProps(txt, component))
+        var processChildren = false;
+        if (Attribute.GetCustomAttribute(componentType, typeof(ViewAttribute)) != null)
         {
-          prop.PropertyChanged += (sender, o) =>
+          entity = AddUIComponent(provider, componentType, instance, node);
+        }
+        else
+        {
+          var component = (UIComponent)ActivatorUtilities.CreateInstance(provider, componentType);
+          component.Initialize(node, instance, parentInstance);
+          entity = component.Render(parent);
+          processChildren = true;
+        }
+
+        if (instance.Root == null)
+        {
+          instance.Root = entity;
+        }
+        
+        // Handle Style updates
+        var sa = entity?.GetAddon<StyleAddon>();
+        if (sa != null)
+        {
+          var contentManager = provider.GetRequiredService<ContentManager>();
+
+          // Calculate the basic style and assign it to the styles
+          var style = node.Attributes?["style"]?.GenerateStyle(contentManager);
+          if (style != null)
           {
-            var ta = entity.GetAddon<TextAddon>();
-            if (ta != null)
-            {
-              ta.Text = ExpressionRegex.TranslateText(txt, component);
-              eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
-            }
-          };
+            style.Parent = sa.Style;
+            sa.Style = style;
+
+            // Update the hover style to use the current path for the style
+            if (sa.HoverStyle != null) sa.HoverStyle.Parent = style;
+            else sa.HoverStyle = style;
+          }
+
+          // Calculate the hover style and assign it to the styles
+          var hoverStyle = node.Attributes?["hoverStyle"]?.GenerateStyle(contentManager);
+          if (hoverStyle != null)
+          {
+            hoverStyle.Parent = sa.HoverStyle;
+            sa.HoverStyle = hoverStyle;
+          }
         }
-        return entity;
+
+        if (processChildren)
+        {
+          for (var i = 0; i < node.ChildNodes.Count; ++i)
+          {
+            GenerateItem(node.ChildNodes[i], provider, components, instance, parentInstance, entity);
+          }
+        }
       }
-      return provider.AddText(txt, style, parent);
+      return entity;
     }
   }
 }

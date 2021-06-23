@@ -1,4 +1,5 @@
-﻿using BlueJay.UI.Components;
+﻿using BlueJay.Content.App.Components;
+using BlueJay.UI.Components;
 using System;
 
 namespace BlueJay.Content.App.Games.Breakout

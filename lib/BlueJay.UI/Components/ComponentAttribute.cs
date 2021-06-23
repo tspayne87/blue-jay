@@ -1,17 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace BlueJay.UI.Components
 {
+  /// <summary>
+  /// Component attribute is meant to tell the UI component what other custom components will be
+  /// used in the view
+  /// </summary>
   [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
   public class ComponentAttribute : Attribute
   {
-    public Type[] Components { get; private set; }
+    /// <summary>
+    /// The list of components needed in the view
+    /// </summary>
+    public List<Type> Components { get; private set; }
 
+    /// <summary>
+    /// Constructor for defining all custom components used in the view
+    /// </summary>
+    /// <param name="components">The list of custom components</param>
     public ComponentAttribute(params Type[] components)
     {
-      Components = components;
+      Components = components.ToList();
     }
   }
 }

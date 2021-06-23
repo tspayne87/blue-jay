@@ -4,17 +4,13 @@ using BlueJay.Content.App.Games.Breakout.Factories;
 using BlueJay.Content.App.Games.Breakout.Systems;
 using BlueJay.Component.System;
 using BlueJay.Component.System.Collections;
-using BlueJay.Component.System.Interfaces;
 using BlueJay.Component.System.Systems;
 using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Keyboard;
-using BlueJay.Events.Mouse;
 using BlueJay.Events.Touch;
-using BlueJay.Interfaces;
 using BlueJay.Systems;
 using BlueJay.UI;
-using BlueJay.UI.Factories;
 using BlueJay.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
@@ -22,6 +18,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using BlueJay.UI.Components;
+using BlueJay.Content.App.Components;
 
 namespace BlueJay.Content.App.Views
 {

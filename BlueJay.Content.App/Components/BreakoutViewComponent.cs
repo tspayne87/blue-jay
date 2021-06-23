@@ -1,25 +1,24 @@
-﻿using BlueJay.Content.App.Components;
-using BlueJay.Content.App.Views;
+﻿using BlueJay.Content.App.Views;
 using BlueJay.Interfaces;
 using BlueJay.UI;
 using BlueJay.UI.Components;
 
-namespace BlueJay.Content.App.Games.Breakout
+namespace BlueJay.Content.App.Components
 {
   /// <summary>
   /// The breakout view component we need to show some UI on the screen
   /// </summary>
   [View(@"
 <container style=""GridColumns: 5; ColumnGap: 5, 5"">
-  <button onSelect=""OnBackToTitleClick"">Back To Title</button>
+  <button style=""ColumnSpan: 2"" onSelect=""OnBackToTitleClick"">Back To Title</button>
 
-  <text style=""TextureFont: Default"">Round: {{Round}}</text>
-  <text style=""TextureFont: Default"">Balls: {{Balls}}</text>
-  <text style=""TextureFont: Default"">Score: {{Score}}</text>
+  <container style=""TextureFont: Default"">Round: {{Round}}</container>
+  <container style=""TextureFont: Default"">Balls: {{Balls}}</container>
+  <container style=""TextureFont: Default"">Score: {{Score}}</container>
 </container>
     ")]
   [Component(typeof(Button))]
-  public class BreakoutViewComponent
+  public class BreakoutViewComponent : UIComponent
   {
     /// <summary>
     /// The view collection we need to switch between
