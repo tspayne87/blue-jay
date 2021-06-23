@@ -60,7 +60,7 @@ namespace BlueJay.UI
     /// <param name="parentInstance">The parent instance we are processing</param>
     /// <param name="node">The current node we are processing for the component type</param>
     /// <returns>Will return the generated root element for the component</returns>
-    internal static IEntity AddUIComponent(IServiceProvider provider, Type type, UIComponent parentInstance, XmlNode node)
+    internal static IEntity AddUIComponent(IServiceProvider provider, Type type, UIComponent parentInstance, XmlNode node, IEntity parent = null)
     {
       var view = (ViewAttribute)Attribute.GetCustomAttribute(type, typeof(ViewAttribute));
       var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
@@ -70,7 +70,7 @@ namespace BlueJay.UI
       {
         var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
         instance.Initialize(node, parentInstance, null);
-        entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parentInstance.Root);
+        entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parent);
         collection.Add(instance);
       }
 
@@ -97,7 +97,7 @@ namespace BlueJay.UI
         var processChildren = false;
         if (Attribute.GetCustomAttribute(componentType, typeof(ViewAttribute)) != null)
         {
-          entity = AddUIComponent(provider, componentType, instance, node);
+          entity = AddUIComponent(provider, componentType, instance, node, parent);
         }
         else
         {
