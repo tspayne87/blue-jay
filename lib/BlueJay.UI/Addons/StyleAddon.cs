@@ -5,15 +5,10 @@ namespace BlueJay.UI.Addons
 {
   public class StyleAddon : Addon<StyleAddon>
   {
-    private Style _style;
-
     /// <summary>
     /// The basic nine patch style for the UI element
     /// </summary>
-    public Style Style {
-      get => _style;
-      set => _style = value;
-    }
+    public Style Style { get; set; }
 
     /// <summary>
     /// The style that should be used for hovering

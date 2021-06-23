@@ -6,8 +6,6 @@ namespace BlueJay.UI
 {
   public class Style
   {
-    private Guid _testGuid;
-
     private int? _width = null;
     private float? _widthPercentage = null;
     private int? _height = null;
@@ -28,11 +26,6 @@ namespace BlueJay.UI
     private string _font = null;
     private string _textureFont = null;
     private int? _textureFontSize = null;
-
-    public Style()
-    {
-      _testGuid = Guid.NewGuid();
-    }
 
     public Style Parent { get; set; }
 
