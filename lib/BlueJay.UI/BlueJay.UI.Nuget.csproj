@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>BlueJay.UI</PackageId>
+    <Version>{{Version}}</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlueJay" Version="{{Version}}" />
+    <PackageReference Include="BlueJay.Component.System" Version="{{Version}}" />
+  </ItemGroup>
+</Project>

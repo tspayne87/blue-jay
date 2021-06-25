@@ -1,0 +1,21 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  - name: MajorMinor
+    value: '0.1'
+  - name: Patch
+    value: $[counter(variables['MajorMinor'], 1)]
+  - name: Version
+    value: $(MajorMinor).$(Patch)
+  - name: BuildPlatform
+    value: 'Any CPU'
+  - name: BuildConfiguration
+    value: 'Release'
+
+steps:
