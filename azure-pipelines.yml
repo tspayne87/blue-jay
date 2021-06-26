@@ -10,6 +10,10 @@ variables:
     value: $(MajorMinor).$(Patch)
   - name: BuildConfiguration
     value: 'Release'
+  - name: PackLocation
+    value: dist
+  - name: ApiSource
+    value: https://api.nuget.org/v3/index.json
 
 
 steps:
@@ -26,13 +30,6 @@ steps:
 
   - script: |
       dotnet restore lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
-      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration) -o dist
-    displayName: 'Restore and Pack BlueJay.Core'
-    
-  - task: DotNetCoreCLI@2
-    displayName: 'NuGet Push BlueJay.Core'
-    inputs:
-      command: 'push'
-      packagesToPush: 'dist/BlueJay.Core.$(Version).nupkg'
-      nuGetFeedType: 'external'
-      publishFeedCredentials: 'NuGet Service Connection'
+      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration) -o $(PackLocation)
+      dotnet nuget push $(PackLocation)/BlueJay.Core.$(Version).nupkg --api-key %APIKEY% --source $(ApiSource)
+    displayName: 'Restore, Pack, and Push BlueJay.Core'
