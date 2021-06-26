@@ -28,4 +28,3 @@ steps:
     inputs:
       command: 'restore'
       projects: '**/*.Nuget.csproj'
-      externalFeedCredentials: 'NuGet Service Connection'
