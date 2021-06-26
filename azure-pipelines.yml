@@ -1,0 +1,19 @@
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  - name: MajorMinor
+    value: '0.1'
+  - name: Patch
+    value: $[counter(variables['MajorMinor'], 1)]
+  - name: Version
+    value: $(MajorMinor).$(Patch)
+  - name: BuildConfiguration
+    value: 'Release'
+
+steps:
+  - task: PowerShell@2
+    displayName: 'Update Version For Nuget Packages'
+    inputs:
+      filePath: 'replace-version.ps1'
+      arguments: '$(Version)'
