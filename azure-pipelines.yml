@@ -26,5 +26,13 @@ steps:
 
   - script: |
       dotnet restore lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
-      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration)
+      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration) -o dist
     displayName: 'Restore and Pack BlueJay.Core'
+    
+  - task: DotNetCoreCLI@2
+    displayName: 'NuGet Push BlueJay.Core'
+    inputs:
+      command: 'push'
+      packagesToPush: 'dist/BlueJay.Core.$(Version).nupkg'
+      nuGetFeedType: 'external'
+      publishFeedCredentials: 'NuGet Service Connection'
