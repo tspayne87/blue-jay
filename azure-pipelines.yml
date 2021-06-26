@@ -12,7 +12,7 @@ variables:
     value: 'Release'
 
 jobs:
-  - job: 'BlueJay-Core'
+  - job: 'BlueJay_Core'
     steps:
       - task: PowerShell@2
         displayName: 'Update Version For Nuget Packages'
