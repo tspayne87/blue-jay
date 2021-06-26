@@ -26,5 +26,5 @@ steps:
 
   - script: |
       dotnet restore lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
-      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration) -o dist
+      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration)
     displayName: 'Restore and Pack BlueJay.Core'
