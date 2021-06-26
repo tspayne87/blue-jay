@@ -132,7 +132,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         if (!string.IsNullOrEmpty(sa.Style.Font) && _fonts.SpriteFonts.ContainsKey(sa.Style.Font))
           _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
         else if (!string.IsNullOrEmpty(sa.Style.TextureFont) && _fonts.TextureFonts.ContainsKey(sa.Style.TextureFont))
-          _renderer[RendererName.Default].DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize);
+          _renderer[RendererName.Default].DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
         _graphics.SetRenderTarget(null);
 
         ta.Texture = target;
@@ -144,7 +144,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       if (!string.IsNullOrEmpty(style.Font) && _fonts.SpriteFonts.ContainsKey(style.Font))
         return _fonts.SpriteFonts[style.Font].MeasureString(str);
       if (!string.IsNullOrEmpty(style.TextureFont) && _fonts.TextureFonts.ContainsKey(style.TextureFont))
-        return _fonts.TextureFonts[style.TextureFont].MeasureString(str, style.TextureFontSize);
+        return _fonts.TextureFonts[style.TextureFont].MeasureString(str, style.TextureFontSize ?? 1);
       return Vector2.Zero;
     }
   }

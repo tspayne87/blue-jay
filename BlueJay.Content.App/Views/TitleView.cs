@@ -3,29 +3,39 @@ using BlueJay.Views;
 using Microsoft.Xna.Framework;
 using System;
 using BlueJay.UI;
-using BlueJay.UI.Factories;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using BlueJay.Core;
-using BlueJay.Component.System.Interfaces;
-using BlueJay.Events.Mouse;
 using Microsoft.Extensions.DependencyInjection;
-using BlueJay.Interfaces;
-using BlueJay.Systems;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System;
+using BlueJay.Content.App.Components;
 
 namespace BlueJay.Content.App.Views
 {
+  /// <summary>
+  /// The title view to switch between sample games for BlueJay
+  /// </summary>
   public class TitleView : View
   {
+    /// <summary>
+    /// The content manger meant to load the one texture used by breakout
+    /// </summary>
     public readonly ContentManager _contentManager;
 
+    /// <summary>
+    /// Constructor is meant to inject the global content manger into the system
+    /// </summary>
     public TitleView(ContentManager contentManager)
     {
       _contentManager = contentManager;
     }
 
+    /// <summary>
+    /// Configuration method is meant to add in all the systems that this game will use and bootstrap the game with entities
+    /// that will be used by the game and its systems
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to add the entities and systems to</param>
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       // Add Fonts
@@ -42,40 +52,7 @@ namespace BlueJay.Content.App.Views
       serviceProvider.AddComponentSystem<RenderingSystem>(serviceProvider.GetRequiredService<RendererCollection>()[RendererName.Default]);
       serviceProvider.AddComponentSystem<FPSSystem>("Default");
 
-      // Create layout and a button
-      var container = serviceProvider.AddContainer(new Style() { WidthPercentage = 0.66f, TopOffset = 50, HorizontalAlign = HorizontalAlign.Center, GridColumns = 3, ColumnGap = new Point(5, 5), NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 });
-
-      serviceProvider.AddText("BlueJay Component System", new Style() { ColumnSpan = 3, Padding = 15, TextureFont = "Default", TextureFontSize = 2 }, container);
-
-
-      var views = serviceProvider.GetRequiredService<IViewCollection>();
-      AddButton(serviceProvider, "Breakout", container, evt =>
-      {
-        views.SetCurrent<BreakOutView>();
-        return true;
-      });
-      AddButton(serviceProvider, "Tetris", container, evt =>
-      {
-        // TODO: Set Current to Tetris
-        return true;
-      }, new Style() { ColumnOffset = 1 });
-    }
-
-    private IEntity AddButton(IServiceProvider serviceProvider, string text, IEntity parent, Func<SelectEvent, bool> callback, Style style = null)
-    {
-      var baseStyle = new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_NinePatch")), Padding = 13 };
-      baseStyle.Parent = style;
-      var btn = serviceProvider.AddContainer(
-        baseStyle,
-        new Style() { NinePatch = new NinePatch(_contentManager.Load<Texture2D>("Sample_Hover_NinePatch")) },
-        parent
-      );
-      var txt = serviceProvider.AddText(text, new Style() { TextureFont = "Default" }, btn);
-
-      // Add Event Listeners to both
-      serviceProvider.AddEventListener(callback, btn);
-      serviceProvider.AddEventListener(callback, txt);
-      return btn;
+      serviceProvider.AddUIComponent<TitleViewComponent>();
     }
   }
 }
