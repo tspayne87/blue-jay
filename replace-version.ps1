@@ -2,7 +2,7 @@
 $replace=$args[0];
 
 # Gather all the Nuget.csproj files and update the version information in the file
-Get-ChildItem -Path ./*.csproj -Recurse -Force | ForEach-Object {
+Get-ChildItem -Path ./lib/*.csproj -Recurse -Force | ForEach-Object {
   # Log information to the host so we can check in the pipelines what is going on
   Write-Host "Updating File: $_ | Version ($replace)"
 
