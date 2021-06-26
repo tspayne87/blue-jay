@@ -11,22 +11,20 @@ variables:
   - name: BuildConfiguration
     value: 'Release'
 
-jobs:
-  - job: 'Update_Versions'
-    steps:
-      - task: PowerShell@2
-        displayName: 'Update Version For Nuget Packages'
-        inputs:
-          filePath: 'replace-version.ps1'
-          arguments: '$(Version)'
-  - job: 'BlueJay_Core'
-    steps:
-      - task: UseDotNet@2
-        displayName: 'Use .Net Core SDK'
-        inputs:
-          version: 5.0.301
 
-      - script: |
-          dotnet restore lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
-          dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
-        displayName: 'Restore and Pack'
+steps:
+  - task: PowerShell@2
+    displayName: 'Update Version For Nuget Packages'
+    inputs:
+      filePath: 'replace-version.ps1'
+      arguments: '$(Version)'
+
+  - task: UseDotNet@2
+    displayName: 'Use .Net Core SDK'
+    inputs:
+      version: 5.0.301
+
+  - script: |
+      dotnet restore lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
+      dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
+    displayName: 'Restore and Pack BlueJay.Core'
