@@ -31,5 +31,5 @@ steps:
   - script: |
       dotnet restore lib/BlueJay.Core/BlueJay.Core.Nuget.csproj
       dotnet pack lib/BlueJay.Core/BlueJay.Core.Nuget.csproj -c $(BuildConfiguration) -o $(PackLocation)
-      dotnet nuget push $(PackLocation)/BlueJay.Core.$(Version).nupkg --api-key ${env:APIKEY} --source $(ApiSource)
+      dotnet nuget push $(PackLocation)/BlueJay.Core.$(Version).nupkg --api-key $(APIKEY) --source $(ApiSource)
     displayName: 'Restore, Pack, and Push BlueJay.Core'
