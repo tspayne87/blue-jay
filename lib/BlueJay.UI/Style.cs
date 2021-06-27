@@ -56,6 +56,6 @@ namespace BlueJay.UI
 
     public string Font { get => _font ?? Parent?.Font; set => _font = value; }
     public string TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
-    public int TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize ?? 1; set => _textureFontSize = Math.Max(value, 1); }
+    public int? TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize; set { if (value != null) _textureFontSize = Math.Max(value ?? 1, 1); else _textureFontSize = null; } }
   }
 }
