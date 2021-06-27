@@ -71,8 +71,129 @@ version generated at this time for them.  A basic example of using a view is as 
   }
 ```
 
-## Systems
-
 ## Addons
+Addons are data points that can be added to entities so that systems can filter on those types of addons
+to break down all entities in the system to their basic level.  Addons should be small data points that handle
+a piece the data for a piece of the game.  An example is the common *ColorAddon* as follows:
+
+```csharp
+  /// <summary>
+  /// The color addon is for attaching color to an entity
+  /// </summary>
+  public class ColorAddon : Addon<ColorAddon>
+  {
+    /// <summary>
+    /// The current color that should be used for the entity
+    /// </summary>
+    public Color Color;
+
+    /// <summary>
+    /// Basic contructor is meant to build out a default addon for color
+    /// </summary>
+    public ColorAddon()
+      : this(Color.White) { }
+
+
+    /// <summary>
+    /// Constructor to build out the color addon
+    /// </summary>
+    /// <param name="color">The current color that should be assigned</param>
+    public ColorAddon(Color color)
+    {
+      Color = color;
+    }
+
+    /// <summary>
+    /// Overridden to string method is meant to print out a nice version of the
+    /// addon for debugging purposes
+    /// </summary>
+    /// <returns>Will return a debug string</returns>
+    public override string ToString()
+    {
+      return $"Color | R: {Color.R}, G: {Color.G}, B: {Color.B}, A: {Color.A}";
+    }
+  }
+```
+
+_*Note:*_ Only 64 different addons can be used in a game
+
+## Systems
+Systems are meant to be the implementation of the game, and are required to have an addon key that will
+determine which entities will be processed by the system.  The following is an example system:
+
+```csharp
+  /// <summary>
+  /// Basic rendering system to draw a texture at a position
+  /// </summary>
+  public class RenderingSystem : ComponentSystem
+  {
+    /// <summary>
+    /// The renderer to draw textures to the screen
+    /// </summary>
+    private readonly IRenderer _renderer;
+
+    /// <summary>
+    /// The Selector to determine that Position and Texture addons are needed
+    /// for this system
+    /// </summary>
+    public override long Key => PositionAddon.Identifier | TextureAddon.Identifier;
+
+    /// <summary>
+    /// The current layers that this system should be attached to
+    /// </summary>
+    public override List<string> Layers => new List<string>();
+
+    /// <summary>
+    /// Constructor method is meant to build out the renderer system and inject
+    /// the renderer for drawing
+    /// </summary>
+    /// <param name="renderer">The renderer that should be used one draw</param>
+    /// <param name="rendererCollection">The collection of renderers that exist in the system</param>
+    public RenderingSystem(string renderer, RendererCollection rendererCollection)
+    {
+      _renderer = rendererCollection[renderer];
+    }
+
+    /// <summary>
+    /// Draw method is meant to draw the entity to the screen based on the texture
+    /// and position of the entity
+    /// </summary>
+    /// <param name="delta">The current delta for this frame</param>
+    /// <param name="entity">The current entity that should be drawn</param>
+    public override void OnDraw(IEntity entity)
+    {
+      var pc = entity.GetAddon<PositionAddon>();
+      var tc = entity.GetAddon<TextureAddon>();
+
+      _renderer.Draw(tc.Texture, pc.Position);
+    }
+  }
+```
 
 ## Factories
+Factories are the suggested ways to create entities, adding extension methods onto *IServiceProvider* interface so that entities
+can be created and addons be added to the entity created.  An example of creating a ball entity to a game is as follows:
+
+```csharp
+  public static class BallFactory
+  {
+    /// <summary>
+    /// Factory method is meant to create an entity and add various addons to the entity that represents
+    /// the ball in the game
+    /// </summary>
+    /// <param name="provider">The service provider we need to add the entities and systems to</param>
+    /// <param name="texture">The ball texture that should be used</param>
+    /// <returns>The entity that was created</returns>
+    public static IEntity AddBall(this IServiceProvider provider, Texture2D texture)
+    {
+      var entity = provider.AddEntity<Entity>(LayerNames.BallLayer);
+      entity.Add<BoundsAddon>(new Rectangle(Point.Zero, new Point(9, 9)));
+      entity.Add<VelocityAddon>(Vector2.Zero);
+      entity.Add<TypeAddon>(EntityType.Ball);
+      entity.Add<TextureAddon>(texture);
+      entity.Add<ColorAddon>(Color.Black);
+      entity.Add<BallActiveAddon>();
+      return entity;
+    }
+  }
+```
