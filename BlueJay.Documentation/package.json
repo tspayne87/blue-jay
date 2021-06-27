@@ -1,0 +1,19 @@
+{
+  "name": "blue-jay-documentation",
+  "version": "0.0.1",
+  "description": "Documentation for using the BlueJay Framework",
+  "main": "index.js",
+  "authors": {
+    "name": "Terry Payne",
+    "email": "tspayne87@gmail.com"
+  },
+  "repository": "/BlueJay Documentation",
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "vuepress": "^1.8.2"
+  }
+}
