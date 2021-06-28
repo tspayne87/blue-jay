@@ -10,7 +10,9 @@
   "repository": "/BlueJay Documentation",
   "scripts": {
     "dev": "vuepress dev src",
-    "build": "vuepress build src"
+    "build": "vuepress build src",
+    "deploy:firebase": "firebase deploy",
+    "deploy": "npm run build && npm run deploy:firebase"
   },
   "license": "MIT",
   "devDependencies": {

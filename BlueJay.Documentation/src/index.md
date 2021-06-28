@@ -11,5 +11,5 @@ features:
   details: An event system is meant to make it easy to trigger and listen to events
 - title: UI System
   details: A UI system to make working with UI elements in monogame simplier
-footer: Made by Namtar with ❤️
+footer: Made by Terry Payne with ❤️
 ---
