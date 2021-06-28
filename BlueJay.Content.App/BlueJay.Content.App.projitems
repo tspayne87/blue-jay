@@ -10,10 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)BlueJayAppGame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\TitleViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\BallActiveAddon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\BlockIndexAddon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\TypeAddon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\BreakoutGameService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\BreakoutViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EntityType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\EventListeners\KeyboardPressEventListener.cs" />
