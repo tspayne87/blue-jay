@@ -59,7 +59,7 @@ namespace BlueJay.UI.EventListeners
         var target = new RenderTarget2D(_graphics, ba.Bounds.Width, ba.Bounds.Height);
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
-        _renderer[RendererName.Default].DrawRectangle(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
+        _renderer["UI"].DrawRectangle(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
         _graphics.SetRenderTarget(null);
 
         sa.StyleUpdates++;

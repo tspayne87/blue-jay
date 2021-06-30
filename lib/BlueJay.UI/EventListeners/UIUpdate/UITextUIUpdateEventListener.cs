@@ -130,9 +130,9 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
         if (!string.IsNullOrEmpty(sa.Style.Font) && _fonts.SpriteFonts.ContainsKey(sa.Style.Font))
-          _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
+          _renderer["UI"].DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
         else if (!string.IsNullOrEmpty(sa.Style.TextureFont) && _fonts.TextureFonts.ContainsKey(sa.Style.TextureFont))
-          _renderer[RendererName.Default].DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
+          _renderer["UI"].DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
         _graphics.SetRenderTarget(null);
 
         ta.Texture = target;

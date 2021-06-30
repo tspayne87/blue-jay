@@ -16,7 +16,7 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The current renderer so we can render data to the screen
     /// </summary>
-    private readonly RendererCollection _renderer;
+    private readonly IRenderer _renderer;
 
     /// <summary>
     /// The global fonts that will be used to render on the screen
@@ -45,13 +45,15 @@ namespace BlueJay.Component.System.Systems
     public override List<string> Layers => new List<string>() { };
 
     /// <summary>
-    /// Constructor method to build out the system and inject the renderer into
-    /// the class
+    /// Constructor method to build out the system and inject the renderer into the class
     /// </summary>
-    /// <param name="renderer"></param>
-    public DebugSystem(RendererCollection renderer, FontCollection fonts, string fontKey)
+    /// <param name="collection">The renderer collection</param>
+    /// <param name="fonts">The font collection</param>
+    /// <param name="fontKey">The font key we need to use</param>
+    /// <param name="renderer">The current renderer</param>
+    public DebugSystem(RendererCollection collection, FontCollection fonts, string fontKey, string renderer)
     {
-      _renderer = renderer;
+      _renderer = collection[renderer];
       _fontKey = fontKey;
       _fonts = fonts;
     }
@@ -67,7 +69,6 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The draw event where we are going to render the draw information to the screen
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     /// <param name="entity">The current entity we are working with</param>
     public override void OnDraw(IEntity entity)
     {
@@ -75,7 +76,7 @@ namespace BlueJay.Component.System.Systems
       var dAddons = entity.GetAddons(dc.KeyIdentifier);
       foreach (var addon in dAddons)
       {
-        _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[_fontKey], addon.ToString(), new Vector2(10, _y), Color.Black);
+        _renderer.DrawString(_fonts.SpriteFonts[_fontKey], addon.ToString(), new Vector2(10, _y), Color.Black);
         _y += 20;
       }
     }

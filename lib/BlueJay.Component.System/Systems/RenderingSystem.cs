@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Addons;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
 using System.Collections.Generic;
@@ -30,10 +31,11 @@ namespace BlueJay.Component.System.Systems
     /// Constructor method is meant to build out the renderer system and inject
     /// the renderer for drawing
     /// </summary>
+    /// <param name="collection">The renderer collection we need to pull from</param>
     /// <param name="renderer">The renderer that should be used one draw</param>
-    public RenderingSystem(IRenderer renderer)
+    public RenderingSystem(RendererCollection collection, string renderer)
     {
-      _renderer = renderer;
+      _renderer = collection[renderer];
     }
 
     /// <summary>

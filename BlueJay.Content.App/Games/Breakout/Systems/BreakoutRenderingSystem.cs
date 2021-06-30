@@ -54,14 +54,14 @@ namespace BlueJay.Content.App.Games.Breakout.Systems
     /// <summary>
     /// Constructor is meant to inject the renderer into the system for processing
     /// </summary>
-    /// <param name="renderer">The renderer that should be used for the breakout</param>
+    /// <param name="collection">The renderer that should be used for the breakout</param>
     /// <param name="font">The global font</param>
     /// <param name="graphics">The graphics for the screen</param>
     /// <param name="layers">The layers we are working with</param>
     /// <param name="service">The current service that represents the game</param>
-    public BreakoutRenderingSystem(IRenderer renderer, LayerCollection layers, BreakoutGameService service, FontCollection font, GraphicsDevice graphics)
+    public BreakoutRenderingSystem(RendererCollection collection, LayerCollection layers, BreakoutGameService service, FontCollection font, GraphicsDevice graphics)
     {
-      _renderer = renderer;
+      _renderer = collection["Default"];
       _layers = layers;
       _service = service;
       _font = font;

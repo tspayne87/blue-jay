@@ -13,7 +13,7 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// The renderer to print the fps to
     /// </summary>
-    private readonly RendererCollection _renderer;
+    private readonly IRenderer _renderer;
 
     /// <summary>
     /// The delta service that is meant to be updated every frame
@@ -58,13 +58,14 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// Constructor to build out the fps system
     /// </summary>
-    /// <param name="renderer">The current renderer to print stuff on the screen</param>
+    /// <param name="collection">The current renderer to print stuff on the screen</param>
     /// <param name="deltaService">The current delta that gets updated every frame</param>
     /// <param name="fontKey">The key for creating the font key</param>
     /// <param name="fonts">The fonts collection that we should look up sprite fonts</param>
-    public FPSSystem(RendererCollection renderer, IDeltaService deltaService, FontCollection fonts, string fontKey)
+    /// <param name="renderer">The renderer we need to use</param>
+    public FPSSystem(RendererCollection collection, IDeltaService deltaService, FontCollection fonts, string fontKey, string renderer)
     {
-      _renderer = renderer;
+      _renderer = collection[renderer];
       _deltaService = deltaService;
       _fonts = fonts;
       _fontKey = fontKey;
@@ -73,7 +74,6 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// Update event is meant to track how many times this method is called in a second
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     public override void OnUpdate()
     {
       _updates++;
@@ -89,10 +89,9 @@ namespace BlueJay.Component.System.Systems
     /// <summary>
     /// Draw event is meant to print the current fps to the screen
     /// </summary>
-    /// <param name="delta">The current delta for this frame</param>
     public override void OnDraw()
     {
-      _renderer[RendererName.Default].DrawString(_fonts.SpriteFonts[_fontKey], $"fps: {_fps}", new Vector2(200, 10), Color.Black);
+      _renderer.DrawString(_fonts.SpriteFonts[_fontKey], $"fps: {_fps}", new Vector2(200, 10), Color.Black);
     }
   }
 }
