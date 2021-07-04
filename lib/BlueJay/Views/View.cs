@@ -42,8 +42,6 @@ namespace BlueJay.Views
       // Add basic listeners for the queue
       ServiceProvider.AddEventListener<UpdateEventListener, UpdateEvent>();
       ServiceProvider.AddEventListener<DrawEventListener, DrawEvent>();
-
-      ServiceProvider.AddRenderer<Renderer>(RendererName.Default);
       ConfigureProvider(ServiceProvider);
     }
 

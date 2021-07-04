@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Renderers;
 using BlueJay.Events;
 using BlueJay.Events.Mouse;
 using BlueJay.Events.Touch;
@@ -13,6 +14,17 @@ namespace BlueJay.UI
 {
   public static class ServiceProviderExtensions
   {
+    /// <summary>
+    /// Method is meant to add the correct renderer for UI components
+    /// </summary>
+    /// <param name="provider">The service provider</param>
+    /// <returns>Will return the service provider</returns>
+    public static IServiceProvider UseUI(this IServiceProvider provider)
+    {
+      provider.AddRenderer<Renderer>("UI");
+      return provider;
+    }
+
     /// <summary>
     /// Method is meant to add a ui entity to the entity collection and use DI to build out the object so that
     /// services and other DI components can be injected properly into the class

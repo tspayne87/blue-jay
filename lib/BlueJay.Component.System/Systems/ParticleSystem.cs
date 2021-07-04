@@ -37,11 +37,18 @@ namespace BlueJay.Component.System.Systems
     /// </summary>
     public override List<string> Layers => new List<string>();
 
-    public ParticleSystem(LayerCollection layers, IDeltaService deltaService, IRenderer renderer)
+    /// <summary>
+    /// Constructor for the particle system
+    /// </summary>
+    /// <param name="layers">The current layers we are working with</param>
+    /// <param name="deltaService">The delta service</param>
+    /// <param name="collection">The renderer collection so we can load the correct renderer</param>
+    /// <param name="renderer">The renderer we need to load</param>
+    public ParticleSystem(LayerCollection layers, IDeltaService deltaService, RendererCollection collection, string renderer)
     {
       _layers = layers;
       _deltaService = deltaService;
-      _renderer = renderer;
+      _renderer = collection[renderer];
     }
 
     /// <summary>
