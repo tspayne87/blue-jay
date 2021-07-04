@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static BlueJay.Events.Mouse.MouseEvent;
 
 namespace BlueJay.Systems
 {
@@ -86,7 +87,13 @@ namespace BlueJay.Systems
       // Trigger event for when the mouse moves
       if (PreviousPosition != state.Position)
       {
-        _queue.DispatchEvent(new MouseMoveEvent() { Position = state.Position, PreviousPosition = PreviousPosition });
+        ButtonType? key = null;
+        if (state.LeftButton == ButtonState.Pressed) key = ButtonType.Left;
+        else if (state.RightButton == ButtonState.Pressed) key = ButtonType.Right;
+        else if (state.MiddleButton == ButtonState.Pressed) key = ButtonType.Middle;
+        else if (state.XButton1 == ButtonState.Pressed) key = ButtonType.XButton1;
+        else if (state.XButton2 == ButtonState.Pressed) key = ButtonType.XButton2;
+        _queue.DispatchEvent(new MouseMoveEvent() { Position = state.Position, PreviousPosition = PreviousPosition, Button = key });
       }
 
       // Trigger event for scroll wheel
