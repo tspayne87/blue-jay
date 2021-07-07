@@ -93,6 +93,7 @@ namespace BlueJay
     protected override void Update(GameTime gameTime)
     {
       _deltaService.Delta = gameTime.ElapsedGameTime.Milliseconds;
+      _deltaService.DeltaSeconds = gameTime.ElapsedGameTime.TotalSeconds;
       _serviceProvider.GetRequiredService<IViewCollection>()
         .Current?.Update();
 
