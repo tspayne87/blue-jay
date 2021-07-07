@@ -49,6 +49,14 @@ namespace BlueJay.Core.Interfaces
     void Draw(Texture2D texture, Vector2 position, Color color);
 
     /// <summary>
+    /// Method is meant to draw a texture to the screen with some color spliced in at a certain position
+    /// </summary>
+    /// <param name="texture">The texture that should be drawn</param>
+    /// <param name="location">The location where the texture should be drawn and how big</param>
+    /// <param name="color">The color that should be spliced into the texture during draw time</param>
+    void Draw(Texture2D texture, Rectangle location, Color color);
+
+    /// <summary>
     /// Method is meant to draw a frame on a sprite sheet
     /// </summary>
     /// <param name="texture">The sprite sheet that should be drawn from</param>
