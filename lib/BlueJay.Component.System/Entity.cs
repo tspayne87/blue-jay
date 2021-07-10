@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using BlueJay.Component.System.Collections;
+using BlueJay.Events;
+using BlueJay.Component.System.Events;
 
 namespace BlueJay.Component.System
 {
@@ -16,6 +18,11 @@ namespace BlueJay.Component.System
     /// The current entity collection 
     /// </summary>
     private readonly LayerCollection _layerCollection;
+
+    /// <summary>
+    /// The event queue
+    /// </summary>
+    private readonly EventQueue _eventQueue;
 
     /// <summary>
     /// The list of addons that are bound to this entity
@@ -40,9 +47,11 @@ namespace BlueJay.Component.System
     /// Constructor to build out this entity through DI
     /// </summary>
     /// <param name="layerCollection">The current layer collection</param>
-    public Entity(LayerCollection layerCollection)
+    /// <param name="eventQueue">The event queue</param>
+    public Entity(LayerCollection layerCollection, EventQueue eventQueue)
     {
       _layerCollection = layerCollection;
+      _eventQueue = eventQueue;
 
       _addonsId = 0;
       _addons = new IAddon[0];
@@ -60,6 +69,8 @@ namespace BlueJay.Component.System
         _addons[_addons.Length - 1] = addon;
         _addonsId = AddonHelper.Identifier(_addons.Select(x => x.GetType()).ToArray());
         _layerCollection[Layer].Entities.UpdateAddonTree(this);
+
+        _eventQueue.DispatchEvent(new AddAddonEvent() { Addon = addon }, this);
         return true;
       }
       return false;
@@ -79,6 +90,7 @@ namespace BlueJay.Component.System
         Array.Resize(ref _addons, _addons.Length - 1);
         _addonsId = AddonHelper.Identifier(_addons.Select(x => x.GetType()).ToArray());
         _layerCollection[Layer].Entities.UpdateAddonTree(this);
+        _eventQueue.DispatchEvent(new RemoveAddonEvent() { Addon = addon }, this);
         return true;
       }
       return false;
@@ -93,6 +105,7 @@ namespace BlueJay.Component.System
         if (_addons[i].GetType() == typeof(T))
         {
           _addons[i] = addon;
+          _eventQueue.DispatchEvent(new UpdateAddonEvent() { Addon = addon }, this);
           return true;
         }
       }
