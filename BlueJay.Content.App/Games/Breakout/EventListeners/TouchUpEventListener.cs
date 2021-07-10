@@ -43,6 +43,7 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
         if (!baa.IsActive)
         {
           baa.IsActive = true;
+          ball.Update(baa);
           _eventQueue.DispatchEvent(new StartBallEvent() { Ball = ball });
         }
       }

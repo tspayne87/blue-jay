@@ -35,6 +35,9 @@ namespace BlueJay.Content.App.Games.Breakout
     /// <param name="collection">The UI Collection</param>
     public void Initialize(UIComponentCollection collection)
     {
+      Score = 0;
+      Round = 0;
+      Balls = 3;
       _uiComponent = collection.GetItem<BreakoutViewComponent>();
     }
   }

@@ -71,14 +71,14 @@ namespace BlueJay
       _serviceCollection.AddSingleton(Window);
       _serviceCollection.AddSingleton(GraphicsDevice);
       _serviceCollection.AddSingleton<IViewCollection, ViewCollection>();
-      _serviceCollection.AddSingleton<RendererCollection>();
       _serviceCollection.AddSingleton<FontCollection>();
+      _serviceCollection.AddSingleton<SpriteBatch>();
+      _serviceCollection.AddSingleton<SpriteBatchExtension>();
 
       // Scopped collections that will be used in each view when processing
       _serviceCollection.AddScoped<IEventProcessor, EventProcessor>();
       _serviceCollection.AddScoped<EventQueue>();
       _serviceCollection.AddScoped<LayerCollection>();
-      _serviceCollection.AddScoped<SystemCollection>();
 
       ConfigureServices(_serviceCollection);
 

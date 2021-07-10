@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlueJay.Core\BlueJay.Core.csproj" />
+    <ProjectReference Include="..\BlueJay.Events\BlueJay.Events.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,23 +1,17 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlueJay.Component.System.Interfaces;
+using Microsoft.Xna.Framework;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// The color addon is for attaching color to an entity
   /// </summary>
-  public class ColorAddon : Addon<ColorAddon>
+  public struct ColorAddon : IAddon
   {
     /// <summary>
     /// The current color that should be used for the entity
     /// </summary>
     public Color Color;
-
-    /// <summary>
-    /// Basic contructor is meant to build out a default addon for color
-    /// </summary>
-    public ColorAddon()
-      : this(Color.White) { }
-
 
     /// <summary>
     /// Constructor to build out the color addon

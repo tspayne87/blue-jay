@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Systems;
+﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.GamePad;
 using Microsoft.Xna.Framework;
@@ -12,22 +12,18 @@ namespace BlueJay.Systems
   /// <summary>
   /// System is meant to handle gamepad inputs and send an event out to the system that can be listened to
   /// </summary>
-  public class GamepadSystem : ComponentSystem
+  public class GamepadSystem : IUpdateSystem
   {
     /// <summary>
     /// The list of all the player indexes in the system
     /// </summary>
     private readonly Dictionary<PlayerIndex, GamePadHandler> _handlers;
 
-    /// <summary>
-    /// The Identifier for this system 0 is used if we do not care about the entities
-    /// </summary>
-    public override long Key => 0;
+    /// <inheritdoc />
+    public long Key => 0;
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>() { string.Empty };
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>() { string.Empty };
 
     /// <summary>
     /// Constructor is meant to initialize the gamepad system so we can start processing the mouse events to the system
@@ -44,10 +40,8 @@ namespace BlueJay.Systems
       };
     }
 
-    /// <summary>
-    /// The update event that is called before all entity update events for this system
-    /// </summary>
-    public override void OnUpdate()
+    /// <inheritdoc />
+    public void OnUpdate()
     {
       var items = _handlers.ToArray();
       for (var i = 0; i < items.Length; ++i)

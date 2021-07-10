@@ -1,9 +1,9 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.UI.Addons
 {
-  public class StyleAddon : Addon<StyleAddon>
+  public struct StyleAddon : IAddon
   {
     /// <summary>
     /// The basic nine patch style for the UI element
@@ -41,12 +41,6 @@ namespace BlueJay.UI.Addons
     public Rectangle CalculatedBounds;
 
     /// <summary>
-    /// Basic constructor to build out the style component
-    /// </summary>
-    public StyleAddon()
-      : this(new Style(), null) { }
-
-    /// <summary>
     /// Constructor to give a default to the style component
     /// </summary>
     /// <param name="style">The style that should process the UI element bounds</param>
@@ -60,6 +54,9 @@ namespace BlueJay.UI.Addons
     /// <param name="hoverStyle">The hover style that should be processed for the UI element</param>
     public StyleAddon(Style style, Style hoverStyle)
     {
+      Hovering = false;
+      CalculatedBounds = Rectangle.Empty;
+      GridPosition = Point.Zero;
       Style = style;
       HoverStyle = hoverStyle;
       if (HoverStyle != null)

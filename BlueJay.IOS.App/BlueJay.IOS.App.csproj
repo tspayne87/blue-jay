@@ -130,6 +130,10 @@
     <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\lib\BlueJay.Common\BlueJay.Common.csproj">
+      <Project>{3f2351d3-b640-4147-a6b5-dc3c6c1e7d49}</Project>
+      <Name>BlueJay.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj">
       <Project>{3df0932e-182f-41be-8cc1-c0363520e7ff}</Project>
       <Name>BlueJay.Component.System</Name>

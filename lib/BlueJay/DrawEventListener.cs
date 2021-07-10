@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Collections;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
@@ -11,24 +12,24 @@ namespace BlueJay
   public class DrawEventListener : EventListener<DrawEvent>
   {
     /// <summary>
-    /// The current system collection
-    /// </summary>
-    private readonly SystemCollection _systemCollection;
-
-    /// <summary>
     /// The current layer collection
     /// </summary>
     private readonly LayerCollection _layerCollection;
 
     /// <summary>
+    /// The system we need to draw on
+    /// </summary>
+    private readonly ISystem _system;
+
+    /// <summary>
     /// Constructor to build out the update event
     /// </summary>
     /// <param name="layerCollection">The entity collection we are working with</param>
-    /// <param name="systemCollection">The current system collection we are working with</param>
-    public DrawEventListener(LayerCollection layerCollection, SystemCollection systemCollection)
+    /// <param name="system">The current system being processed</param>
+    public DrawEventListener(LayerCollection layerCollection, ISystem system)
     {
       _layerCollection = layerCollection;
-      _systemCollection = systemCollection;
+      _system = system;
     }
 
     /// <summary>
@@ -37,28 +38,29 @@ namespace BlueJay
     /// <param name="evt">The current update event we are working with</param>
     public override void Process(IEvent<DrawEvent> evt)
     {
-      for (var i = 0; i < _systemCollection.Count; ++i)
-      {
-        _systemCollection[i].OnDraw();
+      if (_system is IDrawSystem)
+        ((IDrawSystem)_system).OnDraw();
 
-        if (_systemCollection[i].Key != 0)
+      if (_system.Key != 0 && _system is IDrawEntitySystem)
+      {
+        for (var j = 0; j < _layerCollection.Count; ++j)
         {
-          for (var j = 0; j < _layerCollection.Count; ++j)
+          if (_system.Layers.Count == 0 || _system.Layers.Contains(_layerCollection[j].Id))
           {
-            if (_systemCollection[i].Layers.Count == 0 || _systemCollection[i].Layers.Contains(_layerCollection[j].Id))
+            var entities = _layerCollection[j].Entities.GetByKey(_system.Key);
+            for (var k = 0; k < entities.Count; ++k)
             {
-              var entities = _layerCollection[j].Entities.GetByKey(_systemCollection[i].Key);
-              for (var k = 0; k < entities.Count; ++k)
+              if (entities[k].Active)
               {
-                if (entities[k].Active)
-                {
-                  _systemCollection[i].OnDraw(entities[k]);
-                }
+                ((IDrawEntitySystem)_system).OnDraw(entities[k]);
               }
             }
           }
         }
       }
+
+      if (_system is IDrawEndSystem)
+        ((IDrawEndSystem)_system).OnDrawEnd();
     }
   }
 }

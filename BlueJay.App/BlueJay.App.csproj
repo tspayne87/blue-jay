@@ -25,6 +25,7 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\lib\BlueJay.Common\BlueJay.Common.csproj" />
     <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj" />
     <ProjectReference Include="..\lib\BlueJay.Core\BlueJay.Core.csproj" />
     <ProjectReference Include="..\lib\BlueJay.Events\BlueJay.Events.csproj" />

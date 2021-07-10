@@ -1,5 +1,4 @@
 ﻿using BlueJay.Component.System.Interfaces;
-using BlueJay.Core.Renderers;
 using BlueJay.Events;
 using BlueJay.Events.Mouse;
 using BlueJay.Events.Touch;
@@ -14,17 +13,6 @@ namespace BlueJay.UI
 {
   public static class ServiceProviderExtensions
   {
-    /// <summary>
-    /// Method is meant to add the correct renderer for UI components
-    /// </summary>
-    /// <param name="provider">The service provider</param>
-    /// <returns>Will return the service provider</returns>
-    public static IServiceProvider UseUI(this IServiceProvider provider)
-    {
-      provider.AddRenderer<Renderer>("UI");
-      return provider;
-    }
-
     /// <summary>
     /// Method is meant to add a ui entity to the entity collection and use DI to build out the object so that
     /// services and other DI components can be injected properly into the class
@@ -42,7 +30,8 @@ namespace BlueJay.UI
       if (parent != null)
       {
         var la = parent.GetAddon<LineageAddon>();
-        la?.Children.Add(item);
+        la.Children.Add(item);
+        parent.Update(la);
       }
 
       item.Add(new LineageAddon(parent));
@@ -57,7 +46,7 @@ namespace BlueJay.UI
     public static IServiceProvider AddUISystems(this IServiceProvider provider)
     {
       // Add Component systems
-      provider.AddComponentSystem<UIPositionSystem>();
+      provider.AddSystem<UIPositionSystem>();
 
       // Add event listeners
       provider.AddEventListener<UIGridCalculationUIUpdateEventListener, UIUpdateEvent>();
@@ -81,7 +70,7 @@ namespace BlueJay.UI
     public static IServiceProvider AddUIMouseSupport(this IServiceProvider provider)
     {
       // Add the mouse system if it has not been added
-      provider.AddComponentSystem<MouseSystem>();
+      provider.AddSystem<MouseSystem>();
 
       // Add the event listener
       provider.AddEventListener<UIMouseMoveEventListener, MouseMoveEvent>();
@@ -97,7 +86,7 @@ namespace BlueJay.UI
     public static IServiceProvider AddUITouchSupport(this IServiceProvider provider)
     {
       // Add the mouse system if it has not been added
-      provider.AddComponentSystem<TouchSystem>();
+      provider.AddSystem<TouchSystem>();
 
       // Add the event listener
       provider.AddEventListener<UITouchDownEventListener, TouchDownEvent>();

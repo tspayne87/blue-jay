@@ -1,8 +1,4 @@
-using BlueJay.Component.System;
-using BlueJay.Core.Renderers;
-using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Lifecycle;
 using BlueJay.Interfaces;
 using BlueJay.Systems;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +7,7 @@ using System;
 namespace BlueJay.Views
 {
   /// <summary>
-  /// Ab
+  /// A basic view to render a collection of entities to the screen
   /// </summary>
   public abstract class View : IView
   {
@@ -37,11 +33,7 @@ namespace BlueJay.Views
       _scope = serviceProvider.CreateScope();
 
       // Add a basic system that will be used by most games
-      ServiceProvider.AddComponentSystem<ViewportSystem>();
-
-      // Add basic listeners for the queue
-      ServiceProvider.AddEventListener<UpdateEventListener, UpdateEvent>();
-      ServiceProvider.AddEventListener<DrawEventListener, DrawEvent>();
+      ServiceProvider.AddSystem<ViewportSystem>();
       ConfigureProvider(ServiceProvider);
     }
 

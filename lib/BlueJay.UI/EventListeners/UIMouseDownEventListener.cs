@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
@@ -72,7 +72,7 @@ namespace BlueJay.UI.EventListeners
       var pa = entity.GetAddon<PositionAddon>();
 
       var bounds = new Rectangle((int)pa.Position.X, (int)pa.Position.Y, ba.Bounds.Width, ba.Bounds.Height);
-      return ba != null && pa != null && bounds.Contains(position);
+      return bounds.Contains(position);
     }
   }
 }

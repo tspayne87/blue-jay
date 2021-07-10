@@ -68,16 +68,19 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       var y = 0;
       for (var i = 0; i <= index; ++i)
       {
-        var sba = pla.Children[i].GetAddon<StyleAddon>();
+        var sba = pla?.Children[i].GetAddon<StyleAddon>();
 
-        if (y != sba.GridPosition.Y)
+        if (sba != null)
         {
-          sa.CalculatedBounds.Y += maxHeight + pGap.Y;
-          maxHeight = 0;
-          y = sba.GridPosition.Y;
-        }
+          if (y != sba.Value.GridPosition.Y)
+          {
+            sa.CalculatedBounds.Y += maxHeight + pGap.Y;
+            maxHeight = 0;
+            y = sba.Value.GridPosition.Y;
+          }
 
-        maxHeight = Math.Max(maxHeight, sba.CalculatedBounds.Height);
+          maxHeight = Math.Max(maxHeight, sba.Value.CalculatedBounds.Height);
+        }
       }
 
       sa.CalculatedBounds.X += (cWidth * sa.GridPosition.X) + (sa.GridPosition.X * pGap.X);
@@ -110,6 +113,8 @@ namespace BlueJay.UI.EventListeners.UIUpdate
             break;
         }
       }
+
+      entity.Update(sa);
     }
   }
 }

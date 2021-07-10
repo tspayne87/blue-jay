@@ -57,3 +57,9 @@ steps:
       dotnet pack lib/BlueJay.UI/BlueJay.UI.csproj -c $(BuildConfiguration) -o $(PackLocation)
       dotnet nuget push $(PackLocation)/BlueJay.UI.$(Version).nupkg --api-key $(APIKEY) --source $(ApiSource)
     displayName: 'Restore, Pack, and Push BlueJay.UI'
+
+  - script: |
+      dotnet restore lib/BlueJay.Common/BlueJay.Common.csproj
+      dotnet pack lib/BlueJay.Common/BlueJay.Common.csproj -c $(BuildConfiguration) -o $(PackLocation)
+      dotnet nuget push $(PackLocation)/BlueJay.Common.$(Version).nupkg --api-key $(APIKEY) --source $(ApiSource)
+    displayName: 'Restore, Pack, and Push BlueJay.Common'

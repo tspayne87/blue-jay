@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlueJay.Common\BlueJay.Common.csproj" />
     <ProjectReference Include="..\BlueJay.Component.System\BlueJay.Component.System.csproj" />
     <ProjectReference Include="..\BlueJay.Events\BlueJay.Events.csproj" />
   </ItemGroup>

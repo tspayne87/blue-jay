@@ -23,28 +23,39 @@ namespace BlueJay.Component.System.Interfaces
     string Layer { get; set; }
 
     /// <summary>
-    /// Lifecycle hook is meant to load assets for this entity by passing them down to the addons
-    /// </summary>
-    void LoadContent();
-
-    /// <summary>
     /// Method is meant to add an addon when the object has already been generated
     /// </summary>
+    /// <typeparam name="T">The type of addon</typeparam>
     /// <param name="addon">The addon to append to the list and update the addon trees</param>
-    void Add(IAddon addon);
-
-    /// <summary>
-    /// Method is meant to add an addon through DI
-    /// </summary>
-    /// <typeparam name="T">The addon that should be added</typeparam>
-    /// <param name="parameters">The construction parameters that do not exist in the DI context</param>
-    void Add<T>(params object[] parameters) where T : IAddon;
+    bool Add<T>(T addon) where T : struct, IAddon;
 
     /// <summary>
     /// Method is meant to remove and addon from the list
     /// </summary>
+    /// <typeparam name="T">The type of addon</typeparam>
     /// <param name="addon">The current addon to be removed</param>
-    void Remove(IAddon addon);
+    bool Remove<T>(T addon) where T : struct, IAddon;
+
+    /// <summary>
+    /// Method is meant to update an addon from the list
+    /// </summary>
+    /// <typeparam name="T">The type of addon</typeparam>
+    /// <param name="addon">The current addon to be updated</param>
+    bool Update<T>(T addon) where T : struct, IAddon;
+
+    /// <summary>
+    /// Method is meant to update or add the addon to this list
+    /// </summary>
+    /// <typeparam name="T">The type of addon</typeparam>
+    /// <param name="addon">The addon we need to update or insert</param>
+    bool Upsert<T>(T addon) where T : struct, IAddon;
+
+    /// <summary>
+    /// Helper method is meant to get a specific addon otherwise null will be given
+    /// </summary>
+    /// <typeparam name="TAddon">The addon that should be gotten by this entity</typeparam>
+    /// <returns>The addon or null if not exist</returns>
+    T GetAddon<T>() where T : struct, IAddon;
 
     /// <summary>
     /// Helper method to get a list of addons that represent the key given
@@ -52,13 +63,6 @@ namespace BlueJay.Component.System.Interfaces
     /// <param name="key">The key that determines the list of addons we are looking for</param>
     /// <returns>A list of addons based on the key given</returns>
     IEnumerable<IAddon> GetAddons(long key);
-
-    /// <summary>
-    /// Helper method is meant to get a specific addon otherwise null will be given
-    /// </summary>
-    /// <typeparam name="TAddon">The addon that should be gotten by this entity</typeparam>
-    /// <returns>The addon or null if not exist</returns>
-    TAddon GetAddon<TAddon>() where TAddon : IAddon;
 
     /// <summary>
     /// Helper method is meant to match if the key given is able to be sloted into the key

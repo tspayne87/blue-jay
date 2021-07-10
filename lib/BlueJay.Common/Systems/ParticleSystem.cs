@@ -1,16 +1,18 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
+using BlueJay.Component.System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Core.Interfaces;
+using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace BlueJay.Component.System.Systems
+namespace BlueJay.Common.Systems
 {
   /// <summary>
   /// The particle system that should update and render the particles to the screen
   /// </summary>
-  public class ParticleSystem : ComponentSystem
+  public class ParticleSystem : IUpdateEntitySystem, IDrawSystem, IDrawEntitySystem, IDrawEndSystem
   {
     /// <summary>
     /// The delta service that is meant to be updated every frame
@@ -18,45 +20,36 @@ namespace BlueJay.Component.System.Systems
     private readonly IDeltaService _deltaService;
 
     /// <summary>
-    /// The renderer to draw textures to the screen
+    /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly IRenderer _renderer;
+    private readonly SpriteBatch _batch;
 
     /// <summary>
     /// The layers that handle the entities
     /// </summary>
     private readonly LayerCollection _layers;
 
-    /// <summary>
-    /// The Identifier for this system 0 is used if we do not care about the entities
-    /// </summary>
-    public override long Key => ParticleAddon.Identifier | TextureAddon.Identifier;
+    /// <inheritdoc />
+    public long Key => AddonHelper.Identifier<ParticleAddon, TextureAddon>();
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>();
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor for the particle system
     /// </summary>
     /// <param name="layers">The current layers we are working with</param>
     /// <param name="deltaService">The delta service</param>
-    /// <param name="collection">The renderer collection so we can load the correct renderer</param>
-    /// <param name="renderer">The renderer we need to load</param>
-    public ParticleSystem(LayerCollection layers, IDeltaService deltaService, RendererCollection collection, string renderer)
+    /// <param name="batch">The sprite batch to draw to the screen</param>
+    public ParticleSystem(LayerCollection layers, IDeltaService deltaService, SpriteBatch batch)
     {
       _layers = layers;
       _deltaService = deltaService;
-      _renderer = collection[renderer];
+      _batch = batch;
     }
 
-    /// <summary>
-    /// The update event that is called for eeach entity that was selected by the key
-    /// for this system.
-    /// </summary>
-    /// <param name="entity">The current entity that should be updated</param>
-    public override void OnUpdate(IEntity entity)
+    /// <inheritdoc />
+    public void OnUpdate(IEntity entity)
     {
       var pa = entity.GetAddon<ParticleAddon>();
 
@@ -80,17 +73,25 @@ namespace BlueJay.Component.System.Systems
       }
     }
 
-    /// <summary>
-    /// The draw event that is called for each entity that was selected by the key
-    /// for this system
-    /// </summary>
-    /// <param name="entity">The current entity that should be drawn</param>
-    public override void OnDraw(IEntity entity)
+    /// <inheritdoc />
+    public void OnDraw()
+    {
+      _batch.Begin();
+    }
+
+    /// <inheritdoc />
+    public void OnDraw(IEntity entity)
     {
       var pa = entity.GetAddon<ParticleAddon>();
       var ta = entity.GetAddon<TextureAddon>();
 
-      _renderer.DrawParticles(ta.Texture, pa.Particles);
+      _batch.DrawParticles(ta.Texture, pa.Particles);
+    }
+
+    /// <inheritdoc />
+    public void OnDrawEnd()
+    {
+      _batch.End();
     }
   }
 }

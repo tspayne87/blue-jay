@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Content.App.Games.Breakout.Addons
 {
@@ -6,19 +6,11 @@ namespace BlueJay.Content.App.Games.Breakout.Addons
   /// Addon to determine if the ball is active or not and should start handling velocity
   /// instead of being attached to the paddle
   /// </summary>
-  public class BallActiveAddon : Addon<BallActiveAddon>
+  public struct BallActiveAddon : IAddon
   {
     /// <summary>
     /// If the ball is currently active and not attached to the paddle
     /// </summary>
     public bool IsActive { get; set; }
-
-    /// <summary>
-    /// Constructor to prime the is active field
-    /// </summary>
-    public BallActiveAddon()
-    {
-      IsActive = false;
-    }
   }
 }

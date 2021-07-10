@@ -1,11 +1,11 @@
-﻿using System;
+﻿using BlueJay.Component.System.Interfaces;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// Debug addon is meant to set a list of addons we want to debug
   /// </summary>
-  public class DebugAddon : Addon<DebugAddon>
+  public struct DebugAddon : IAddon
   {
     /// <summary>
     /// The key identifier used to track down the correct addons

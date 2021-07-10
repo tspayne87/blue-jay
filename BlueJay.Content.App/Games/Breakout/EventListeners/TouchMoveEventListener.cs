@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
@@ -38,6 +38,7 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
         var ba = paddle.GetAddon<BoundsAddon>();
 
         ba.Bounds.X = (int)evt.Data.Position.X - (ba.Bounds.Width / 2);
+        paddle.Update(ba);
       }
     }
   }

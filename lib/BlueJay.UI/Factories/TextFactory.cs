@@ -1,5 +1,5 @@
-﻿using BlueJay.Component.System;
-using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
+using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
@@ -50,7 +50,7 @@ namespace BlueJay.UI.Factories
     /// <param name="parent">The parent this text node should have</param>
     public static IEntity AddText(this IServiceProvider provider, string text, Style style, IEntity parent)
     {
-      var parentStyle = parent?.GetAddon<StyleAddon>()?.Style;
+      var parentStyle = parent?.GetAddon<StyleAddon>().Style;
       var entity = provider.AddUIEntity<Entity>(parent);
       style.HorizontalAlign = style.HorizontalAlign ?? HorizontalAlign.Center;
       style.TextAlign = style.TextAlign ?? TextAlign.Center;
@@ -59,12 +59,12 @@ namespace BlueJay.UI.Factories
       style.TextureFont = style.TextureFont ?? parentStyle?.TextureFont;
       style.TextureFontSize = style.TextureFontSize ?? parentStyle?.TextureFontSize;
 
-      entity.Add<StyleAddon>(style);
-      entity.Add<TextAddon>(text);
-      entity.Add<TextureAddon>();
-      entity.Add<PositionAddon>();
-      entity.Add<ColorAddon>(Color.Black);
-      entity.Add<BoundsAddon>();
+      entity.Add(new StyleAddon(style));
+      entity.Add(new TextAddon(text));
+      entity.Add(new TextureAddon());
+      entity.Add(new PositionAddon());
+      entity.Add(new ColorAddon(Color.Black));
+      entity.Add(new BoundsAddon());
 
       return entity;
     }

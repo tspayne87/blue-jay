@@ -1,12 +1,13 @@
-﻿using BlueJay.Core;
+﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Core;
 using System.Collections.Generic;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// Particle addon that handles the list of particles that should be batched
   /// </summary>
-  public class ParticleAddon : Addon<ParticleAddon>
+  public struct ParticleAddon : IAddon
   {
     /// <summary>
     /// The batch of particles that were generated from a system

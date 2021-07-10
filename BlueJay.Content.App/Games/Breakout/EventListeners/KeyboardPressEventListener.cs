@@ -1,5 +1,4 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Addons;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Core;
 using BlueJay.Events;
@@ -7,6 +6,7 @@ using BlueJay.Events.Interfaces;
 using BlueJay.Events.Keyboard;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.EventListeners
 {
@@ -53,10 +53,12 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
           case Keys.A: // Move left if A is pressed
           case Keys.Left:
             ba.Bounds = ba.Bounds.Add(new Vector2(-10, 0));
+            paddle.Update(ba);
             break;
           case Keys.D: // Move right if D is pressed
           case Keys.Right:
             ba.Bounds = ba.Bounds.Add(new Vector2(10, 0));
+            paddle.Update(ba);
             break;
           case Keys.Space:
             if (_layerCollection[LayerNames.BallLayer].Entities.Count == 1)
@@ -66,6 +68,7 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
               if (!baa.IsActive)
               {
                 baa.IsActive = true;
+                ball.Update(baa);
                 _eventQueue.DispatchEvent(new StartBallEvent() { Ball = ball });
               }
             }

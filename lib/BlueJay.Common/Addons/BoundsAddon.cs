@@ -1,23 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlueJay.Component.System.Interfaces;
+using Microsoft.Xna.Framework;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// Bounds Addon to determine the rectangle that will represent where the entity
   /// is in the world
   /// </summary>
-  public class BoundsAddon : Addon<BoundsAddon>
+  public struct BoundsAddon : IAddon
   {
     /// <summary>
     /// The current bounds of the entity
     /// </summary>
     public Rectangle Bounds;
-
-    /// <summary>
-    /// Basic bounds addon to create a basic bounds addon
-    /// </summary>
-    public BoundsAddon()
-      : this(new Rectangle()) { }
 
     /// <summary>
     /// Constructor method is meant to help with the creation of the bounds addon

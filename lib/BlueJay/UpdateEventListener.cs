@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Collections;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
@@ -16,19 +17,19 @@ namespace BlueJay
     private readonly LayerCollection _layerCollection;
 
     /// <summary>
-    /// The current system collection
+    /// The current system being processed
     /// </summary>
-    private readonly SystemCollection _systemCollection;
+    private readonly ISystem _system;
 
     /// <summary>
     /// Constructor to build out the update event
     /// </summary>
     /// <param name="layerCollection">The layer collection we are working with</param>
-    /// <param name="systemCollection">The current system collection we are working with</param>
-    public UpdateEventListener(LayerCollection layerCollection, SystemCollection systemCollection)
+    /// <param name="system">The current system being processed</param>
+    public UpdateEventListener(LayerCollection layerCollection, ISystem system)
     {
       _layerCollection = layerCollection;
-      _systemCollection = systemCollection;
+      _system = system;
     }
 
     /// <summary>
@@ -37,28 +38,32 @@ namespace BlueJay
     /// <param name="evt">The current update event we are working with</param>
     public override void Process(IEvent<UpdateEvent> evt)
     {
-      for (var i = 0; i < _systemCollection.Count; ++i)
-      {
-        _systemCollection[i].OnUpdate();
+      // Call On update if system has an on update event
+      if (_system is IUpdateSystem)
+        ((IUpdateSystem)_system).OnUpdate();
 
-        if (_systemCollection[i].Key != 0)
+      // If we are dealing with a system that needs to update the entities
+      if (_system.Key != 0 && _system is IUpdateEntitySystem)
+      {
+        for (var j = 0; j < _layerCollection.Count; ++j)
         {
-          for (var j = 0; j < _layerCollection.Count; ++j)
+          if (_system.Layers.Count == 0 || _system.Layers.Contains(_layerCollection[j].Id))
           {
-            if (_systemCollection[i].Layers.Count == 0 || _systemCollection[i].Layers.Contains(_layerCollection[j].Id))
+            var entities = _layerCollection[j].Entities.GetByKey(_system.Key);
+            for (var k = 0; k < entities.Count; ++k)
             {
-              var entities = _layerCollection[j].Entities.GetByKey(_systemCollection[i].Key);
-              for (var k = 0; k < entities.Count; ++k)
+              if (entities[k].Active)
               {
-                if (entities[k].Active)
-                {
-                  _systemCollection[i].OnUpdate(entities[k]);
-                }
+                ((IUpdateEntitySystem)_system).OnUpdate(entities[k]);
               }
             }
           }
         }
       }
+
+      // Call on update end if the system has the update end event
+      if (_system is IUpdateEndSystem)
+        ((IUpdateEndSystem)_system).OnUpdateEnd();
     }
   }
 }

@@ -1,13 +1,14 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlueJay.Component.System.Interfaces;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
-namespace BlueJay.Component.System.Systems
+namespace BlueJay.Common.Systems
 {
   /// <summary>
   /// Clear system is meant to clear the screen
   /// </summary>
-  public class ClearSystem : ComponentSystem
+  public class ClearSystem : IDrawSystem
   {
     /// <summary>
     /// The current graphics device we are clearing the screen to
@@ -19,15 +20,11 @@ namespace BlueJay.Component.System.Systems
     /// </summary>
     private readonly Color _color;
 
-    /// <summary>
-    /// The Identifier for this system 0 is used if we do not care about the entities
-    /// </summary>
-    public override long Key => 0;
+    /// <inheritdoc />
+    public long Key => 0;
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>() { string.Empty };
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor to build out the clear system and get it ready to clear on every frame
@@ -40,11 +37,8 @@ namespace BlueJay.Component.System.Systems
       _color = color;
     }
 
-    /// <summary>
-    /// The draw method that will clear the screen
-    /// </summary>
-    /// <param name="delta">The current delta of the draw</param>
-    public override void OnDraw()
+    /// <inheritdoc />
+    public void OnDraw()
     {
       _graphicsDevice.Clear(_color);
     }

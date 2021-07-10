@@ -1,12 +1,9 @@
-﻿using BlueJay.Component.System.Systems;
-using BlueJay.Views;
+﻿using BlueJay.Views;
 using Microsoft.Xna.Framework;
 using System;
 using BlueJay.UI;
-using Microsoft.Extensions.DependencyInjection;
-using BlueJay.Component.System.Collections;
-using BlueJay.Component.System;
 using BlueJay.Content.App.Components;
+using BlueJay.Common.Systems;
 
 namespace BlueJay.Content.App.Views
 {
@@ -23,13 +20,13 @@ namespace BlueJay.Content.App.Views
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       // Add Processor Systems
-      serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
+      serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
       serviceProvider.AddUITouchSupport();
 
-      serviceProvider.AddComponentSystem<RenderingSystem>("Default");
-      serviceProvider.AddComponentSystem<FPSSystem>("Default", "Default");
+      serviceProvider.AddSystem<RenderingSystem>();
+      serviceProvider.AddSystem<FPSSystem>("Default");
 
       serviceProvider.AddUIComponent<TitleViewComponent>();
     }
