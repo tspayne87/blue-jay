@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using BlueJay.Component.System.Collections;
 using BlueJay.Events;
 using BlueJay.Component.System.Events;
