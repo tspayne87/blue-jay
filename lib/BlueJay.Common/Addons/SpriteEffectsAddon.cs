@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using BlueJay.Component.System.Interfaces;
+using Microsoft.Xna.Framework.Graphics;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// Addon is meant to handle storing the correct sprit effect for rendering
   /// </summary>
-  public class SpriteEffectsAddon : Addon<SpriteEffectsAddon>
+  public struct SpriteEffectsAddon : IAddon
   {
     /// <summary>
     /// The current sprite effects for the texture on render

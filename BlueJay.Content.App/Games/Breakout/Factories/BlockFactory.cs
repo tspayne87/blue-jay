@@ -1,10 +1,10 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Addons;
 using BlueJay.Component.System;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using Microsoft.Xna.Framework;
 using System;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.Factories
 {
@@ -20,9 +20,9 @@ namespace BlueJay.Content.App.Games.Breakout.Factories
     public static IEntity AddBlock(this IServiceProvider provider, int index)
     {
       var entity = provider.AddEntity<Entity>(LayerNames.BlockLayer);
-      entity.Add<BoundsAddon>(Rectangle.Empty);
-      entity.Add<TypeAddon>(EntityType.Block);
-      entity.Add<BlockIndexAddon>(index);
+      entity.Add(new BoundsAddon(Rectangle.Empty));
+      entity.Add(new TypeAddon(EntityType.Block));
+      entity.Add(new BlockIndexAddon(index));
       return entity;
     }
   }

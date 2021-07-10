@@ -2,7 +2,6 @@
 using BlueJay.Content.App.Games.Breakout.EventListeners;
 using BlueJay.Content.App.Games.Breakout.Factories;
 using BlueJay.Content.App.Games.Breakout.Systems;
-using BlueJay.Component.System.Systems;
 using BlueJay.Events;
 using BlueJay.Events.Keyboard;
 using BlueJay.Events.Touch;
@@ -14,6 +13,7 @@ using Microsoft.Xna.Framework;
 using System;
 using BlueJay.UI.Components;
 using BlueJay.Content.App.Components;
+using BlueJay.Common.Systems;
 
 namespace BlueJay.Content.App.Views
 {
@@ -30,18 +30,18 @@ namespace BlueJay.Content.App.Views
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       // Processing systems
-      serviceProvider.AddComponentSystem<KeyboardSystem>();
-      serviceProvider.AddComponentSystem<ClearSystem>(Color.White);
+      serviceProvider.AddSystem<KeyboardSystem>();
+      serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUITouchSupport();
       serviceProvider.AddUIMouseSupport();
-      serviceProvider.AddComponentSystem<ClampPositionSystem>();
-      serviceProvider.AddComponentSystem<BallSystem>();
+      serviceProvider.AddSystem<ClampPositionSystem>();
+      serviceProvider.AddSystem<BallSystem>();
 
       // Rendering systems
-      serviceProvider.AddComponentSystem<BreakoutRenderingSystem>();
-      serviceProvider.AddComponentSystem<RenderingSystem>("Default");
-      serviceProvider.AddComponentSystem<ParticleSystem>("Default");
+      serviceProvider.AddSystem<BreakoutRenderingSystem>();
+      serviceProvider.AddSystem<RenderingSystem>();
+      serviceProvider.AddSystem<ParticleSystem>();
 
       // Add event listeners that could happen in the system
       serviceProvider.AddEventListener<KeyboardPressEventListener, KeyboardPressEvent>();

@@ -1,11 +1,12 @@
-﻿using BlueJay.Core;
+﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Core;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// Addon to track the size of the entity
   /// </summary>
-  public class SizeAddon : Addon<SizeAddon>
+  public class SizeAddon : IAddon
   {
     /// <summary>
     /// The current size of the entity

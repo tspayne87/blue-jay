@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Systems;
+﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +9,7 @@ namespace BlueJay.Systems
   /// <summary>
   /// System is meant to trigger a viewport change event when the viewport changes
   /// </summary>
-  public class ViewportSystem : ComponentSystem
+  public class ViewportSystem : IUpdateSystem
   {
     /// <summary>
     /// The current graphic device we are working with
@@ -26,16 +26,11 @@ namespace BlueJay.Systems
     /// </summary>
     private Size _previous;
 
-    /// <summary>
-    /// The current addon key that is meant to act as a selector for the Draw/Update
-    /// methods with entities
-    /// </summary>
-    public override long Key => 0;
+    /// <inheritdoc />
+    public long Key => 0;
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>();
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor is meant to assign defaults and inject the graphic device
@@ -49,10 +44,8 @@ namespace BlueJay.Systems
       _previous = Size.Empty;
     }
 
-    /// <summary>
-    /// The update event that is called before all entity update events for this system
-    /// </summary>
-    public override void OnUpdate()
+    /// <inheritdoc />
+    public void OnUpdate()
     {
       var current = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height);
       if (_previous != current)

@@ -69,11 +69,9 @@ namespace BlueJay.UI.Components.Common
           prop.PropertyChanged += (sender, o) =>
           {
             var ta = entity.GetAddon<TextAddon>();
-            if (ta != null)
-            {
-              ta.Text = _expressionRegex.TranslateText(txt, Current);
-              _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-            }
+            ta.Text = _expressionRegex.TranslateText(txt, Current);
+            entity.Update(ta);
+            _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
           };
         }
       }

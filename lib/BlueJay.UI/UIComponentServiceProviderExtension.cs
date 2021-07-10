@@ -113,9 +113,10 @@ namespace BlueJay.UI
         }
         
         // Handle Style updates
-        var sa = entity?.GetAddon<StyleAddon>();
-        if (sa != null)
+        if (entity != null)
         {
+          // Handle Style updates
+          var sa = entity.GetAddon<StyleAddon>();
           var contentManager = provider.GetRequiredService<ContentManager>();
 
           // Calculate the basic style and assign it to the styles
@@ -137,6 +138,8 @@ namespace BlueJay.UI
             hoverStyle.Parent = sa.HoverStyle;
             sa.HoverStyle = hoverStyle;
           }
+
+          entity.Update(sa);
         }
 
         if (processChildren)

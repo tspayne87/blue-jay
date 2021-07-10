@@ -12,11 +12,16 @@ namespace BlueJay.Component.System
     /// <typeparam name="TComponent">The current addon we are looking for</typeparam>
     /// <param name="list">The list we are looking in</param>
     /// <returns>Will return the FirstOrDefault addon it finds</returns>
-    public static TComponent ByIdentifier<TComponent>(this IEnumerable<IAddon> list)
+    internal static TComponent ByIdentifier<TComponent>(this IEnumerable<IAddon> list)
       where TComponent : IAddon
     {
-      var identifier = IdentifierHelper.Addon<TComponent>();
-      return (TComponent)list.FirstOrDefault(x => x.Identifier == identifier);
+      var identifier = AddonHelper.Identifier<TComponent>();
+      foreach(var item in list)
+      {
+        if (AddonHelper.Identifier(item.GetType()) == identifier)
+          return (TComponent)item;
+      }
+      return default(TComponent);
     }
   }
 }

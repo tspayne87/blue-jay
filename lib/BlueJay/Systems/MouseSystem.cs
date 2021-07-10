@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Systems;
+﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Mouse;
 using Microsoft.Xna.Framework;
@@ -13,12 +13,12 @@ namespace BlueJay.Systems
   /// <summary>
   /// The mouse system that is meant to trigger events out to the systems
   /// </summary>
-  public class MouseSystem : ComponentSystem
+  public class MouseSystem : IUpdateSystem
   {
     /// <summary>
     /// The collection of button event presses that we should keep track of
     /// </summary>
-    private readonly Dictionary<MouseEvent.ButtonType, bool> _pressed;
+    private readonly Dictionary<ButtonType, bool> _pressed;
 
     /// <summary>
     /// The current event queue that should process events
@@ -35,15 +35,11 @@ namespace BlueJay.Systems
     /// </summary>
     private int PreviousScrollWheelValue { get; set; }
 
-    /// <summary>
-    /// The Identifier for this system 0 is used if we do not care about the entities
-    /// </summary>
-    public override long Key => 0;
+    /// <inheritdoc />
+    public long Key => 0;
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>();
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor is meant to initialize the mouse system so we can start processing the mouse events to the system
@@ -52,16 +48,14 @@ namespace BlueJay.Systems
     public MouseSystem(EventQueue queue)
     {
       _queue = queue;
-      _pressed = EnumHelper.GenerateEnumDictionary<MouseEvent.ButtonType, bool>(false);
+      _pressed = EnumHelper.GenerateEnumDictionary<ButtonType, bool>(false);
 
       PreviousPosition = Point.Zero;
       PreviousScrollWheelValue = 0;
     }
 
-    /// <summary>
-    /// The update event that is called before all entity update events for this system
-    /// </summary>
-    public override void OnUpdate()
+    /// <inheritdoc />
+    public void OnUpdate()
     {
       // Get the current moust state to process
       var state = Mouse.GetState();
@@ -113,15 +107,15 @@ namespace BlueJay.Systems
     /// <param name="state">The current mouse state we are processing</param>
     /// <param name="type">The enum button type we need to look up</param>
     /// <returns>Will return the button state</returns>
-    private ButtonState GetState(MouseState state, MouseEvent.ButtonType type)
+    private ButtonState GetState(MouseState state, ButtonType type)
     {
       switch(type)
       {
-        case MouseEvent.ButtonType.Left: return state.LeftButton;
-        case MouseEvent.ButtonType.Middle: return state.MiddleButton;
-        case MouseEvent.ButtonType.Right: return state.RightButton;
-        case MouseEvent.ButtonType.XButton1: return state.XButton1;
-        case MouseEvent.ButtonType.XButton2: return state.XButton2;
+        case ButtonType.Left: return state.LeftButton;
+        case ButtonType.Middle: return state.MiddleButton;
+        case ButtonType.Right: return state.RightButton;
+        case ButtonType.XButton1: return state.XButton1;
+        case ButtonType.XButton2: return state.XButton2;
       }
       throw new ArgumentException("The enum type was not defined in the switch", nameof(type));
     }

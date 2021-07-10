@@ -1,11 +1,11 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.UI.Addons
 {
   /// <summary>
   /// The text addon for rendering text to the screen
   /// </summary>
-  public class TextAddon : Addon<TextAddon>
+  public struct TextAddon : IAddon
   {
     /// <summary>
     /// The text that should be rendered on the screen

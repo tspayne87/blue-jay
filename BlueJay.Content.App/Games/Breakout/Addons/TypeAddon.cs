@@ -1,11 +1,11 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Content.App.Games.Breakout.Addons
 {
   /// <summary>
   /// Addon is meant to determine what type the entity is to deal with it in different ways
   /// </summary>
-  public class TypeAddon : Addon<TypeAddon>
+  public struct TypeAddon : IAddon
   {
     /// <summary>
     /// The type this entity should be

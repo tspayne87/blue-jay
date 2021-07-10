@@ -1,5 +1,4 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Addons;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
@@ -7,6 +6,7 @@ using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI;
 using Microsoft.Xna.Framework;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.EventListeners
 {
@@ -72,6 +72,7 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
             var size = new Size((evt.Size.Width - (BlockConsts.Padding * (BlockConsts.Amount + 1))) / BlockConsts.Amount, evt.Size.Height / 15);
             var position = new Point((bia.Index % BlockConsts.Amount) * (size.Width + BlockConsts.Padding) + BlockConsts.Padding, (bia.Index / BlockConsts.Amount) * (size.Height + BlockConsts.Padding) + BlockConsts.TopOffset);
             ba.Bounds = new Rectangle(position, size.ToPoint());
+            entity.Update(ba);
           }
           break;
         case EntityType.Paddle:
@@ -79,6 +80,7 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
             var size = new Size(evt.Size.Width / 7, 20);
             var position = new Point(ba.Bounds.X, evt.Size.Height - (evt.Size.Height / 10));
             ba.Bounds = new Rectangle(position, size.ToPoint());
+            entity.Update(ba);
           }
           break;
       }

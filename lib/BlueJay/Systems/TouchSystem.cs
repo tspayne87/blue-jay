@@ -1,32 +1,26 @@
-﻿using BlueJay.Component.System.Systems;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input.Touch;
 using BlueJay.Events;
 using BlueJay.Events.Touch;
+using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Systems
 {
   /// <summary>
   /// The touch system that is meant to trigger events out of the touch state
   /// </summary>
-  public class TouchSystem : ComponentSystem
+  public class TouchSystem : IUpdateSystem
   {
     /// <summary>
     /// The current event queue that should process events
     /// </summary>
     private readonly EventQueue _queue;
 
-    /// <summary>
-    /// The Identifier for this system 0 is used if we do not care about the entities
-    /// </summary>
-    public override long Key => 0;
+    /// <inheritdoc />
+    public long Key => 0;
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>();
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>();
 
     /// <summary>
     /// Constructor is meant to initialize the mouse system so we can start processing the mouse events to the system
@@ -37,10 +31,8 @@ namespace BlueJay.Systems
       _queue = queue;
     }
 
-    /// <summary>
-    /// The update event that is called before all entity update events for this system
-    /// </summary>
-    public override void OnUpdate()
+    /// <inheritdoc />
+    public void OnUpdate()
     {
       var touches = TouchPanel.GetState();
 

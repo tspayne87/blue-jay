@@ -1,5 +1,4 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Factories;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
@@ -8,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.EventListeners
 {

@@ -1,8 +1,7 @@
-﻿using BlueJay.Component.System;
-using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
-using BlueJay.Core.Interfaces;
+using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
@@ -27,9 +26,9 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     private readonly LayerCollection _layers;
 
     /// <summary>
-    /// The renderer so we can render the ninepatch to a renderable target
+    /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly RendererCollection _renderer;
+    private readonly SpriteBatch _batch;
 
     /// <summary>
     /// The global sprite font that should be used
@@ -40,10 +39,13 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, RendererCollection renderer, FontCollection fonts)
+    /// <param name="graphics">The current graphic device we are working with</param>
+    /// <param name="batch">The sprite batch to draw to the screen</param>
+    /// <param name="fonts">The global sprite font that should be used</param>
+    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, SpriteBatch batch, FontCollection fonts)
     {
       _layers = layers;
-      _renderer = renderer;
+      _batch = batch;
       _graphics = graphics;
       _fonts = fonts;
     }
@@ -71,7 +73,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       var txt = entity.GetAddon<TextAddon>();
       var sa = entity.GetAddon<StyleAddon>();
 
-      if (txt != null && sa.CalculatedBounds.Height == 0 && sa.CalculatedBounds.Width > 0)
+      if (!string.IsNullOrWhiteSpace(txt.Text) && sa.CalculatedBounds.Height == 0 && sa.CalculatedBounds.Width > 0)
       {
         var ta = entity.GetAddon<TextureAddon>();
 
@@ -129,13 +131,18 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
+        _batch.Begin();
         if (!string.IsNullOrEmpty(sa.Style.Font) && _fonts.SpriteFonts.ContainsKey(sa.Style.Font))
-          _renderer["UI"].DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
+          _batch.DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
         else if (!string.IsNullOrEmpty(sa.Style.TextureFont) && _fonts.TextureFonts.ContainsKey(sa.Style.TextureFont))
-          _renderer["UI"].DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
+          _batch.DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
+        _batch.End();
         _graphics.SetRenderTarget(null);
 
         ta.Texture = target;
+
+        entity.Update(sa);
+        entity.Update(ta);
       }
     }
 

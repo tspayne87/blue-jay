@@ -7,6 +7,48 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.Default.props" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.Common.props" />
   <PropertyGroup />
-  <Import Project="BlueJay.Content.App.projitems" Label="Shared" />
+  <ItemGroup>
+    <Compile Include="BlueJayAppGame.cs" />
+    <Compile Include="Components\BreakoutViewComponent.cs" />
+    <Compile Include="Components\Button.cs" />
+    <Compile Include="Components\TitleViewComponent.cs" />
+    <Compile Include="Games\Breakout\Addons\BallActiveAddon.cs" />
+    <Compile Include="Games\Breakout\Addons\BlockIndexAddon.cs" />
+    <Compile Include="Games\Breakout\Addons\TypeAddon.cs" />
+    <Compile Include="Games\Breakout\BreakoutGameService.cs" />
+    <Compile Include="Games\Breakout\Constants.cs" />
+    <Compile Include="Games\Breakout\EntityType.cs" />
+    <Compile Include="Games\Breakout\EventListeners\KeyboardPressEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\LostBallEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\NextRoundEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\StartBallEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\TouchMoveEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\TouchUpEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\UpdateBoundsEventListener.cs" />
+    <Compile Include="Games\Breakout\EventListeners\ViewportChangeEventListener.cs" />
+    <Compile Include="Games\Breakout\Factories\BallFactory.cs" />
+    <Compile Include="Games\Breakout\Factories\BlockFactory.cs" />
+    <Compile Include="Games\Breakout\Factories\PaddleFactory.cs" />
+    <Compile Include="Games\Breakout\LostBallEvent.cs" />
+    <Compile Include="Games\Breakout\NextRoundEvent.cs" />
+    <Compile Include="Games\Breakout\StartBallEvent.cs" />
+    <Compile Include="Games\Breakout\Systems\BallSystem.cs" />
+    <Compile Include="Games\Breakout\Systems\BreakoutRenderingSystem.cs" />
+    <Compile Include="Games\Breakout\Systems\ClampPositionSystem.cs" />
+    <Compile Include="Games\Breakout\UpdateBoundsEvent.cs" />
+    <Compile Include="Views\BreakOutView.cs" />
+    <Compile Include="Views\TitleView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Bitmap-Font-export.png" />
+    <Content Include="Content\Bitmap-Font.png" />
+    <Content Include="Content\Circle.png" />
+    <Content Include="Content\Sample_Hover_NinePatch.png" />
+    <Content Include="Content\Sample_NinePatch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Content.mgcb" />
+    <None Include="Content\TestFont.spritefont" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\CodeSharing\Microsoft.CodeSharing.CSharp.targets" />
 </Project>

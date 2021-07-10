@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
@@ -64,11 +64,12 @@ namespace BlueJay.UI.EventListeners
           hoverEntity = entity;
         }
 
-        if (!IsParent(hoverEntity?.GetAddon<LineageAddon>(), entity) && entity != hoverEntity)
+        if (hoverEntity == null || (!IsParent(hoverEntity.GetAddon<LineageAddon>(), entity) && entity != hoverEntity))
         {
           if (sa.Hovering)
             _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
           sa.Hovering = false;
+          entity.Update(sa);
         }
       }
 
@@ -79,15 +80,19 @@ namespace BlueJay.UI.EventListeners
 
         var sa = hoverEntity.GetAddon<StyleAddon>();
         var la = hoverEntity.GetAddon<LineageAddon>();
-        while (sa != null && la != null && hoverEntity != null)
+        while (hoverEntity != null)
         {
           if (!sa.Hovering)
             _eventQueue.DispatchEvent(new StyleUpdateEvent(hoverEntity));
           sa.Hovering = true;
+          hoverEntity.Update(sa);
 
           hoverEntity = la.Parent;
-          la = hoverEntity?.GetAddon<LineageAddon>();
-          sa = hoverEntity?.GetAddon<StyleAddon>();
+          if (hoverEntity != null)
+          {
+            la = hoverEntity.GetAddon<LineageAddon>();
+            sa = hoverEntity.GetAddon<StyleAddon>();
+          }
         }
       }
     }
@@ -104,7 +109,7 @@ namespace BlueJay.UI.EventListeners
       var pa = entity.GetAddon<PositionAddon>();
 
       var bounds = new Rectangle((int)pa.Position.X, (int)pa.Position.Y, ba.Bounds.Width, ba.Bounds.Height);
-      return ba != null && pa != null && bounds.Contains(position);
+      return bounds.Contains(position);
     }
 
     /// <summary>
@@ -115,7 +120,7 @@ namespace BlueJay.UI.EventListeners
     /// <returns>Will return true if this is a parent of the current entity</returns>
     private bool IsParent(LineageAddon la, IEntity entity)
     {
-      if (la == null || la.Parent == null || entity == null) return false;
+      if (la.Parent == null || entity == null) return false;
       return entity == la.Parent || IsParent(la.Parent.GetAddon<LineageAddon>(), entity);
     }
   }

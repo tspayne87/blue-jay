@@ -1,21 +1,21 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Addons;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
-using BlueJay.Component.System.Systems;
 using BlueJay.Core;
 using BlueJay.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using BlueJay.Component.System;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.Systems
 {
   /// <summary>
   /// The heart of the game that handles the ball and how it behaves
   /// </summary>
-  public class BallSystem : ComponentSystem
+  public class BallSystem : IUpdateEntitySystem
   {
     /// <summary>
     /// The current graphic device we are working with
@@ -37,16 +37,11 @@ namespace BlueJay.Content.App.Games.Breakout.Systems
     /// </summary>
     private readonly BreakoutGameService _service;
 
-    /// <summary>
-    /// The current addon key that is meant to act as a selector for the Draw/Update
-    /// methods with entities
-    /// </summary>
-    public override long Key => BoundsAddon.Identifier | VelocityAddon.Identifier | BallActiveAddon.Identifier;
+    /// <inheritdoc />
+    public long Key => AddonHelper.Identifier<BoundsAddon, VelocityAddon, BallActiveAddon>();
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>() { LayerNames.BallLayer };
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>() { LayerNames.BallLayer };
 
     /// <summary>
     /// Constructor is meant to inject various items to be used in this system
@@ -63,12 +58,8 @@ namespace BlueJay.Content.App.Games.Breakout.Systems
       _service = service;
     }
 
-    /// <summary>
-    /// The update event that is called for eeach entity that was selected by the key
-    /// for this system.
-    /// </summary>
-    /// <param name="entity">The current entity that should be updated</param>
-    public override void OnUpdate(IEntity entity)
+    /// <inheritdoc />
+    public void OnUpdate(IEntity entity)
     {
       var baa = entity.GetAddon<BallActiveAddon>();
       if (!baa.IsActive) BeforeStart(entity);
@@ -90,6 +81,7 @@ namespace BlueJay.Content.App.Games.Breakout.Systems
         // Position the ball in the middle of the paddle
         ba.Bounds.X = pba.Bounds.X + ((pba.Bounds.Width - ba.Bounds.Width) / 2);
         ba.Bounds.Y = pba.Bounds.Y - ba.Bounds.Height;
+        entity.Update(ba);
       }
     }
 
@@ -169,6 +161,9 @@ namespace BlueJay.Content.App.Games.Breakout.Systems
             }
           }
         }
+
+        entity.Update(ba);
+        entity.Update(va);
       }
     }
   }

@@ -8,6 +8,7 @@ using BlueJay.Events.Interfaces;
 using BlueJay.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Graphics;
+using BlueJay.Events.Lifecycle;
 
 namespace BlueJay
 {
@@ -57,28 +58,9 @@ namespace BlueJay
     {
       var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
       item.Layer = layer;
-      item.LoadContent();
 
       provider.GetRequiredService<LayerCollection>()
         .AddEntity(item, layer, weight);
-      return item;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="provider"></param>
-    /// <param name="key"></param>
-    /// <param name="parameters"></param>
-    /// <returns></returns>
-    public static T AddRenderer<T>(this IServiceProvider provider, string key, params object[] parameters)
-      where T : IRenderer
-    {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
-
-      provider.GetRequiredService<RendererCollection>()
-        .Add(key, item);
       return item;
     }
 
@@ -90,15 +72,21 @@ namespace BlueJay
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="parameters">The constructor parameters that do not exists in D</param>
     /// <returns>Will return the system that was created and added to the collection</returns>
-    public static T AddComponentSystem<T>(this IServiceProvider provider, params object[] parameters)
-      where T : IComponentSystem
+    public static T AddSystem<T>(this IServiceProvider provider, params object[] parameters)
+      where T : ISystem
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
-      item.OnInitialize();
+      var eventQueue = provider.GetRequiredService<EventQueue>();
+      var system = ActivatorUtilities.CreateInstance<T>(provider, parameters);
 
-      provider.GetRequiredService<SystemCollection>()
-        .Add(item);
-      return item;
+      // If this is an update system we need to add an event listener to the queue
+      if (system is IUpdateSystem || system is IUpdateEntitySystem || system is IUpdateEndSystem)
+        eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(provider, new object[] { system }));
+
+      // If this is a draw system we need to add an event listener to the queue
+      if (system is IDrawSystem || system is IDrawEntitySystem || system is IDrawEndSystem)
+        eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<DrawEventListener>(provider, new object[] { system }));
+
+      return system;
     }
 
     /// <summary>
@@ -155,7 +143,7 @@ namespace BlueJay
       where T : IEventListener<K>
     {
       var eventQueue = provider.GetRequiredService<EventQueue>();
-      eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<T>(provider));
+      eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<T>(provider, parameters));
     }
 
     /// <summary>

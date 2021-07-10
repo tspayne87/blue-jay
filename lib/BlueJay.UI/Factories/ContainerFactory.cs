@@ -1,5 +1,5 @@
-﻿using BlueJay.Component.System;
-using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
+using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Addons;
 using System;
@@ -39,11 +39,11 @@ namespace BlueJay.UI.Factories
     public static IEntity AddContainer(this IServiceProvider provider, Style style, IEntity parent)
     {
       var entity = provider.AddUIEntity<Entity>(parent);
-      entity.Add<StyleAddon>(style);
-      entity.Add<TextureAddon>();
-      entity.Add<PositionAddon>();
-      entity.Add<ColorAddon>();
-      entity.Add<BoundsAddon>();
+      entity.Add(new StyleAddon(style));
+      entity.Add(new TextureAddon());
+      entity.Add(new PositionAddon());
+      entity.Add(new ColorAddon());
+      entity.Add(new BoundsAddon());
       return entity;
     }
 
@@ -58,11 +58,11 @@ namespace BlueJay.UI.Factories
     public static IEntity AddContainer(this IServiceProvider provider, Style style, Style hoverStyle, IEntity parent)
     {
       var entity = provider.AddUIEntity<Entity>(parent);
-      entity.Add<StyleAddon>(style, hoverStyle);
-      entity.Add<TextureAddon>();
-      entity.Add<PositionAddon>();
-      entity.Add<ColorAddon>();
-      entity.Add<BoundsAddon>();
+      entity.Add(new StyleAddon(style, hoverStyle));
+      entity.Add(new TextureAddon());
+      entity.Add(new PositionAddon());
+      entity.Add(new ColorAddon());
+      entity.Add(new BoundsAddon());
       return entity;
     }
   }

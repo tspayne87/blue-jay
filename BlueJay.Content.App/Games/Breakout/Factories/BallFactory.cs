@@ -1,10 +1,10 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Addons;
 using BlueJay.Component.System;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.Factories
 {
@@ -20,12 +20,12 @@ namespace BlueJay.Content.App.Games.Breakout.Factories
     public static IEntity AddBall(this IServiceProvider provider, Texture2D texture)
     {
       var entity = provider.AddEntity<Entity>(LayerNames.BallLayer);
-      entity.Add<BoundsAddon>(new Rectangle(Point.Zero, new Point(9, 9)));
-      entity.Add<VelocityAddon>(Vector2.Zero);
-      entity.Add<TypeAddon>(EntityType.Ball);
-      entity.Add<TextureAddon>(texture);
-      entity.Add<ColorAddon>(Color.Black);
-      entity.Add<BallActiveAddon>();
+      entity.Add(new BoundsAddon(0, 0, 9, 9));
+      entity.Add(new VelocityAddon(Vector2.Zero));
+      entity.Add(new TypeAddon(EntityType.Ball));
+      entity.Add(new TextureAddon(texture));
+      entity.Add(new ColorAddon(Color.Black));
+      entity.Add(new BallActiveAddon());
       return entity;
     }
   }

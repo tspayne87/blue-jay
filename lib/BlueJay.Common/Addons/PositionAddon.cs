@@ -1,22 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlueJay.Component.System.Interfaces;
+using Microsoft.Xna.Framework;
+using System;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// The position addon the determine where the entity is in the world
   /// </summary>
-  public class PositionAddon : Addon<PositionAddon>
+  public struct PositionAddon : IAddon
   {
     /// <summary>
     /// The position of the entity
     /// </summary>
     public Vector2 Position { get; set; }
-
-    /// <summary>
-    /// Basic constructor to build out the position for the addon
-    /// </summary>
-    public PositionAddon()
-      : this(Vector2.Zero) { }
 
     /// <summary>
     /// Constructor to build out position for the addon

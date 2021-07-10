@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using Microsoft.Xna.Framework;
@@ -20,6 +20,7 @@ namespace BlueJay.Content.App.Games.Breakout.EventListeners
       // Get the ball and add basic velocity to it
       var va = evt.Data.Ball.GetAddon<VelocityAddon>();
       va.Velocity = new Vector2(3, -3);
+      evt.Data.Ball.Update(va);
     }
   }
 }

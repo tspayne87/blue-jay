@@ -76,6 +76,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         height += maxHeight;
 
         sa.CalculatedBounds.Height = height + ((sa.CurrentStyle.Padding ?? 0) * 2) + (pos * sa.CurrentStyle.ColumnGap.X);
+        entity.Update(sa);
       }
     }
   }

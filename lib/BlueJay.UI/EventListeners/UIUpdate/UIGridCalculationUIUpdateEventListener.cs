@@ -47,39 +47,43 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       var pla = la.Parent?.GetAddon<LineageAddon>();
       var psa = la.Parent?.GetAddon<StyleAddon>();
 
-      var index = pla?.Children.IndexOf(entity) ?? -1;
       var pos = Point.Zero;
-      for (var i = 0; i <= index; ++i)
+      if (pla != null && psa != null)
       {
-        var sba = pla.Children[i].GetAddon<StyleAddon>();
-        pos.X += Math.Min(sba.CurrentStyle.ColumnOffset, psa.CurrentStyle.GridColumns);
-        if (pos.X >= psa.CurrentStyle.GridColumns)
+        var index = pla?.Children.IndexOf(entity) ?? -1;
+        for (var i = 0; i <= index; ++i)
         {
-          pos.X -= psa.CurrentStyle.GridColumns;
-          pos.Y++;
-        }
-
-        var span = Math.Min(sba.CurrentStyle.ColumnSpan, psa.CurrentStyle.GridColumns);
-        if (i != index)
-        {
-          pos.X += span;
-          if (pos.X > psa.CurrentStyle.GridColumns)
+          var sba = pla?.Children[i].GetAddon<StyleAddon>();
+          pos.X += Math.Min(sba.Value.CurrentStyle.ColumnOffset, psa.Value.CurrentStyle.GridColumns);
+          if (pos.X >= psa.Value.CurrentStyle.GridColumns)
           {
-            pos.X = span;
+            pos.X -= psa.Value.CurrentStyle.GridColumns;
             pos.Y++;
           }
-        }
-        else
-        {
-          if (pos.X + span > psa.CurrentStyle.GridColumns)
+
+          var span = Math.Min(sba.Value.CurrentStyle.ColumnSpan, psa.Value.CurrentStyle.GridColumns);
+          if (i != index)
           {
-            pos.X = 0;
-            pos.Y++;
+            pos.X += span;
+            if (pos.X > psa.Value.CurrentStyle.GridColumns)
+            {
+              pos.X = span;
+              pos.Y++;
+            }
+          }
+          else
+          {
+            if (pos.X + span > psa.Value.CurrentStyle.GridColumns)
+            {
+              pos.X = 0;
+              pos.Y++;
+            }
           }
         }
       }
 
       sa.GridPosition = pos;
+      entity.Update(sa);
     }
   }
 }

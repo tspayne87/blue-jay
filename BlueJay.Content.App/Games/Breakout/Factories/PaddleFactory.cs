@@ -1,9 +1,9 @@
 ﻿using BlueJay.Content.App.Games.Breakout.Addons;
 using BlueJay.Component.System;
-using BlueJay.Component.System.Addons;
 using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework;
 using System;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.Content.App.Games.Breakout.Factories
 {
@@ -17,8 +17,8 @@ namespace BlueJay.Content.App.Games.Breakout.Factories
     public static IEntity AddPaddle(this IServiceProvider provider)
     {
       var entity = provider.AddEntity<Entity>(LayerNames.PaddleLayer);
-      entity.Add<BoundsAddon>(new Rectangle(new Point(50, 250), new Point(0, 20)));
-      entity.Add<TypeAddon>(EntityType.Paddle);
+      entity.Add(new BoundsAddon(50, 250, 0, 20));
+      entity.Add(new TypeAddon(EntityType.Paddle));
       return entity;
     }
   }

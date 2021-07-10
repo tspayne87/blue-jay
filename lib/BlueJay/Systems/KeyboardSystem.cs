@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Systems;
+﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Keyboard;
 using Microsoft.Xna.Framework.Input;
@@ -10,7 +10,7 @@ namespace BlueJay.Systems
   /// <summary>
   /// The keyboard system that is meant to send events out to the system based on what is happening in the keyboard state
   /// </summary>
-  public class KeyboardSystem : ComponentSystem
+  public class KeyboardSystem : IUpdateSystem
   {
     /// <summary>
     /// The current event queue that should process events
@@ -22,15 +22,11 @@ namespace BlueJay.Systems
     /// </summary>
     private readonly Dictionary<Keys, bool> _pressed;
 
-    /// <summary>
-    /// The Identifier for this system 0 is used if we do not care about the entities
-    /// </summary>
-    public override long Key => 0;
+    /// <inheritdoc />
+    public long Key => 0;
 
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    public override List<string> Layers => new List<string>() { string.Empty };
+    /// <inheritdoc />
+    public List<string> Layers => new List<string>() { string.Empty };
 
     /// <summary>
     /// Constructor is meant to initialize the mouse system so we can start processing the mouse events to the system
@@ -42,12 +38,8 @@ namespace BlueJay.Systems
       _pressed = EnumHelper.GenerateEnumDictionary<Keys, bool>(false);
     }
 
-    /// <summary>
-    /// The update event that is called before all entity update events for this system
-    /// 
-    /// Add Check to see if ctrl/shift/alt are being pressed for modifiers to pass to event
-    /// </summary>
-    public override void OnUpdate()
+    /// <inheritdoc />
+    public void OnUpdate()
     {
       var state = Keyboard.GetState();
 

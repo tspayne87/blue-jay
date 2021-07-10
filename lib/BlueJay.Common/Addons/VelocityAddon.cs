@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlueJay.Component.System.Interfaces;
+using Microsoft.Xna.Framework;
 
-namespace BlueJay.Component.System.Addons
+namespace BlueJay.Common.Addons
 {
   /// <summary>
   /// Velocity addon to track the current velocity of the entity
   /// </summary>
-  public class VelocityAddon : Addon<VelocityAddon>
+  public struct VelocityAddon : IAddon
   {
     /// <summary>
     /// The current velocity of the addon

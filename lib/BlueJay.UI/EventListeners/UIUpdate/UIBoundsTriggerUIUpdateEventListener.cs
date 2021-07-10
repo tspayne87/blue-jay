@@ -1,4 +1,4 @@
-﻿using BlueJay.Component.System.Addons;
+﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
@@ -57,9 +57,11 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       if (ba.Bounds != sa.CalculatedBounds)
       {
         ba.Bounds = sa.CalculatedBounds;
+        entity.Update(ba);
         _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
       }
       sa.CalculatedBounds = Rectangle.Empty;
+      entity.Update(sa);
     }
   }
 }
