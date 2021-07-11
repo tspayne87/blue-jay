@@ -3,6 +3,28 @@ BlueJay is a framework that is meant to help with making games faster by buildin
 Framework to get to building out the game faster.  Dependency Injection or DI is used in the project to decouple classes
 from each other to allow for a greater range of customization.
 
+## Features
+- Addon/Entity System
+- Event Queue
+- Common Addon/Systems
+- UI Framework
+
+## Installation
+### Package Manager
+```bash
+  Install-Package BlueJay
+```
+
+### .NET CLI
+```bash
+  dotnet add BlueJay
+```
+
+### Paket CLI
+```bash
+  paket add BlueJay
+```
+
 ## Component System Game
 The *ComponentSystemGame* is an abstract game class meant to bootstrap all the basic contents of the game class
 and act like a *StartUp* file in a basic mvc app.  It also set up DI internaly and start the event queue for each
