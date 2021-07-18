@@ -6,7 +6,7 @@ namespace BlueJay.Common.Addons
   /// <summary>
   /// Addon to track the size of the entity
   /// </summary>
-  public class SizeAddon : IAddon
+  public struct SizeAddon : IAddon
   {
     /// <summary>
     /// The current size of the entity
@@ -20,6 +20,25 @@ namespace BlueJay.Common.Addons
     public SizeAddon(Size size)
     {
       Size = size;
+    }
+
+    /// <summary>
+    /// Constructor to build out a square with the same width/height
+    /// </summary>
+    /// <param name="size">The size of this Size</param>
+    public SizeAddon(int size)
+    {
+      Size = new Size(size);
+    }
+
+    /// <summary>
+    /// Constructor to build out a rectangle based on the width and height
+    /// </summary>
+    /// <param name="width">The width of the Size</param>
+    /// <param name="height">The height of the Size</param>
+    public SizeAddon(int width, int height)
+    {
+      Size = new Size(width, height);
     }
 
     /// <summary>
