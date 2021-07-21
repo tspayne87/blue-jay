@@ -16,7 +16,7 @@ namespace BlueJay.Core
     /// <summary>
     /// The current position of the camera
     /// </summary>
-    public Vector2 Position { get; set; } = new Vector2(-32f);
+    public Vector2 Position { get; set; }
 
     /// <summary>
     /// The current zoom of the camera with a clamp so that it does not zoom in or out to much
