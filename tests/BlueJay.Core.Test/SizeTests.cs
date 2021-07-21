@@ -44,6 +44,11 @@ namespace BlueJay.Core.Test
       Assert.Equal(new Size(5), square - new Size(5));
       Assert.Equal(new Size(100), square * new Size(10));
       Assert.Equal(new Size(1), square / new Size(10));
+
+      Assert.Equal(new Size(20, 15), square + new Size(10, 5));
+      Assert.Equal(new Size(0, 5), square - new Size(10, 5));
+      Assert.Equal(new Size(100, 50), square * new Size(10, 5));
+      Assert.Equal(new Size(1, 2), square / new Size(10, 5));
     }
 
     [Fact]

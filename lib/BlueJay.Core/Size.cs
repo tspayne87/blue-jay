@@ -97,7 +97,7 @@ namespace BlueJay.Core
     /// <param name="ls">The left hand side of the operator</param>
     /// <param name="rs">The right hand side of the operator</param>
     /// <returns>The multipled size</returns>
-    public static Size operator *(Size ls, Size rs) => new Size(ls.Width * rs.Width, ls.Width * rs.Width);
+    public static Size operator *(Size ls, Size rs) => new Size(ls.Width * rs.Width, ls.Height * rs.Height);
 
     /// <summary>
     /// Operator is meant to determine if two sizes are equal
