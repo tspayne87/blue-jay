@@ -81,6 +81,32 @@ namespace BlueJay.Core
     }
 
     /// <summary>
+    /// Method is meant to draw a frame on a sprite sheet
+    /// </summary>
+    /// <param name="spriteBatch">The sprite batch to draw the frame on</param>
+    /// <param name="texture">The sprite sheet that should be drawn from</param>
+    /// <param name="destinationRectangle">The desitnation where the frame should be drawn</param>
+    /// <param name="rows">The number of rows in the sprite sheet</param>
+    /// <param name="columns">The number of columns in the sprite sheet</param>
+    /// <param name="frame">The current frame we are wanting to render on the sprite sheet</param>
+    /// <param name="color">The color that should be spliced into the sprite being drawn</param>
+    /// <param name="rotation">The rotation of the frame</param>
+    /// <param name="origin">The origin to use for the rotation</param>
+    /// <param name="effects">The effect that should be used on the sprite being drawn</param>
+    /// <param name="layerDepth">A depth of the layer of this sprite</param>
+    public static void DrawFrame(this SpriteBatch spriteBatch, Texture2D texture, Rectangle destinationRectangle, int rows, int columns, int frame, Color? color = null, float rotation = 0f, Vector2? origin = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+    {
+      if (texture != null)
+      {
+        var width = texture.Width / columns;
+        var height = texture.Height / rows;
+        var source = new Rectangle((frame % columns) * width, (frame / columns) * height, width, height);
+
+        spriteBatch.Draw(texture, destinationRectangle, source, color ?? Color.White, rotation, origin ?? Vector2.Zero, effects, layerDepth);
+      }
+    }
+
+    /// <summary>
     /// Method is meant to draw the list of particles to the scene
     /// </summary>
     /// <param name="spriteBatch">The sprite batch to draw the particles on</param>
