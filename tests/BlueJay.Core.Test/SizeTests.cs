@@ -15,6 +15,14 @@ namespace BlueJay.Core.Test
       var rectangle = new Size(10, 5);
       Assert.Equal(10, rectangle.Width);
       Assert.Equal(5, rectangle.Height);
+
+      var squarePoint = new Size(new Point(10));
+      Assert.Equal(10, squarePoint.Width);
+      Assert.Equal(10, squarePoint.Height);
+
+      var rectangleVector = new Size(new Vector2(10, 5));
+      Assert.Equal(10, rectangle.Width);
+      Assert.Equal(5, rectangle.Height);
     }
 
     [Fact]
@@ -25,6 +33,16 @@ namespace BlueJay.Core.Test
 
       var rectangle = new Size(10, 5);
       Assert.Equal(new Point(10, 5), rectangle.ToPoint());
+    }
+
+    [Fact]
+    public void ToVector2()
+    {
+      var square = new Size(10);
+      Assert.Equal(new Vector2(10, 10), square.ToVector2());
+
+      var rectangle = new Size(10, 5);
+      Assert.Equal(new Vector2(10, 5), rectangle.ToVector2());
     }
 
     [Fact]
@@ -44,11 +62,13 @@ namespace BlueJay.Core.Test
       Assert.Equal(new Size(5), square - new Size(5));
       Assert.Equal(new Size(100), square * new Size(10));
       Assert.Equal(new Size(1), square / new Size(10));
+      Assert.Equal(new Size(1), square % new Size(3));
 
       Assert.Equal(new Size(20, 15), square + new Size(10, 5));
       Assert.Equal(new Size(0, 5), square - new Size(10, 5));
       Assert.Equal(new Size(100, 50), square * new Size(10, 5));
       Assert.Equal(new Size(1, 2), square / new Size(10, 5));
+      Assert.Equal(new Size(1, 2), square % new Size(3, 4));
     }
 
     [Fact]
