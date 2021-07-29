@@ -2,7 +2,7 @@
 using BlueJay.UI.Factories;
 using System;
 
-namespace BlueJay.UI.Components.Common
+namespace BlueJay.UI.Component.Common
 {
   /// <summary>
   /// Global container component is meant to be a basic building block in making UI elements

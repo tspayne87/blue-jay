@@ -2,6 +2,7 @@
 using BlueJay.Content.App.Views;
 using BlueJay.Core;
 using BlueJay.UI;
+using BlueJay.UI.Component;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;

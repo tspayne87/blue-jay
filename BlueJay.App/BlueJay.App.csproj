@@ -29,6 +29,7 @@
     <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj" />
     <ProjectReference Include="..\lib\BlueJay.Core\BlueJay.Core.csproj" />
     <ProjectReference Include="..\lib\BlueJay.Events\BlueJay.Events.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.UI.Component\BlueJay.UI.Component.csproj" />
     <ProjectReference Include="..\lib\BlueJay.UI\BlueJay.UI.csproj" />
     <ProjectReference Include="..\lib\BlueJay\BlueJay.csproj" />
   </ItemGroup>

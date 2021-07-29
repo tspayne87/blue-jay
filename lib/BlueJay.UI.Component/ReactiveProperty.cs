@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace BlueJay.UI.Components
+namespace BlueJay.UI.Component
 {
   /// <summary>
   /// Wrapper to cast with so that we can get the value object

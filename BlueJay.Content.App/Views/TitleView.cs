@@ -4,6 +4,7 @@ using System;
 using BlueJay.UI;
 using BlueJay.Content.App.Components;
 using BlueJay.Common.Systems;
+using BlueJay.UI.Component;
 
 namespace BlueJay.Content.App.Views
 {

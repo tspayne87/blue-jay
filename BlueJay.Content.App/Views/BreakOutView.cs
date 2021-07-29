@@ -11,7 +11,7 @@ using BlueJay.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using System;
-using BlueJay.UI.Components;
+using BlueJay.UI.Component;
 using BlueJay.Content.App.Components;
 using BlueJay.Common.Systems;
 

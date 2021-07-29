@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BlueJay.UI.Components.Common
+namespace BlueJay.UI.Component.Common
 {
   /// <summary>
   /// Slot component is meant to act as a placeholder for child elements pased into custom components from their parent
@@ -33,10 +33,10 @@ namespace BlueJay.UI.Components.Common
     public override IEntity Render(IEntity parent)
     {
       var parentComponents = (ComponentAttribute)Attribute.GetCustomAttribute(Parent.GetType(), typeof(ComponentAttribute));
-      var components = UIComponentServiceProviderExtension.Globals.Concat(parentComponents?.Components ?? new List<Type>());
+      var components = ServiceProviderExtension.Globals.Concat(parentComponents?.Components ?? new List<Type>());
       for (var i = 0; i < Current.Node.ChildNodes.Count; ++i)
       {
-        UIComponentServiceProviderExtension.GenerateItem(Current.Node.ChildNodes[i], this._serviceProvider, components, Parent, Parent.Parent, parent);
+        ServiceProviderExtension.GenerateItem(Current.Node.ChildNodes[i], this._serviceProvider, components, Parent, Parent.Parent, parent);
       }
       return null;
     }

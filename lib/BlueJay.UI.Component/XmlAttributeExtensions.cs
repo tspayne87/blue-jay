@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Xml;
 
-namespace BlueJay.UI.Components
+namespace BlueJay.UI.Component
 {
   public static class XmlAttributeExtensions
   {

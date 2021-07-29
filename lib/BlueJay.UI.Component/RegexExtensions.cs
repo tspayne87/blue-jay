@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace BlueJay.UI.Components
+namespace BlueJay.UI.Component
 {
   public static class RegexExtensions
   {

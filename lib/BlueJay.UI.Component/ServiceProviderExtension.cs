@@ -1,7 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Addons;
-using BlueJay.UI.Components;
-using BlueJay.UI.Components.Common;
+using BlueJay.UI.Component.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
 using System;
@@ -9,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
-namespace BlueJay.UI
+namespace BlueJay.UI.Component
 {
-  public static class UIComponentServiceProviderExtension
+  public static class ServiceProviderExtension
   {
     /// <summary>
     /// The set of global objects defined by the project

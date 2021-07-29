@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Text.RegularExpressions;
 
-namespace BlueJay.UI.Components.Common
+namespace BlueJay.UI.Component.Common
 {
   /// <summary>
   /// Global text UI component that is meant to render text to the screen

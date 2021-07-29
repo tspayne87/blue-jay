@@ -1,7 +1,7 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using System.Xml;
 
-namespace BlueJay.UI.Components
+namespace BlueJay.UI.Component
 {
   /// <summary>
   /// The abstract UI component meant to be a base for all UI components in the system

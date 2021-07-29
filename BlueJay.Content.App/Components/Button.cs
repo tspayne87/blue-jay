@@ -1,5 +1,5 @@
 ﻿using BlueJay.UI;
-using BlueJay.UI.Components;
+using BlueJay.UI.Component;
 
 namespace BlueJay.Content.App.Components
 {

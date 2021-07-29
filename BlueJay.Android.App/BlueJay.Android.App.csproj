@@ -88,6 +88,10 @@
       <Project>{4226338c-261b-4c09-89ea-258e2f96e4e6}</Project>
       <Name>BlueJay.Events</Name>
     </ProjectReference>
+    <ProjectReference Include="..\lib\BlueJay.UI.Component\BlueJay.UI.Component.csproj">
+      <Project>{22b69fd5-c6a7-4f54-9619-d23e177396ee}</Project>
+      <Name>BlueJay.UI.Component</Name>
+    </ProjectReference>
     <ProjectReference Include="..\lib\BlueJay.UI\BlueJay.UI.csproj">
       <Project>{45c9f90e-6d1e-4967-b323-3ff4508d317e}</Project>
       <Name>BlueJay.UI</Name>

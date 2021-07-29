@@ -1,7 +1,6 @@
-﻿using BlueJay.UI.Components;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace BlueJay.UI
+namespace BlueJay.UI.Component
 {
   public static class ServiceCollectionExtensions
   {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace BlueJay.UI.Components
+namespace BlueJay.UI.Component
 {
   /// <summary>
   /// UI Component collection is meant to add a component to the collection to be loaded at a later time

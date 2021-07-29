@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace BlueJay.UI.Components
+namespace BlueJay.UI.Component
 {
   /// <summary>
   /// The view attribute that will store the xml view information for the UI component
