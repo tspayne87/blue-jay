@@ -101,6 +101,6 @@
       <Name>BlueJay</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\BlueJay.Content.App\BlueJay.Content.App.projitems" Label="Shared" />
+  <Import Project="..\BlueJay.Shared\BlueJay.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

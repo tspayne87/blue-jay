@@ -33,5 +33,5 @@
     <ProjectReference Include="..\lib\BlueJay.UI\BlueJay.UI.csproj" />
     <ProjectReference Include="..\lib\BlueJay\BlueJay.csproj" />
   </ItemGroup>
-  <Import Project="..\BlueJay.Content.App\BlueJay.Content.App.projitems" Label="Shared" />
+  <Import Project="..\BlueJay.Shared\BlueJay.Shared.projitems" Label="Shared" />
 </Project>
