@@ -7,7 +7,7 @@ namespace BlueJay.Shared.Components
   /// Button component
   /// </summary>
   [View(@"
-<container style=""NinePatch: Sample_NinePatch; Padding: 13; TextureFont: Default"" hoverStyle=""NinePatch: Sample_Hover_NinePatch"" onSelect=""OnSelect"">
+<container style=""NinePatch: Sample_NinePatch; Padding: 13"" hoverStyle=""NinePatch: Sample_Hover_NinePatch"" onSelect=""OnSelect"">
   <slot />
 </container>
   ")]

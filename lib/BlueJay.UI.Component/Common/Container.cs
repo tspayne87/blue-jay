@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Events.Keyboard;
 using BlueJay.UI.Factories;
 using System;
 
@@ -32,6 +33,9 @@ namespace BlueJay.UI.Component.Common
     {
       var entity = _serviceProvider.AddContainer(new Style(), parent);
       _serviceProvider.AddEventListener<SelectEvent>(x => Emit("Select", x), entity);
+      _serviceProvider.AddEventListener<BlurEvent>(x => Emit("Blur", x), entity);
+      _serviceProvider.AddEventListener<FocusEvent>(x => Emit("Focus", x), entity);
+      _serviceProvider.AddEventListener<KeyboardUpEvent>(x => Emit("KeyboardUp", x), entity);
       return entity;
     }
   }

@@ -1,6 +1,7 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
+using BlueJay.Events.Keyboard;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Factories;
 using Microsoft.Xna.Framework.Graphics;
@@ -58,7 +59,7 @@ namespace BlueJay.UI.Component.Common
     {
       IEntity entity;
       var txt = Node.InnerText;
-      var field = Current.GetType().GetField(Node.InnerText.Replace("{{", string.Empty).Replace("}}", string.Empty));
+      var field = Current.GetType().GetField(Node.InnerText.Trim().Replace("{{", string.Empty).Replace("}}", string.Empty));
       if (_expressionRegex.IsMatch(txt))
       {
         entity = _serviceProvider.AddText(_expressionRegex.TranslateText(txt, Current), parent);
@@ -80,16 +81,25 @@ namespace BlueJay.UI.Component.Common
         entity = _serviceProvider.AddText(txt, parent);
       }
 
-      // Add select event listener
-      _serviceProvider.AddEventListener<SelectEvent>(x => {
-        var method = Current?.GetType().GetMethod(Node?.ParentNode?.Attributes?[$"onSelect"]?.InnerText ?? string.Empty);
+      // Add Event Listeners that should send event up to parent since text cannot handle events
+      _serviceProvider.AddEventListener(CallParentEmitCallback<SelectEvent>("onSelect"), entity);
+      _serviceProvider.AddEventListener(CallParentEmitCallback<BlurEvent>("onBlur"), entity);
+      _serviceProvider.AddEventListener(CallParentEmitCallback<FocusEvent>("onFocus"), entity);
+      _serviceProvider.AddEventListener(CallParentEmitCallback<KeyboardUpEvent>("onKeyboardUp"), entity);
+      return entity;
+    }
+
+    public Func<T, bool> CallParentEmitCallback<T>(string evt)
+    {
+      return x =>
+      {
+        var method = Current?.GetType().GetMethod(Node?.ParentNode?.Attributes?[evt]?.InnerText ?? string.Empty);
         if (method != null)
         {
           return (bool)method.Invoke(Current, new object[] { x });
         }
         return true;
-      }, entity);
-      return entity;
+      };
     }
   }
 }

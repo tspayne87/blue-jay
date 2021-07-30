@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Events;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ namespace BlueJay.UI.Component
     /// The set of global objects defined by the project
     /// </summary>
     internal static List<Type> Globals = new List<Type>() { typeof(Container), typeof(Slot) };
+
+    internal static int _index = 0;
 
     /// <summary>
     /// Method is meant to add a UI component to the system
@@ -89,7 +92,7 @@ namespace BlueJay.UI.Component
     internal static IEntity GenerateItem(XmlNode node, IServiceProvider provider, IEnumerable<Type> components, UIComponent instance, UIComponent parentInstance, IEntity parent = null)
     {
       IEntity entity = null;
-      var componentType = components.FirstOrDefault(x => x.Name.Equals(node.Name, StringComparison.OrdinalIgnoreCase));
+      var componentType = components.FirstOrDefault(x => x.Name.Equals(node.Name.Replace("-", ""), StringComparison.OrdinalIgnoreCase));
       if (node.Name == "#text") componentType = typeof(Text);
       if (componentType != null)
       {
@@ -122,24 +125,33 @@ namespace BlueJay.UI.Component
           var style = node.Attributes?["style"]?.GenerateStyle(contentManager);
           if (style != null)
           {
+            style.Id = ++_index;
             style.Parent = sa.Style;
             sa.Style = style;
-
-            // Update the hover style to use the current path for the style
-            if (sa.HoverStyle != null) sa.HoverStyle.Parent = style;
-            else sa.HoverStyle = style;
           }
 
           // Calculate the hover style and assign it to the styles
           var hoverStyle = node.Attributes?["hoverStyle"]?.GenerateStyle(contentManager);
           if (hoverStyle != null)
           {
+            hoverStyle.Id = ++_index;
             hoverStyle.Parent = sa.HoverStyle;
             sa.HoverStyle = hoverStyle;
           }
 
           entity.Update(sa);
         }
+
+        // Add this ui component as a system if it needs to be added
+        var eventQueue = provider.GetRequiredService<EventQueue>();
+
+        // If this is an update system we need to add an event listener to the queue
+        if (instance is IUpdateSystem || instance is IUpdateEntitySystem || instance is IUpdateEndSystem)
+          eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(provider, new object[] { instance }));
+
+        // If this is a draw system we need to add an event listener to the queue
+        if (instance is IDrawSystem || instance is IDrawEntitySystem || instance is IDrawEndSystem)
+          eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<DrawEventListener>(provider, new object[] { instance }));
 
         if (processChildren)
         {

@@ -27,7 +27,17 @@ namespace BlueJay.UI
     private string _textureFont = null;
     private int? _textureFontSize = null;
 
-    public Style Parent { get; set; }
+    private Style _parent;
+
+    public Style Parent
+    {
+      get => _parent;
+      set
+      {
+        _parent = value;
+      }
+    }
+    public int Id { get; set; }
 
     public int? Width { get => _width ?? Parent?.Width; set => _width = value; }
     public float? WidthPercentage { get => _widthPercentage ?? Parent?.WidthPercentage; set => _widthPercentage = value; }

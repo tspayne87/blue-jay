@@ -8,10 +8,7 @@ using BlueJay.UI.Component;
 
 namespace BlueJay.Shared.Views
 {
-  /// <summary>
-  /// The title view to switch between sample games for BlueJay
-  /// </summary>
-  public class TitleView : View
+  public class UIComponentView : View
   {
     /// <summary>
     /// Configuration method is meant to add in all the systems that this game will use and bootstrap the game with entities
@@ -28,9 +25,8 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddUITouchSupport();
 
       serviceProvider.AddSystem<RenderingSystem>();
-      serviceProvider.AddSystem<FPSSystem>("Default");
 
-      serviceProvider.AddUIComponent<TitleViewComponent>();
+      serviceProvider.AddUIComponent<UIComponentTestComponent>();
     }
   }
 }

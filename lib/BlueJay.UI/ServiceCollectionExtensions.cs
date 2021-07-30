@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using BlueJay.UI.Services;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace BlueJay.UI.Component
+namespace BlueJay.UI
 {
   public static class ServiceCollectionExtensions
   {
@@ -9,10 +13,10 @@ namespace BlueJay.UI.Component
     /// </summary>
     /// <param name="serviceCollection">The service collection we are wanting to add some items to</param>
     /// <returns>Will return the service collection given with the added items</returns>
-    public static IServiceCollection AddComponentUI(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddUI(this IServiceCollection serviceCollection)
     {
       return serviceCollection
-        .AddScoped<UIComponentCollection>();
+        .AddSingleton<UIService>();
     }
   }
 }

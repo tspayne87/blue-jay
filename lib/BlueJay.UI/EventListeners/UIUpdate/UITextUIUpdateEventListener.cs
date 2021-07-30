@@ -73,7 +73,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       var txt = entity.GetAddon<TextAddon>();
       var sa = entity.GetAddon<StyleAddon>();
 
-      if (!string.IsNullOrWhiteSpace(txt.Text) && sa.CalculatedBounds.Height == 0 && sa.CalculatedBounds.Width > 0)
+      if (!string.IsNullOrEmpty(txt.Text) && sa.CalculatedBounds.Height == 0 && sa.CalculatedBounds.Width > 0)
       {
         var ta = entity.GetAddon<TextureAddon>();
 
@@ -83,13 +83,13 @@ namespace BlueJay.UI.EventListeners.UIUpdate
           ta.Texture = null;
         }
 
-        var spaceBounds = MeasureString(" ", sa.Style);
-        var words = txt.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        var spaceBounds = MeasureString(" ", entity);
+        var words = txt.Text.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         var lines = new List<string>();
         var result = string.Empty;
         for (var i = 0; i < words.Length; ++i)
         {
-          var bounds = MeasureString(result + words[i], sa.Style);
+          var bounds = MeasureString(result + words[i], entity);
           var width = (i - 1 == words.Length) ? bounds.X : bounds.X + spaceBounds.X;
           if (width > sa.CalculatedBounds.Width)
           {
@@ -106,19 +106,17 @@ namespace BlueJay.UI.EventListeners.UIUpdate
           lines.Add(result);
 
         result = string.Join("\n", lines.Select(x => x.Trim()));
-        var finalBounds = MeasureString(result, sa.Style);
+        var finalBounds = MeasureString(result, entity);
         var pos = Vector2.Zero;
-        if (sa.CurrentStyle.TextAlign != null)
+
+        switch (GetStyle(entity, x => x.TextAlign) ?? TextAlign.Center)
         {
-          switch (sa.CurrentStyle.TextAlign.Value)
-          {
-            case TextAlign.Center:
-              pos.X = (sa.CalculatedBounds.Width - finalBounds.X) / 2;
-              break;
-            case TextAlign.Left:
-              pos.X = sa.CalculatedBounds.Width - finalBounds.X;
-              break;
-          }
+          case TextAlign.Center:
+            pos.X = (sa.CalculatedBounds.Width - finalBounds.X) / 2;
+            break;
+          case TextAlign.Right:
+            pos.X = sa.CalculatedBounds.Width - finalBounds.X;
+            break;
         }
 
         // Calculate the text height based on the bounds of the generate text
@@ -132,10 +130,10 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         _graphics.SetRenderTarget(target);
         _graphics.Clear(Color.Transparent);
         _batch.Begin();
-        if (!string.IsNullOrEmpty(sa.Style.Font) && _fonts.SpriteFonts.ContainsKey(sa.Style.Font))
-          _batch.DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
-        else if (!string.IsNullOrEmpty(sa.Style.TextureFont) && _fonts.TextureFonts.ContainsKey(sa.Style.TextureFont))
-          _batch.DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
+        if (TryGetStyle(entity, x => x.Font, out var font))
+          _batch.DrawString(_fonts.SpriteFonts[font], result, pos, GetStyle(entity, x => x.TextColor) ?? Color.Black);
+        else if (TryGetStyle(entity, x => x.TextureFont, out var textureFont))
+          _batch.DrawString(_fonts.TextureFonts[textureFont], result, pos, GetStyle(entity, x => x.TextColor) ?? Color.Black, GetStyle(entity, x => x.TextureFontSize) ?? 1);
         _batch.End();
         _graphics.SetRenderTarget(null);
 
@@ -146,13 +144,35 @@ namespace BlueJay.UI.EventListeners.UIUpdate
       }
     }
 
-    private Vector2 MeasureString(string str, Style style)
+    private Vector2 MeasureString(string str, IEntity entity)
     {
-      if (!string.IsNullOrEmpty(style.Font) && _fonts.SpriteFonts.ContainsKey(style.Font))
-        return _fonts.SpriteFonts[style.Font].MeasureString(str);
-      if (!string.IsNullOrEmpty(style.TextureFont) && _fonts.TextureFonts.ContainsKey(style.TextureFont))
-        return _fonts.TextureFonts[style.TextureFont].MeasureString(str, style.TextureFontSize ?? 1);
+      if (TryGetStyle(entity, x => x.Font, out var font))
+        return _fonts.SpriteFonts[font].MeasureString(str);
+      if (TryGetStyle(entity, x => x.TextureFont, out var textureFont))
+        return _fonts.TextureFonts[textureFont].MeasureString(str, GetStyle(entity, x => x.TextureFontSize) ?? 1);
       return Vector2.Zero;
+    }
+
+    private bool TryGetStyle<T>(IEntity entity, Func<Style, T> expression, out T output)
+    {
+      output = GetStyle(entity, expression);
+      return output != null;
+    }
+
+    private T GetStyle<T>(IEntity entity, Func<Style, T> expression)
+    {
+      while (entity != null)
+      {
+        var sa = entity.GetAddon<StyleAddon>();
+        var la = entity.GetAddon<LineageAddon>();
+
+        var style = expression(sa.CurrentStyle);
+        if (style != null)
+          return style;
+
+        entity = la.Parent;
+      }
+      return default;
     }
   }
 }

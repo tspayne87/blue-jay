@@ -1,24 +1,20 @@
-﻿using BlueJay.Shared.Views;
-using BlueJay.Interfaces;
+﻿using BlueJay.Interfaces;
+using BlueJay.Shared.Views;
 using BlueJay.UI;
 using BlueJay.UI.Component;
+using BlueJay.UI.Component.Interactivity;
 
 namespace BlueJay.Shared.Components
 {
-  /// <summary>
-  /// The breakout view component we need to show some UI on the screen
-  /// </summary>
   [View(@"
 <container style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
   <button style=""ColumnSpan: 2"" onSelect=""OnBackToTitleClick"">Back To Title</button>
 
-  <container>Round: {{Round}}</container>
-  <container>Balls: {{Balls}}</container>
-  <container>Score: {{Score}}</container>
+  <text-input style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 5"" />
 </container>
     ")]
-  [Component(typeof(Button))]
-  public class BreakoutViewComponent : UIComponent
+  [Component(typeof(Button), typeof(TextInput))]
+  public class UIComponentTestComponent : UIComponent
   {
     /// <summary>
     /// The view collection we need to switch between
@@ -26,31 +22,12 @@ namespace BlueJay.Shared.Components
     private IViewCollection _views;
 
     /// <summary>
-    /// The score that should be bound to the view
-    /// </summary>
-    public ReactiveProperty<int> Score;
-
-    /// <summary>
-    /// The round that should be bound to the view
-    /// </summary>
-    public ReactiveProperty<int> Round;
-
-    /// <summary>
-    /// The balls that should be bound to the view
-    /// </summary>
-    public ReactiveProperty<int> Balls;
-
-    /// <summary>
     /// Constructor to build out the breakcout UI Component
     /// </summary>
     /// <param name="views">The injected views component so we can switch between views</param>
-    public BreakoutViewComponent(IViewCollection views)
+    public UIComponentTestComponent(IViewCollection views)
     {
       _views = views;
-
-      Score = new ReactiveProperty<int>(0);
-      Round = new ReactiveProperty<int>(0);
-      Balls = new ReactiveProperty<int>(3);
     }
 
     /// <summary>

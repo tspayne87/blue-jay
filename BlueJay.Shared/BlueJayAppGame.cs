@@ -23,6 +23,7 @@ namespace BlueJay.Shared
     {
       // Add Framework Singletons
       serviceCollection.AddUI();
+      serviceCollection.AddComponentUI();
 
       // Add Custom scoped items
       serviceCollection.AddScoped<BreakoutGameService>();
@@ -41,6 +42,7 @@ namespace BlueJay.Shared
       // Add Views
       serviceProvider.AddView<TitleView>();
       serviceProvider.AddView<BreakOutView>();
+      serviceProvider.AddView<UIComponentView>();
     }
   }
 }

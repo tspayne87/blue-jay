@@ -9,11 +9,12 @@ namespace BlueJay.Shared.Components
   /// The basic title view
   /// </summary>
   [View(@"
-<container style=""WidthPercentage: 0.66; TopOffset: 50; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 13"">
-  <container style=""ColumnSpan: 3; Padding: 15; TextureFont: Default; TextureFontSize: 2"">BlueJay Component System</container>
+<container style=""WidthPercentage: 0.66; TopOffset: 50; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 13; TextureFont: Default"">
+  <container style=""ColumnSpan: 3; Padding: 15; TextureFontSize: 2"">BlueJay Component System</container>
 
   <button onSelect=""OnBreakoutClick"">{{BreakoutTitle}}</button>
   <button style=""ColumnOffset: 1"" onSelect=""OnTetrisClick"">{{TetrisTitle}}</button>
+  <button style=""ColumnSpan: 3"" onSelect=""OnUIComponentClick"">{{UIComponentTitle}}</button>
 </container>
     ")]
   [Component(typeof(Button))]
@@ -35,6 +36,11 @@ namespace BlueJay.Shared.Components
     public ReactiveProperty<string> TetrisTitle;
 
     /// <summary>
+    /// The UI Component title
+    /// </summary>
+    public ReactiveProperty<string> UIComponentTitle;
+
+    /// <summary>
     /// Constructor is meant to bootstrap the component
     /// </summary>
     /// <param name="views">The views collection we need to switch between views</param>
@@ -44,6 +50,7 @@ namespace BlueJay.Shared.Components
 
       BreakoutTitle = new ReactiveProperty<string>("Breakout");
       TetrisTitle = new ReactiveProperty<string>("Tetris");
+      UIComponentTitle = new ReactiveProperty<string>("UI Components");
     }
 
     /// <summary>
@@ -65,6 +72,17 @@ namespace BlueJay.Shared.Components
     public bool OnTetrisClick(SelectEvent evt)
     {
       // TODO: Set Current to Tetris
+      return true;
+    }
+
+    /// <summary>
+    /// Callback method that is triggered when the user clicks the element in the component
+    /// </summary>
+    /// <param name="evt">The select event</param>
+    /// <returns>Will return true to continue propegation</returns>
+    public bool OnUIComponentClick(SelectEvent evt)
+    {
+      _views.SetCurrent<UIComponentView>();
       return true;
     }
   }

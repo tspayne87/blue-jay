@@ -50,15 +50,7 @@ namespace BlueJay.UI.Factories
     /// <param name="parent">The parent this text node should have</param>
     public static IEntity AddText(this IServiceProvider provider, string text, Style style, IEntity parent)
     {
-      var parentStyle = parent?.GetAddon<StyleAddon>().Style;
       var entity = provider.AddUIEntity<Entity>(parent);
-      style.HorizontalAlign = style.HorizontalAlign ?? HorizontalAlign.Center;
-      style.TextAlign = style.TextAlign ?? TextAlign.Center;
-      style.TextBaseline = style.TextBaseline ?? TextBaseline.Center;
-      style.Font = style.Font ?? parentStyle?.Font;
-      style.TextureFont = style.TextureFont ?? parentStyle?.TextureFont;
-      style.TextureFontSize = style.TextureFontSize ?? parentStyle?.TextureFontSize;
-
       entity.Add(new StyleAddon(style));
       entity.Add(new TextAddon(text));
       entity.Add(new TextureAddon());
