@@ -17,8 +17,10 @@ namespace BlueJay.UI
     private VerticalAlign? _verticalAlign = null;
     private NinePatch _ninePatch = null;
     private Color? _textColor = null;
+    private Color? _backgroundColor = null;
     private TextAlign? _textAlign = null;
     private TextBaseline? _textBaseline = null;
+    private Position? _position = null;
     private int? _gridColumns = null;
     private Point? _columnGap = null;
     private int? _columnSpan = null;
@@ -27,17 +29,7 @@ namespace BlueJay.UI
     private string _textureFont = null;
     private int? _textureFontSize = null;
 
-    private Style _parent;
-
-    public Style Parent
-    {
-      get => _parent;
-      set
-      {
-        _parent = value;
-      }
-    }
-    public int Id { get; set; }
+    public Style Parent { get; set; }
 
     public int? Width { get => _width ?? Parent?.Width; set => _width = value; }
     public float? WidthPercentage { get => _widthPercentage ?? Parent?.WidthPercentage; set => _widthPercentage = value; }
@@ -52,10 +44,12 @@ namespace BlueJay.UI
 
     public HorizontalAlign? HorizontalAlign { get => _horizontalAlign ?? Parent?.HorizontalAlign; set => _horizontalAlign = value; }
     public VerticalAlign? VerticalAlign { get => _verticalAlign ?? Parent?.VerticalAlign; set => _verticalAlign = value; }
+    public Position? Position { get => _position ?? Parent?.Position; set => _position = value; }
 
     public NinePatch NinePatch { get => _ninePatch ?? Parent?.NinePatch; set => _ninePatch = value; }
 
     public Color? TextColor { get => _textColor ?? Parent?.TextColor; set => _textColor = value; }
+    public Color? BackgroundColor { get => _backgroundColor ?? Parent?.BackgroundColor; set => _backgroundColor = value; }
     public TextAlign? TextAlign { get => _textAlign ?? Parent?.TextAlign; set => _textAlign = value; }
     public TextBaseline? TextBaseline { get => _textBaseline ?? Parent?.TextBaseline; set => _textBaseline = value; }
 

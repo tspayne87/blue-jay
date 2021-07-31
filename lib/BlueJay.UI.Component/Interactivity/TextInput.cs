@@ -1,8 +1,10 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System.Collections;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Keyboard;
 using BlueJay.Events.Lifecycle;
+using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -11,8 +13,10 @@ using System.Text;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<container id=""text-input"" style=""TextAlign: Left"" onFocus=""OnFocus"" onBlur=""OnBlur"" onKeyboardUp=""OnKeyboardUp"">
-  {{Value}}{{Bar}}
+<container style=""TextAlign: Left"" onFocus=""OnFocus"" onBlur=""OnBlur"" onKeyboardUp=""OnKeyboardUp"">
+  <container>{{Value}}</container>
+
+  <container if=""{{ShowBar}}"" style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 0, 0, 0"" />
 </container>
     ")]
   public class TextInput : UIComponent, IUpdateSystem
@@ -21,22 +25,33 @@ namespace BlueJay.UI.Component.Interactivity
     private readonly int _cooldown = 1000;
     private int _countdown;
     private bool _focused;
+    private int _position;
 
     public ReactiveProperty<string> Value;
-    public ReactiveProperty<string> Bar;
+
+    public ReactiveProperty<bool> ShowBar;
+    public ReactiveProperty<int> BarHeight;
+    public ReactiveProperty<int> BarTop;
+    public ReactiveProperty<int> BarLeft;
+
+    public IEntity Bar;
 
     public long Key => 0;
 
     public List<string> Layers => new List<string>();
 
-    public TextInput(IDeltaService delta)
+    public TextInput(IDeltaService delta, FontCollection fonts)
     {
-      Value = new ReactiveProperty<string>(" ");
-      Bar = new ReactiveProperty<string>("");
+      Value = new ReactiveProperty<string>("");
+      ShowBar = new ReactiveProperty<bool>(false);
+      BarHeight = new ReactiveProperty<int>(0);
+      BarTop = new ReactiveProperty<int>(0);
+      BarLeft = new ReactiveProperty<int>(0);
 
       _delta = delta;
       _countdown = _cooldown;
       _focused = false;
+      _position = 0;
     }
 
     public bool OnKeyboardUp(KeyboardUpEvent evt)
@@ -44,41 +59,22 @@ namespace BlueJay.UI.Component.Interactivity
       switch (evt.Key)
       {
         case Keys.Back:
-          Value.Value = Value.Value.Substring(0, Value.Value.Length - 1);
+          if (Value.Value.Length > 0)
+          {
+            Value.Value = Value.Value.Substring(0, Value.Value.Length - 1);
+            _position--;
+          }
           break;
-        case Keys.A:
-        case Keys.B:
-        case Keys.C:
-        case Keys.D:
-        case Keys.E:
-        case Keys.F:
-        case Keys.G:
-        case Keys.H:
-        case Keys.I:
-        case Keys.J:
-        case Keys.K:
-        case Keys.L:
-        case Keys.M:
-        case Keys.N:
-        case Keys.O:
-        case Keys.P:
-        case Keys.Q:
-        case Keys.R:
-        case Keys.S:
-        case Keys.T:
-        case Keys.U:
-        case Keys.V:
-        case Keys.W:
-        case Keys.X:
-        case Keys.Y:
-        case Keys.Z:
-          Value.Value += evt.Key.ToString().ToLower();
+        case Keys.Enter:
+          Value.Value += '\n';
+          _position++;
           break;
-        case Keys.Space:
-          Value.Value += " ";
-          break;
-        case Keys.OemComma:
-          Value.Value += ",";
+        default:
+          if (evt.TryGetCharacter(out var character))
+          {
+            Value.Value += character;
+            _position++;
+          }
           break;
       }
       return false;
@@ -93,7 +89,7 @@ namespace BlueJay.UI.Component.Interactivity
     public bool OnBlur(BlurEvent evt)
     {
       _focused = false;
-      Bar.Value = string.Empty;
+      ShowBar.Value = false;
       return true;
     }
 
@@ -105,7 +101,7 @@ namespace BlueJay.UI.Component.Interactivity
         if (_countdown <= 0)
         {
           _countdown += _cooldown;
-          Bar.Value = string.IsNullOrEmpty(Bar.Value) ? "|" : string.Empty;
+          ShowBar.Value = !ShowBar.Value;
         }
       }
     }

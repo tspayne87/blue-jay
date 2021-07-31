@@ -52,7 +52,7 @@ namespace BlueJay.Core
     /// <param name="rows">The rows that exist in the texture</param>
     /// <param name="cols">The columns that exist in the texture</param>
     /// <param name="alphabet">The alphabet that exists in the texture</param>
-    public TextureFont(Texture2D texture, int rows, int cols, string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()/.,’;\\][=-?><“:|}{+_`")
+    public TextureFont(Texture2D texture, int rows, int cols, string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()/.,';\\][=-?><\":|}{+_`")
     {
       _texture = texture;
       _rows = rows;

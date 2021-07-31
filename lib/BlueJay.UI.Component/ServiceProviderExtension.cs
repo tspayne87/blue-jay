@@ -1,12 +1,15 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace BlueJay.UI.Component
@@ -18,7 +21,10 @@ namespace BlueJay.UI.Component
     /// </summary>
     internal static List<Type> Globals = new List<Type>() { typeof(Container), typeof(Slot) };
 
-    internal static int _index = 0;
+    /// <summary>
+    /// The expression regex to process the text and convert the expressions into data from the component
+    /// </summary>
+    internal static Regex ExpressionRegex = new Regex(@"{{([^}]+)}}");
 
     /// <summary>
     /// Method is meant to add a UI component to the system
@@ -117,29 +123,8 @@ namespace BlueJay.UI.Component
         // Handle Style updates
         if (entity != null)
         {
-          // Handle Style updates
-          var sa = entity.GetAddon<StyleAddon>();
-          var contentManager = provider.GetRequiredService<ContentManager>();
-
-          // Calculate the basic style and assign it to the styles
-          var style = node.Attributes?["style"]?.GenerateStyle(contentManager);
-          if (style != null)
-          {
-            style.Id = ++_index;
-            style.Parent = sa.Style;
-            sa.Style = style;
-          }
-
-          // Calculate the hover style and assign it to the styles
-          var hoverStyle = node.Attributes?["hoverStyle"]?.GenerateStyle(contentManager);
-          if (hoverStyle != null)
-          {
-            hoverStyle.Id = ++_index;
-            hoverStyle.Parent = sa.HoverStyle;
-            sa.HoverStyle = hoverStyle;
-          }
-
-          entity.Update(sa);
+          HandleStyle(node, instance, entity, provider, "style");
+          HandleStyle(node, instance, entity, provider, "hoverStyle");
         }
 
         // Add this ui component as a system if it needs to be added
@@ -162,6 +147,54 @@ namespace BlueJay.UI.Component
         }
       }
       return entity;
+    }
+
+    private static void HandleStyle(XmlNode node, UIComponent current, IEntity entity, IServiceProvider provider, string attrType)
+    {
+      if (node.Attributes != null && node.Attributes[attrType] != null) {
+        var contentManager = provider.GetRequiredService<ContentManager>();
+        Style style = null;
+
+        var text = node.Attributes[attrType].InnerText;
+        if (ExpressionRegex.IsMatch(text))
+        {
+          style = ExpressionRegex.TranslateText(text, current).GenerateStyle(contentManager);
+
+          var eventQueue = provider.GetRequiredService<EventQueue>();
+          var graphics = provider.GetRequiredService<GraphicsDevice>();
+          foreach(var prop in ExpressionRegex.GetReactiveProps(text, current))
+          {
+            prop.PropertyChanged += (sender, o) =>
+            {
+              var updateStyle = ExpressionRegex.TranslateText(text, current).GenerateStyle(contentManager);
+              eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
+            };
+          }
+        }
+        else
+        {
+          style = text.GenerateStyle(contentManager);
+        }
+
+        if (style != null)
+        {
+          var sa = entity.GetAddon<StyleAddon>();
+
+          if (attrType == "style")
+          {
+            style.Parent = sa.Style;
+            sa.Style = style;
+          }
+
+          if (attrType == "hoverStyle")
+          {
+            style.Parent = sa.HoverStyle;
+            sa.HoverStyle = style;
+          }
+
+          entity.Update(sa);
+        }
+      }
     }
   }
 }
