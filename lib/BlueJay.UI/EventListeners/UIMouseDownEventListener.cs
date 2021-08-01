@@ -4,7 +4,6 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Mouse;
-using BlueJay.UI.Services;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.UI.EventListeners
@@ -22,21 +21,14 @@ namespace BlueJay.UI.EventListeners
     private readonly EventQueue _eventQueue;
 
     /// <summary>
-    /// The UI Service for keeping track of globals
-    /// </summary>
-    private readonly UIService _service;
-
-    /// <summary>
     /// Constructor to build out the mouse move listener to interact with UI entities
     /// </summary>
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
-    /// <param name="service">The UI Service for keeping track of globals</param>
-    public UIMouseDownEventListener(LayerCollection layers, EventQueue eventQueue, UIService service)
+    public UIMouseDownEventListener(LayerCollection layers, EventQueue eventQueue)
     {
       _layers = layers;
       _eventQueue = eventQueue;
-      _service = service;
     }
 
     /// <summary>
@@ -68,18 +60,8 @@ namespace BlueJay.UI.EventListeners
         }
       }
 
-      if (_service.FocusedEntity != null && _service.FocusedEntity != foundEntity)
-      {
-        _eventQueue.DispatchEvent(new BlurEvent(), _service.FocusedEntity);
-        _service.FocusedEntity = null;
-      }
       if (foundEntity != null)
-      {
-        _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position }, foundEntity);
-        if (_service.FocusedEntity != foundEntity)
-          _eventQueue.DispatchEvent(new FocusEvent(), foundEntity);
-        _service.FocusedEntity = foundEntity;
-      }
+        _eventQueue.DispatchEvent(evt.Data, foundEntity);
     }
 
     /// <summary>

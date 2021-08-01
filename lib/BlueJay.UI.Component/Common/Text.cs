@@ -2,6 +2,7 @@
 using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Keyboard;
+using BlueJay.Events.Mouse;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Factories;
 using Microsoft.Xna.Framework.Graphics;
@@ -55,7 +56,7 @@ namespace BlueJay.UI.Component.Common
       var txt = Node.InnerText;
       if (ServiceProviderExtension.ExpressionRegex.IsMatch(txt))
       {
-        entity = _serviceProvider.AddText(ServiceProviderExtension.ExpressionRegex.TranslateText(txt, Current), parent);
+        entity = _serviceProvider.AddText(ServiceProviderExtension.ExpressionRegex.TranslateText(txt, Current).Trim(), parent);
 
         // Calculate all the reactive props used and add a callback if a property changes
         foreach (var prop in ServiceProviderExtension.ExpressionRegex.GetReactiveProps(txt, Current))
@@ -79,6 +80,10 @@ namespace BlueJay.UI.Component.Common
       _serviceProvider.AddEventListener(CallParentEmitCallback<BlurEvent>("onBlur"), entity);
       _serviceProvider.AddEventListener(CallParentEmitCallback<FocusEvent>("onFocus"), entity);
       _serviceProvider.AddEventListener(CallParentEmitCallback<KeyboardUpEvent>("onKeyboardUp"), entity);
+      _serviceProvider.AddEventListener(CallParentEmitCallback<MouseDownEvent>("MouseDown"), entity);
+      _serviceProvider.AddEventListener(CallParentEmitCallback<MouseMoveEvent>("MouseMove"), entity);
+      _serviceProvider.AddEventListener(CallParentEmitCallback<MouseUpEvent>("MouseUp"), entity);
+
       return entity;
     }
 

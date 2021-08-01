@@ -1,30 +1,23 @@
-﻿using BlueJay.Component.System.Collections;
+﻿using BlueJay.Common.Addons;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
-using BlueJay.Core.Interfaces;
-using BlueJay.Events;
 using BlueJay.Events.Keyboard;
-using BlueJay.Events.Lifecycle;
 using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
 <container style=""TextAlign: Left"" onFocus=""OnFocus"" onBlur=""OnBlur"" onKeyboardUp=""OnKeyboardUp"">
-  <container>{{Value}}</container>
-
-  <container if=""{{ShowBar}}"" style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 0, 0, 0"" />
+  {{Value}}
+  <container if=""{{ShowBar}}"" style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
 </container>
     ")]
-  public class TextInput : UIComponent, IUpdateSystem
+  public class TextInput : UIComponent
   {
-    private readonly IDeltaService _delta;
-    private readonly int _cooldown = 1000;
-    private int _countdown;
-    private bool _focused;
+    private readonly FontCollection _fonts;
     private int _position;
 
     public ReactiveProperty<string> Value;
@@ -40,7 +33,7 @@ namespace BlueJay.UI.Component.Interactivity
 
     public List<string> Layers => new List<string>();
 
-    public TextInput(IDeltaService delta, FontCollection fonts)
+    public TextInput(FontCollection fonts)
     {
       Value = new ReactiveProperty<string>("");
       ShowBar = new ReactiveProperty<bool>(false);
@@ -48,9 +41,7 @@ namespace BlueJay.UI.Component.Interactivity
       BarTop = new ReactiveProperty<int>(0);
       BarLeft = new ReactiveProperty<int>(0);
 
-      _delta = delta;
-      _countdown = _cooldown;
-      _focused = false;
+      _fonts = fonts;
       _position = 0;
     }
 
@@ -61,49 +52,66 @@ namespace BlueJay.UI.Component.Interactivity
         case Keys.Back:
           if (Value.Value.Length > 0)
           {
-            Value.Value = Value.Value.Substring(0, Value.Value.Length - 1);
-            _position--;
+            Value.Value = Value.Value.Splice(_position - 1, 1);
+            UpdatePosition(_position - 1);
           }
           break;
         case Keys.Enter:
-          Value.Value += '\n';
-          _position++;
+          Value.Value = Value.Value.Splice(_position, 0, '\n');
+          UpdatePosition(_position + 1);
+          break;
+        case Keys.Left:
+          UpdatePosition(Math.Max(_position - 1, 0));
+          break;
+        case Keys.Right:
+          UpdatePosition(Math.Min(_position + 1, Value.Value.Length));
+          break;
+        case Keys.End:
+          UpdatePosition(Value.Value.Length);
           break;
         default:
           if (evt.TryGetCharacter(out var character))
           {
-            Value.Value += character;
-            _position++;
+            Value.Value = Value.Value.Splice(_position, 0, character);
+            UpdatePosition(_position + 1);
           }
           break;
       }
       return false;
     }
 
+    public override void Mounted()
+    {
+      BarHeight.Value = (int)Root.MeasureString(" ", _fonts).Y;
+    }
+
     public bool OnFocus(FocusEvent evt)
     {
-      _focused = true;
+      UpdatePosition(Value.Value.Length);
+      ShowBar.Value = true;
       return true;
     }
 
     public bool OnBlur(BlurEvent evt)
     {
-      _focused = false;
       ShowBar.Value = false;
       return true;
     }
 
-    public void OnUpdate()
+    private void UpdatePosition(int newPosition)
     {
-      if (_focused)
-      {
-        _countdown -= _delta.Delta;
-        if (_countdown <= 0)
-        {
-          _countdown += _cooldown;
-          ShowBar.Value = !ShowBar.Value;
-        }
-      }
+      var la = Root.GetAddon<LineageAddon>();
+      var sa = la.Children[0].GetAddon<BoundsAddon>();
+      var fitString = Root.FitString(Value.Value.Substring(0, newPosition), sa.Bounds.Width, _fonts);
+      var yOffset = Root.MeasureString(fitString, _fonts);
+      var spaceOffset = Root.MeasureString(" ", _fonts);
+      BarTop.Value = (int)(yOffset.Y - spaceOffset.Y);
+
+      var split = fitString.Split('\n');
+      var xOffset = Root.MeasureString(split[split.Length - 1], _fonts);
+      BarLeft.Value = (int)xOffset.X;
+
+      _position = newPosition;
     }
   }
 }

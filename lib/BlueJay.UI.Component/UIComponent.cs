@@ -53,6 +53,11 @@ namespace BlueJay.UI.Component
     }
 
     /// <summary>
+    /// Helper method is called when the component is mounted to the UI tree
+    /// </summary>
+    public virtual void Mounted() { }
+
+    /// <summary>
     /// Emitter method is meant to bubble up events that were bound in the internal parent view when using the component
     /// </summary>
     /// <typeparam name="T">The type of emitable data we are sending</typeparam>

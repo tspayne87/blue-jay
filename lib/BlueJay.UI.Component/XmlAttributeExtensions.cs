@@ -16,9 +16,9 @@ namespace BlueJay.UI.Component
     /// <param name="text">The text we are processing</param>
     /// <param name="contentManager">The content manager we need to open texture for style attributes</param>
     /// <returns>The generate style from the xml attribute</returns>
-    public static Style GenerateStyle(this string text, ContentManager contentManager)
+    public static Style GenerateStyle(this string text, ContentManager contentManager, Style style = null)
     {
-      var style = new Style();
+      style = style ?? new Style();
 
       var styles = text.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
         .Select(x => x.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries).Select(y => y.Trim()).ToArray());

@@ -64,7 +64,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         for (var i = 0; i < la.Children.Count; ++i)
         {
           var csa = la.Children[i].GetAddon<StyleAddon>();
-          if (pos != csa.GridPosition.Y)
+          if (csa.CurrentStyle.Position != Position.Absolute && pos != csa.GridPosition.Y)
           {
             height += maxHeight;
             maxHeight = 0;

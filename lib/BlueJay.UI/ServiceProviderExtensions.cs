@@ -76,6 +76,7 @@ namespace BlueJay.UI
       // Add the event listener
       provider.AddEventListener<UIMouseMoveEventListener, MouseMoveEvent>();
       provider.AddEventListener<UIMouseDownEventListener, MouseDownEvent>();
+      provider.AddEventListener<UIMouseUpEventListener, MouseUpEvent>();
       return provider;
     }
 

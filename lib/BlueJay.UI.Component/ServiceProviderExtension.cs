@@ -79,6 +79,7 @@ namespace BlueJay.UI.Component
         var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
         instance.Initialize(node, parentInstance, null);
         entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parent);
+        instance.Mounted();
         collection.Add(instance);
       }
 
@@ -125,6 +126,7 @@ namespace BlueJay.UI.Component
         {
           HandleStyle(node, instance, entity, provider, "style");
           HandleStyle(node, instance, entity, provider, "hoverStyle");
+          HandleIf(node, instance, entity, provider);
         }
 
         // Add this ui component as a system if it needs to be added
@@ -149,6 +151,26 @@ namespace BlueJay.UI.Component
       return entity;
     }
 
+    private static void HandleIf(XmlNode node, UIComponent current, IEntity entity, IServiceProvider provider)
+    {
+      if (node.Attributes != null && node.Attributes["if"] != null)
+      {
+        var txt = node.Attributes["if"].InnerText;
+        if (ExpressionRegex.IsMatch(txt))
+        {
+          entity.Active = ExpressionRegex.TranslateText(txt, current).ToLower() == "true";
+
+          foreach(var prop in ExpressionRegex.GetReactiveProps(txt, current))
+          {
+            prop.PropertyChanged += (sender, o) =>
+            {
+              entity.Active = ExpressionRegex.TranslateText(txt, current).ToLower() == "true";
+            };
+          }
+        }
+      }
+    }
+
     private static void HandleStyle(XmlNode node, UIComponent current, IEntity entity, IServiceProvider provider, string attrType)
     {
       if (node.Attributes != null && node.Attributes[attrType] != null) {
@@ -166,7 +188,7 @@ namespace BlueJay.UI.Component
           {
             prop.PropertyChanged += (sender, o) =>
             {
-              var updateStyle = ExpressionRegex.TranslateText(text, current).GenerateStyle(contentManager);
+              ExpressionRegex.TranslateText(text, current).GenerateStyle(contentManager, style);
               eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
             };
           }

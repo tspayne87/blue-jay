@@ -3,13 +3,13 @@ using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Touch;
+using BlueJay.Events.Mouse;
 using BlueJay.UI.Services;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.UI.EventListeners
 {
-  public class UITouchDownEventListener : EventListener<TouchDownEvent>
+  public class UIMouseUpEventListener : EventListener<MouseUpEvent>
   {
     /// <summary>
     /// The layer collection to grab the UI elements from the screen
@@ -32,7 +32,7 @@ namespace BlueJay.UI.EventListeners
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
     /// <param name="service">The UI Service for keeping track of globals</param>
-    public UITouchDownEventListener(LayerCollection layers, EventQueue eventQueue, UIService service)
+    public UIMouseUpEventListener(LayerCollection layers, EventQueue eventQueue, UIService service)
     {
       _layers = layers;
       _eventQueue = eventQueue;
@@ -53,7 +53,7 @@ namespace BlueJay.UI.EventListeners
     /// The event that we should be processing when it is triggered
     /// </summary>
     /// <param name="evt">The current event object that was triggered</param>
-    public override void Process(IEvent<TouchDownEvent> evt)
+    public override void Process(IEvent<MouseUpEvent> evt)
     {
       // Iterate over all entities so we can find the entity we need to fire the click event on
       var entities = _layers[UIStatic.LayerName].Entities;
@@ -68,16 +68,17 @@ namespace BlueJay.UI.EventListeners
         }
       }
 
-      if (_service.FocusedEntity != null)
+      if (_service.FocusedEntity != null && _service.FocusedEntity != foundEntity)
       {
         _eventQueue.DispatchEvent(new BlurEvent(), _service.FocusedEntity);
         _service.FocusedEntity = null;
       }
       if (foundEntity != null)
       {
-        _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position.ToPoint() }, foundEntity);
+        _eventQueue.DispatchEvent(evt.Data, foundEntity);
+        _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position }, foundEntity);
         if (_service.FocusedEntity != foundEntity)
-          _eventQueue.DispatchEvent(new FocusEvent() { Position = evt.Data.Position.ToPoint() }, foundEntity);
+          _eventQueue.DispatchEvent(new FocusEvent(), foundEntity);
         _service.FocusedEntity = foundEntity;
       }
     }
@@ -88,7 +89,7 @@ namespace BlueJay.UI.EventListeners
     /// <param name="entity">The entity we are checking against</param>
     /// <param name="position">The position we are working with</param>
     /// <returns>Will return true if the position is in the bounds of the entity</returns>
-    private bool Contains(IEntity entity, Vector2 position)
+    private bool Contains(IEntity entity, Point position)
     {
       var ba = entity.GetAddon<BoundsAddon>();
       var pa = entity.GetAddon<PositionAddon>();

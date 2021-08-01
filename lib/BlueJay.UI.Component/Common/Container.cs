@@ -1,5 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Keyboard;
+using BlueJay.Events.Mouse;
 using BlueJay.UI.Factories;
 using System;
 
@@ -36,6 +37,9 @@ namespace BlueJay.UI.Component.Common
       _serviceProvider.AddEventListener<BlurEvent>(x => Emit("Blur", x), entity);
       _serviceProvider.AddEventListener<FocusEvent>(x => Emit("Focus", x), entity);
       _serviceProvider.AddEventListener<KeyboardUpEvent>(x => Emit("KeyboardUp", x), entity);
+      _serviceProvider.AddEventListener<MouseDownEvent>(x => Emit("MouseDown", x), entity);
+      _serviceProvider.AddEventListener<MouseMoveEvent>(x => Emit("MouseMove", x), entity);
+      _serviceProvider.AddEventListener<MouseUpEvent>(x => Emit("MouseUp", x), entity);
       return entity;
     }
   }
