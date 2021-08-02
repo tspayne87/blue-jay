@@ -39,6 +39,7 @@ namespace BlueJay.UI.Factories
     public static IEntity AddContainer(this IServiceProvider provider, Style style, IEntity parent)
     {
       var entity = provider.AddUIEntity<Entity>(parent);
+      entity.Active = parent?.Active ?? true;
       entity.Add(new StyleAddon(style));
       entity.Add(new TextureAddon());
       entity.Add(new PositionAddon());

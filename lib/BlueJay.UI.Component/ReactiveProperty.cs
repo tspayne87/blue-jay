@@ -11,7 +11,7 @@ namespace BlueJay.UI.Component
     /// <summary>
     /// The object value we are currently processing
     /// </summary>
-    object Value { get; }
+    object Value { get; set; }
   }
 
   /// <summary>
@@ -37,15 +37,29 @@ namespace BlueJay.UI.Component
     {
       get => _value;
       set {
-        _value = value;
-        NotifyPropertyChanged();
+        if (!_value.Equals(value))
+        {
+          _value = value;
+          NotifyPropertyChanged();
+        }
       }
     }
 
     /// <summary>
     /// The value getter for IValue interface
     /// </summary>
-    object IReactiveProperty.Value => _value;
+    object IReactiveProperty.Value
+    {
+      get => _value;
+      set
+      {
+        if (!_value.Equals(value))
+        {
+          _value = (T)value;
+          NotifyPropertyChanged();
+        }
+      }
+    }
 
     /// <summary>
     /// Constructor to build out a reactive property starting with a value

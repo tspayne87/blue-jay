@@ -51,6 +51,7 @@ namespace BlueJay.UI.Factories
     public static IEntity AddText(this IServiceProvider provider, string text, Style style, IEntity parent)
     {
       var entity = provider.AddUIEntity<Entity>(parent);
+      entity.Active = parent?.Active ?? true;
       entity.Add(new StyleAddon(style));
       entity.Add(new TextAddon(text));
       entity.Add(new TextureAddon());

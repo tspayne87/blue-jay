@@ -4,21 +4,34 @@ using System.Text;
 
 namespace BlueJay.UI.Component.Interactivity
 {
-  [View(@"<switch min=""0"" max=""1"" model=""{{InnerModel}}"" />")]
-  [Component(typeof(SliderInput))]
+  [View(@"
+<container onSelect=""OnSelect"" style=""BackgroundColor: 200, 200, 200"">
+  <container style=""WidthPercentage: 0.5; HeightPercentage: 1; BackgroundColor: 60, 60, 60; HorizontalAlign: {{Align}}"" onSelect=""OnSelect"" />
+</container>
+    ")]
   public class SwitchInput : UIComponent
   {
-    public ReactiveProperty<int> InnerModel;
-    public ReactiveProperty<bool> Model;
+    [Prop(PropBinding.TwoWay)]
+    public readonly ReactiveProperty<bool> Model;
+    public readonly ReactiveProperty<HorizontalAlign> Align;
 
     public SwitchInput()
     {
-      InnerModel = new ReactiveProperty<int>(0);
       Model = new ReactiveProperty<bool>(false);
+      Align = new ReactiveProperty<HorizontalAlign>(HorizontalAlign.Left);
 
       // Add Property changes
-      InnerModel.PropertyChanged += (sender, o) => Model.Value = InnerModel.Value == 1;
-      Model.PropertyChanged += (sender, o) => InnerModel.Value = Model.Value ? 1 : 0;
+      Model.PropertyChanged += (sender, o) =>
+      {
+        Emit("Input", Model.Value);
+      };
+    }
+
+    public bool OnSelect(SelectEvent evt)
+    {
+      Model.Value = !Model.Value;
+      Align.Value = Model.Value ? HorizontalAlign.Right : HorizontalAlign.Left;
+      return true;
     }
   }
 }

@@ -20,12 +20,12 @@ namespace BlueJay.UI.Component.Interactivity
     private readonly FontCollection _fonts;
     private int _position;
 
-    public ReactiveProperty<string> Value;
+    public readonly ReactiveProperty<string> Value;
 
-    public ReactiveProperty<bool> ShowBar;
-    public ReactiveProperty<int> BarHeight;
-    public ReactiveProperty<int> BarTop;
-    public ReactiveProperty<int> BarLeft;
+    public readonly ReactiveProperty<bool> ShowBar;
+    public readonly ReactiveProperty<int> BarHeight;
+    public readonly ReactiveProperty<int> BarTop;
+    public readonly ReactiveProperty<int> BarLeft;
 
     public IEntity Bar;
 

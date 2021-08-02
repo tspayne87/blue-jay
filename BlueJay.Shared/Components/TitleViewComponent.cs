@@ -28,17 +28,17 @@ namespace BlueJay.Shared.Components
     /// <summary>
     /// The breakout title we should be using for breakout
     /// </summary>
-    public ReactiveProperty<string> BreakoutTitle;
+    public readonly ReactiveProperty<string> BreakoutTitle;
 
     /// <summary>
     /// The Tetris title we are using for this component
     /// </summary>
-    public ReactiveProperty<string> TetrisTitle;
+    public readonly ReactiveProperty<string> TetrisTitle;
 
     /// <summary>
     /// The UI Component title
     /// </summary>
-    public ReactiveProperty<string> UIComponentTitle;
+    public readonly ReactiveProperty<string> UIComponentTitle;
 
     /// <summary>
     /// Constructor is meant to bootstrap the component

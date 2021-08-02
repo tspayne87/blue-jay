@@ -127,6 +127,8 @@ namespace BlueJay.UI.Component
           HandleStyle(node, instance, entity, provider, "style");
           HandleStyle(node, instance, entity, provider, "hoverStyle");
           HandleIf(node, instance, entity, provider);
+
+          HandleProps(node, instance, parentInstance, entity, provider);
         }
 
         // Add this ui component as a system if it needs to be added
@@ -158,14 +160,59 @@ namespace BlueJay.UI.Component
         var txt = node.Attributes["if"].InnerText;
         if (ExpressionRegex.IsMatch(txt))
         {
-          entity.Active = ExpressionRegex.TranslateText(txt, current).ToLower() == "true";
+          SetActiveToSelfAndChildren(entity, ExpressionRegex.TranslateText(txt, current).ToLower() == "true");
 
           foreach(var prop in ExpressionRegex.GetReactiveProps(txt, current))
           {
             prop.PropertyChanged += (sender, o) =>
             {
-              entity.Active = ExpressionRegex.TranslateText(txt, current).ToLower() == "true";
+              SetActiveToSelfAndChildren(entity, ExpressionRegex.TranslateText(txt, current).ToLower() == "true");
             };
+          }
+        }
+      }
+    }
+
+    private static void SetActiveToSelfAndChildren(IEntity entity, bool active)
+    {
+      entity.Active = active;
+
+      var la = entity.GetAddon<LineageAddon>();
+      for (var i = 0; i < la.Children.Count; ++i)
+      {
+        SetActiveToSelfAndChildren(la.Children[i], active);
+      }
+    }
+
+    private static void HandleProps(XmlNode node, UIComponent current, UIComponent parent, IEntity entity, IServiceProvider provider)
+    {
+      var props = current.GetType()
+        .GetFields()
+        .Select(x => new { Field = x, Attribute = x.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute })
+        .Where(x => x.Attribute != null)
+        .ToList();
+
+      if (props.Count > 0)
+      {
+        foreach (var prop in props)
+        {
+          if (current.Node.Attributes?[prop.Field.Name] != null)
+          {
+            var currentProp = prop.Field.GetValue(current) as IReactiveProperty;
+            var parentProp = ExpressionRegex.GetReactiveProps(current.Node.Attributes[prop.Field.Name].InnerText, parent).FirstOrDefault();
+            if (currentProp != null && parentProp != null)
+            {
+              currentProp.Value = parentProp.Value;
+              if (prop.Attribute.Binding == PropBinding.TwoWay)
+              {
+                parentProp.PropertyChanged += (sender, o) => currentProp.Value = parentProp.Value;
+                currentProp.PropertyChanged += (sender, o) => parentProp.Value = currentProp.Value;
+              }
+              else
+              {
+                parentProp.PropertyChanged += (sender, o) => currentProp.Value = parentProp.Value;
+              }
+            }
           }
         }
       }

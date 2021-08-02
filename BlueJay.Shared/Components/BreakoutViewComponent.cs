@@ -28,17 +28,17 @@ namespace BlueJay.Shared.Components
     /// <summary>
     /// The score that should be bound to the view
     /// </summary>
-    public ReactiveProperty<int> Score;
+    public readonly ReactiveProperty<int> Score;
 
     /// <summary>
     /// The round that should be bound to the view
     /// </summary>
-    public ReactiveProperty<int> Round;
+    public readonly ReactiveProperty<int> Round;
 
     /// <summary>
     /// The balls that should be bound to the view
     /// </summary>
-    public ReactiveProperty<int> Balls;
+    public readonly ReactiveProperty<int> Balls;
 
     /// <summary>
     /// Constructor to build out the breakcout UI Component
