@@ -1,6 +1,8 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
+using BlueJay.Events.Keyboard;
+using BlueJay.Events.Mouse;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -129,6 +131,7 @@ namespace BlueJay.UI.Component
           HandleIf(node, instance, entity, provider);
 
           HandleProps(node, instance, parentInstance, entity, provider);
+          HandleGlobalEvents(node, instance, provider);
         }
 
         // Add this ui component as a system if it needs to be added
@@ -184,6 +187,34 @@ namespace BlueJay.UI.Component
       }
     }
 
+    private static void HandleGlobalEvents(XmlNode node, UIComponent current, IServiceProvider provider)
+    {
+      if (node.Attributes != null)
+      {
+        foreach (XmlAttribute attr in node.Attributes)
+        {
+          if (attr.Name.EndsWith(".global"))
+          {
+            switch (attr.Name.Replace(".global", string.Empty))
+            {
+              case "onKeyboardUp":
+                provider.AddEventListener<KeyboardUpEvent>(x => EmitGlobal(node, current, "KeyboardUp", x));
+                break;
+              case "onMouseDown":
+                provider.AddEventListener<MouseDownEvent>(x => EmitGlobal(node, current, "MouseDown", x));
+                break;
+              case "onMouseMove":
+                provider.AddEventListener<MouseMoveEvent>(x => EmitGlobal(node, current, "MouseMove", x));
+                break;
+              case "onMouseUp":
+                provider.AddEventListener<MouseUpEvent>(x => EmitGlobal(node, current, "MouseUp", x));
+                break;
+            }
+          }
+        }
+      }
+    }
+
     private static void HandleProps(XmlNode node, UIComponent current, UIComponent parent, IEntity entity, IServiceProvider provider)
     {
       var props = current.GetType()
@@ -212,6 +243,11 @@ namespace BlueJay.UI.Component
               {
                 parentProp.PropertyChanged += (sender, o) => currentProp.Value = parentProp.Value;
               }
+            }
+            else if (currentProp != null)
+            {
+              // TODO: Handle case where the parentProp is not a reactive prop
+              currentProp.Value = current.Node.Attributes[prop.Field.Name].InnerText;
             }
           }
         }
@@ -264,6 +300,16 @@ namespace BlueJay.UI.Component
           entity.Update(sa);
         }
       }
+    }
+
+    public static bool EmitGlobal<T>(XmlNode node, UIComponent current, string eventName, T data)
+    {
+      var method = current?.GetType().GetMethod(node?.Attributes?[$"on{eventName}.global"]?.InnerText ?? string.Empty);
+      if (method != null)
+      {
+        return (bool)method.Invoke(current, new object[] { data });
+      }
+      return true;
     }
   }
 }

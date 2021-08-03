@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace BlueJay.UI.Component
@@ -55,7 +56,10 @@ namespace BlueJay.UI.Component
       {
         if (!_value.Equals(value))
         {
-          _value = (T)value;
+          if (value.GetType() == typeof(T))
+            _value = (T)value;
+          else
+            _value = (T)Convert.ChangeType(value, typeof(T));
           NotifyPropertyChanged();
         }
       }

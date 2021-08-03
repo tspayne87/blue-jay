@@ -37,6 +37,6 @@
   /// </summary>
   public enum Position
   {
-    Absolute, Relative
+    Relative, Absolute
   }
 }
