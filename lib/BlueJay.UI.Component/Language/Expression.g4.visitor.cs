@@ -8,9 +8,9 @@ namespace BlueJay.UI.Component.Language
 {
   public class ExpressionVisitor : ExpressionBaseVisitor<object>
   {
-    private readonly List<ExpressionScope> Scopes;
+    private readonly List<LanguageScope> Scopes;
 
-    public ExpressionVisitor(List<ExpressionScope> scopes)
+    public ExpressionVisitor(List<LanguageScope> scopes)
     {
       Scopes = scopes;
     }
@@ -51,6 +51,8 @@ namespace BlueJay.UI.Component.Language
     public override object VisitLiteralExpression([NotNull] ExpressionParser.LiteralExpressionContext context)
     {
       var data = context.children[0].GetText();
+      if (bool.TryParse(data, out var boolean))
+        return boolean;
       if (int.TryParse(data, out var num))
         return num;
       if (float.TryParse(data, out var fNum))
@@ -63,6 +65,21 @@ namespace BlueJay.UI.Component.Language
       var key = context.GetText();
       if (Scopes[Scopes.Count - 1].Fields.ContainsKey(key))
         return Scopes[Scopes.Count - 1].Fields[key].Value;
+      return null;
+    }
+
+    public override object VisitTernaryExpression([NotNull] ExpressionParser.TernaryExpressionContext context)
+    {
+      var boolValue = Visit(context.children[0]);
+      if (boolValue is bool)
+      {
+        if ((bool)boolValue)
+        {
+          return Visit(context.children[2]);
+        }
+        return Visit(context.children[4]);
+      }
+      // TODO: Maybe throw exception or something
       return null;
     }
 

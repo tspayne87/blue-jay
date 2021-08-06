@@ -8,7 +8,7 @@ namespace BlueJay.UI.Component.Interactivity
 <container>
   {{GetField(Model)}}
   <container>
-    <container foreach=""var item in Items.Value"" onSelect=""{{OnSelect(item)}}"">{{GetField(item)}}</container>
+    <container foreach=""var item in Items"" e:Select=""OnSelect(item)"">{{GetField(item)}}</container>
   </container>
 </container>
     ")]

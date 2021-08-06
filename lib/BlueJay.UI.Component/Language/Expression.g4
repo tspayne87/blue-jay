@@ -1,21 +1,27 @@
 grammar Expression;
-prog                  : expr EOF ;
-expr                  : basicExpression ;
+prog                     : expr EOF ;
+expr                     : basicExpression
+                         | ternaryExpression
+                         ;
 
-basicExpression       : literalExpression
-                      | functionExpression
-                      | scopeExpression
-                      | contextVarExpression
-                      ;
-literalExpression     : STRING
-                      | DECIMAL
-                      | INTEGER
-                      ;
-functionExpression    : IDENTIFIER LPARAM argumentExpression RPARAM ;
-scopeExpression       : IDENTIFIER ;
-contextVarExpression  : DOLLAR E V E N T ;
+basicExpression          : literalExpression
+                         | functionExpression
+                         | scopeExpression
+                         | contextVarExpression
+                         ;
+literalExpression        : STRING
+                         | DECIMAL
+                         | INTEGER
+                         | TRUE
+                         | FALSE
+                         ;
+functionExpression       : IDENTIFIER LPARAM argumentExpression RPARAM ;
+scopeExpression          : IDENTIFIER ;
+contextVarExpression     : DOLLAR EVENT ;
 
-argumentExpression    : basicExpression (COMMA expr)* ;
+argumentExpression       : basicExpression (COMMA expr)* ;
+ternaryExpression        : basicExpression QUESTION basicExpression COLON basicExpression ;
+
 
 // Constants
 LPARAM        : '(' ;
@@ -27,12 +33,19 @@ TIMES         : '*' ;
 DIVIDE        : '/' ;
 DOT           : '.' ;
 DOLLAR        : '$' ;
+QUESTION      : '?' ;
+COLON         : ':' ;
+SEMICOLON     : ';' ;
 NUMBER        : [0-9] ;
 LOWERCASE     : [a-z] ;
 UPPERCASE     : [A-Z] ;
 ESCSEQ        : '\\' ('b' | 't' | 'n' | 'f' | 'r' | '"' | '\'' | '\\') ;
 
 // Combinations
+TRUE          : T R U E ;
+FALSE         : F A L S E ;
+EVENT         : E V E N T ;
+STYLE         : S T Y L E ;
 STRING        : '\'' ( ESCSEQ | ~('\\'|'\'') )* '\''  ;
 DECIMAL       : MINUS? NUMBER+ DOT NUMBER ;
 INTEGER       : MINUS? NUMBER+ ;

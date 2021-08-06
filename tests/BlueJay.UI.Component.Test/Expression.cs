@@ -11,31 +11,50 @@ namespace BlueJay.UI.Component.Test
     [Fact]
     public void Basic()
     {
-      var scopes = new List<ExpressionScope>() { GetScope() };
+      var scopes = new List<LanguageScope>() { new Component("Test", 5).GenerateScope() };
 
-      Assert.Equal(30, ExpressionReader.Parse("Method(20)", scopes));
-      Assert.Equal("Hello-World-5", ExpressionReader.Parse("Method2('Hello-World', Integer)", scopes));
+      Assert.Equal(30, Language.Language.ParseExpression("Method(20)", scopes));
+      Assert.Equal("Hello-World-5", Language.Language.ParseExpression("Method2('Hello-World', Integer)", scopes));
     }
 
-    /// <summary>
-    /// Helper method is meant to create a basic scope based on the fake UIComponent below
-    /// </summary>
-    /// <returns>A generated scope to work with the expression reader</returns>
-    private ExpressionScope GetScope()
+    [Fact]
+    public void MultiScope()
     {
-      var data = new Component();
-      var props = new Dictionary<string, IReactiveProperty>()
-      {
-        { "String", data.String },
-        { "Integer", data.Integer }
-      };
-      var functions = new Dictionary<string, MethodInfo>()
-      {
-        { "Method", data.GetType().GetMethod("Method") },
-        { "Method2", data.GetType().GetMethod("Method2") }
-      };
+      var scopes = new List<LanguageScope>() { new Component("Test", 5).GenerateScope(), new Component2(1f, false).GenerateScope() };
 
-      return new ExpressionScope(data, props, functions);
+      Assert.Equal(30, Language.Language.ParseExpression("Method(20)", scopes));
+      Assert.Equal("Hello-World-5", Language.Language.ParseExpression("Method2('Hello-World', Integer)", scopes));
+      Assert.Equal(1f, Language.Language.ParseExpression("Float", scopes));
+    }
+
+    [Fact]
+    public void Literals()
+    {
+      var scopes = new List<LanguageScope>();
+
+      Assert.Equal("Hello World", Language.Language.ParseExpression("'Hello World'", scopes));
+      Assert.Equal(1.5f, Language.Language.ParseExpression("1.5", scopes));
+      Assert.Equal(20, Language.Language.ParseExpression("20", scopes));
+      Assert.True((bool)Language.Language.ParseExpression("true", scopes));
+      Assert.False((bool)Language.Language.ParseExpression("false", scopes));
+    }
+
+    [Fact]
+    public void Ternary()
+    {
+      var scopes = new List<LanguageScope>() { new Component("Test", 5).GenerateScope(), new Component2(1.5f, false).GenerateScope() };
+
+      Assert.Equal(1.5f, Language.Language.ParseExpression("true ? Float : String", scopes));
+      Assert.Equal("Test", Language.Language.ParseExpression("false ? Float : String", scopes));
+      Assert.Equal(5, Language.Language.ParseExpression("Bool ? Float : Integer", scopes));
+    }
+
+    [Fact]
+    public void ContextVar()
+    {
+      var scopes = new List<LanguageScope>() { new Component("Test", 5).GenerateScope(), new SelectEvent().AsEventScope() };
+
+      Assert.True((bool)Language.Language.ParseExpression("OnSelect($event)", scopes));
     }
 
     [View("<container>Hello World</container>")]
@@ -44,10 +63,10 @@ namespace BlueJay.UI.Component.Test
       public readonly ReactiveProperty<string> String;
       public readonly ReactiveProperty<int> Integer;
 
-      public Component()
+      public Component(string str, int integer)
       {
-        String = new ReactiveProperty<string>("Test");
-        Integer = new ReactiveProperty<int>(5);
+        String = new ReactiveProperty<string>(str);
+        Integer = new ReactiveProperty<int>(integer);
       }
 
       public int Method(int integer)
@@ -58,6 +77,24 @@ namespace BlueJay.UI.Component.Test
       public string Method2(string str, int integer)
       {
         return $"{str}-{integer}";
+      }
+
+      public bool OnSelect(SelectEvent evt)
+      {
+        return true;
+      }
+    }
+
+    [View("<container>Hello World</container>")]
+    public class Component2 : UIComponent
+    {
+      public readonly ReactiveProperty<float> Float;
+      public readonly ReactiveProperty<bool> Bool;
+
+      public Component2(float num, bool boolean)
+      {
+        Float = new ReactiveProperty<float>(num);
+        Bool = new ReactiveProperty<bool>(boolean);
       }
     }
   }

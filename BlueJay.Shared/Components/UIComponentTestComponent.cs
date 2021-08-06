@@ -18,11 +18,10 @@ namespace BlueJay.Shared.Components
 
   <slider-input Model=""{{Slider}}"" Max=""20"" style=""ColumnSpan: 3"" />
   <container style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</container>
-
-  <dropdown-input Model=""{{Dropdown}}"" Field=""Name"" Items=""DropdownItems"" style=""ColumnSpan: 2"" />
 </container>
     ")]
-  [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput), typeof(DropdownInput))]
+  [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput))]
+  // <dropdown-input Model=""{{Dropdown}}"" Field=""Name"" Items=""DropdownItems"" style=""ColumnSpan: 2"" />
   public class UIComponentTestComponent : UIComponent
   {
     /// <summary>

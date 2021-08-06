@@ -5,6 +5,7 @@ using BlueJay.Events.Keyboard;
 using BlueJay.Events.Mouse;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Common;
+using BlueJay.UI.Component.Language;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -79,7 +80,7 @@ namespace BlueJay.UI.Component
       if (view != null && view.View.ChildNodes.Count == 1)
       {
         var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
-        instance.Initialize(node, parentInstance, null);
+        instance.Initialize(node, parentInstance, parentInstance);
         entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parent);
         instance.Mounted();
         collection.Add(instance);
@@ -126,6 +127,8 @@ namespace BlueJay.UI.Component
         // Handle Style updates
         if (entity != null)
         {
+          ProcessAttributes(node, instance, entity, provider);
+
           HandleStyle(node, instance, entity, provider, "style");
           HandleStyle(node, instance, entity, provider, "hoverStyle");
           HandleIf(node, instance, entity, provider);
@@ -154,6 +157,45 @@ namespace BlueJay.UI.Component
         }
       }
       return entity;
+    }
+
+    private static void ProcessAttributes(XmlNode node, UIComponent instance, IEntity entity, IServiceProvider provider)
+    {
+      if (node.Attributes != null)
+      {
+        var props = instance.GetType()
+          .GetFields()
+          .Select(x => new { Field = x, Attribute = x.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute })
+          .Where(x => x.Attribute != null)
+          .ToList();
+
+        foreach (XmlAttribute attr in node.Attributes)
+        {
+          var name = attr.Name;
+          if (name.StartsWith("b:"))
+          {
+
+          }
+
+          switch (name)
+          {
+            case "style":
+              break;
+            case "hoverStyle":
+              break;
+            case "if":
+              break;
+            case "foreach":
+              break;
+            default:
+              break;
+          }
+        }
+
+        HandleStyle(node, instance, entity, provider, "style");
+        HandleStyle(node, instance, entity, provider, "hoverStyle");
+        HandleIf(node, instance, entity, provider);
+      }
     }
 
     private static void HandleIf(XmlNode node, UIComponent current, IEntity entity, IServiceProvider provider)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 
 namespace BlueJay.UI.Component
@@ -20,8 +21,15 @@ namespace BlueJay.UI.Component
     /// <param name="xml">The string representation of the view</param>
     public ViewAttribute(string xml)
     {
+      var settings = new XmlReaderSettings() { NameTable = new NameTable() };
+      var xmlns = new XmlNamespaceManager(settings.NameTable);
+      xmlns.AddNamespace("b", "");
+      xmlns.AddNamespace("e", "");
+      var context = new XmlParserContext(null, xmlns, "", XmlSpace.Default);
+      var reader = XmlReader.Create(new StringReader(xml), settings, context);
+
       View = new XmlDocument();
-      View.LoadXml(xml);
+      View.Load(reader);
     }
   }
 }

@@ -1,4 +1,7 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.UI.Component.Language;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 namespace BlueJay.UI.Component
@@ -27,6 +30,25 @@ namespace BlueJay.UI.Component
     /// The parent of this UI component so we can process emits and bubble up events
     /// </summary>
     public UIComponent Parent { get; private set; }
+
+    /// <summary>
+    /// Getter to generate a scope based on the structure of the component
+    /// </summary>
+    public List<LanguageScope> Scopes
+    {
+      get
+      {
+        var scopes = new Stack<LanguageScope>();
+
+        var parent = this;
+        if (parent != null)
+        {
+          scopes.Push(parent.GenerateScope());
+          parent = parent.Parent;
+        }
+        return scopes.ToList();
+      }
+    }
 
     /// <summary>
     /// Initialization method is menat to set all the basic properties on this component
