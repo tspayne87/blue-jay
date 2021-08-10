@@ -32,25 +32,6 @@ namespace BlueJay.UI.Component
     public UIComponent Parent { get; private set; }
 
     /// <summary>
-    /// Getter to generate a scope based on the structure of the component
-    /// </summary>
-    public List<LanguageScope> Scopes
-    {
-      get
-      {
-        var scopes = new Stack<LanguageScope>();
-
-        var parent = this;
-        if (parent != null)
-        {
-          scopes.Push(parent.GenerateScope());
-          parent = parent.Parent;
-        }
-        return scopes.ToList();
-      }
-    }
-
-    /// <summary>
     /// Initialization method is menat to set all the basic properties on this component
     /// </summary>
     /// <param name="node">The node we are working with for this component</param>

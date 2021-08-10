@@ -52,13 +52,13 @@ namespace BlueJay.UI.Component
       var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
       var collection = provider.GetRequiredService<UIComponentCollection>();
       IEntity entity = null;
-      if (view != null && view.View.ChildNodes.Count == 1)
-      {
-        var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
-        instance.Initialize(view.View.ChildNodes[0], null, null);
-        entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, null);
-        collection.Add(instance);
-      }
+      // if (view != null && view.View.ChildNodes.Count == 1)
+      // {
+      //   var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
+      //   instance.Initialize(view.View.ChildNodes[0], null, null);
+      //   entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, null);
+      //   collection.Add(instance);
+      // }
 
       return entity;
     }
@@ -77,14 +77,14 @@ namespace BlueJay.UI.Component
       var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
       var collection = provider.GetRequiredService<UIComponentCollection>();
       IEntity entity = null;
-      if (view != null && view.View.ChildNodes.Count == 1)
-      {
-        var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
-        instance.Initialize(node, parentInstance, parentInstance);
-        entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parent);
-        instance.Mounted();
-        collection.Add(instance);
-      }
+      // if (view != null && view.View.ChildNodes.Count == 1)
+      // {
+      //   var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
+      //   instance.Initialize(node, parentInstance, parentInstance);
+      //   entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parent);
+      //   instance.Mounted();
+      //   collection.Add(instance);
+      // }
 
       return entity;
     }
@@ -174,7 +174,6 @@ namespace BlueJay.UI.Component
           var name = attr.Name;
           if (name.StartsWith("b:"))
           {
-
           }
 
           switch (name)
@@ -191,10 +190,6 @@ namespace BlueJay.UI.Component
               break;
           }
         }
-
-        HandleStyle(node, instance, entity, provider, "style");
-        HandleStyle(node, instance, entity, provider, "hoverStyle");
-        HandleIf(node, instance, entity, provider);
       }
     }
 

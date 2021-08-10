@@ -2,6 +2,7 @@ grammar Expression;
 prog                     : expr EOF ;
 expr                     : basicExpression
                          | ternaryExpression
+                         | foreachExpression
                          ;
 
 basicExpression          : literalExpression
@@ -21,6 +22,8 @@ contextVarExpression     : DOLLAR EVENT ;
 
 argumentExpression       : basicExpression (COMMA expr)* ;
 ternaryExpression        : basicExpression QUESTION basicExpression COLON basicExpression ;
+
+foreachExpression        : VAR IDENTIFIER IN IDENTIFIER ;
 
 
 // Constants
@@ -51,6 +54,8 @@ DECIMAL       : MINUS? NUMBER+ DOT NUMBER ;
 INTEGER       : MINUS? NUMBER+ ;
 LETTER        : LOWERCASE | UPPERCASE ;
 IDENTIFIER    : (LETTER | '_') (LETTER | NUMBER | '_')+  ;
+IN            : I N ;
+VAR           : V A R ;
 
 
 // Case Insensitive found at https://github.com/antlr/antlr4/blob/master/doc/case-insensitive-lexing.md

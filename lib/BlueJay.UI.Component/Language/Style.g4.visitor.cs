@@ -12,29 +12,14 @@ namespace BlueJay.UI.Component.Language
 
     public Style Style { get; private set; }
 
+    public readonly List<IReactiveProperty> ReactiveProperties;
+
     public StyleVisitor(List<LanguageScope> scopes, Style style = null)
     {
       Scopes = scopes;
       Style = style ?? new Style();
+      ReactiveProperties = new List<IReactiveProperty>();
     }
-
-    //public override object VisitStyleColorExpression([NotNull] StyleParser.StyleColorExpressionContext context)
-    //{
-    //  if (context.ChildCount == 5 && int.TryParse(context.children[0].GetText(), out var r) && int.TryParse(context.children[2].GetText(), out var g) && int.TryParse(context.children[4].GetText(), out var b))
-    //    return new Color(r, g, b);
-    //  if (context.ChildCount == 7 && int.TryParse(context.children[0].GetText(), out var ar) && int.TryParse(context.children[2].GetText(), out var ag) && int.TryParse(context.children[4].GetText(), out var ab) && int.TryParse(context.children[6].GetText(), out var a))
-    //    return new Color(ar, ag, ab, a);
-    //  return null;
-    //}
-
-    //public override object VisitStylePointExpression([NotNull] StyleParser.StylePointExpressionContext context)
-    //{
-    //  if (context.ChildCount == 1 && int.TryParse(context.children[0].GetText(), out var value))
-    //    return new Point(value);
-    //  if (int.TryParse(context.children[0].GetText(), out var x) && int.TryParse(context.children[2].GetText(), out var y))
-    //    return new Point(x, y);
-    //  return null;
-    //}
 
     public override object VisitStyleItemExpression([NotNull] StyleParser.StyleItemExpressionContext context)
     {
@@ -47,7 +32,10 @@ namespace BlueJay.UI.Component.Language
 
       if (right == "{{")
       {
-        var obj = Language.ParseExpression(context.children[3].GetText(), Scopes);
+        var (obj, props) = Language.ParseExpression(context.children[3].GetText(), Scopes);
+        foreach(var reactiveProp in props)
+          if (!ReactiveProperties.Contains(reactiveProp))
+            ReactiveProperties.Add(reactiveProp);
         prop.SetValue(Style, obj);
         return null;
       }

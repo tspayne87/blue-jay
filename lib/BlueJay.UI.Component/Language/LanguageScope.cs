@@ -7,16 +7,19 @@ namespace BlueJay.UI.Component.Language
 {
   public class LanguageScope
   {
-    public object Data { get; private set; }
+    public readonly object Instance;
+    public readonly Dictionary<string, object> Props;
+    public readonly Dictionary<string, (MethodInfo, List<object>)> Events;
 
-    public Dictionary<string, IReactiveProperty> Fields { get; private set; }
-    public Dictionary<string, MethodInfo> Methods { get; private set; }
+    public LanguageScope Parent { get; set; }
+    public List<LanguageScope> Children { get; set; }
+    public Dictionary<string, LanguageScope> Slots { get; set; }
 
-    public LanguageScope(object data, Dictionary<string, IReactiveProperty> fields, Dictionary<string, MethodInfo> methods)
+    public LanguageScope(object instance)
     {
-      Data = data;
-      Fields = fields;
-      Methods = methods;
+      Instance = instance;
+      Props = new Dictionary<string, object>();
+      Events = new Dictionary<string, (MethodInfo, List<object>)>();
     }
   }
 }

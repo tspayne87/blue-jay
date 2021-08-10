@@ -10,9 +10,9 @@ using System.Collections.Generic;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<container style=""TextAlign: Left"" onFocus=""OnFocus"" onBlur=""OnBlur"" onKeyboardUp=""OnKeyboardUp"">
+<container style=""TextAlign: Left"" e:focus=""OnFocus"" e:blur=""OnBlur"" e:keyboardUp=""OnKeyboardUp"">
   {{Value}}
-  <container if=""{{ShowBar}}"" style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
+  <container b:if=""ShowBar"" style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
 </container>
     ")]
   public class TextInput : UIComponent
