@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using System.Reactive.Subjects;
 
 namespace BlueJay.UI.Component.Test
 {
@@ -13,31 +12,40 @@ namespace BlueJay.UI.Component.Test
     [Fact]
     public void Single()
     {
-      Language.Language.ParseXML("<container />", new Component());
+      Language.Language.ParseXML("<Container />", new Component());
     }
 
     [Fact]
     public void InnerText()
     {
-      Language.Language.ParseXML("<container>Hello World</container>", new Component());
+      Language.Language.ParseXML("<Container>Hello World</Container>", new Component());
     }
 
     [Fact]
     public void StringProp()
     {
-      Language.Language.ParseXML("<container    prop1='Value 1'>Hello World</container>", new Component());
+      Language.Language.ParseXML("<Container prop1='Value 1'>Hello World</Container>", new Component());
+    }
+
+    [Fact]
+    public void BindedLiteralProp()
+    {
+      Language.Language.ParseXML("<Container :prop1=\"'string'\">Hello World</Container>", new Component());
+      Language.Language.ParseXML("<Container :prop1=\"15\">Hello World</Container>", new Component());
+      Language.Language.ParseXML("<Container :prop1=\"15.0\">Hello World</Container>", new Component());
+      Language.Language.ParseXML("<Container :prop1=\"true\">Hello World</Container>", new Component());
     }
 
     [Fact]
     public void BindedProp()
     {
-      Language.Language.ParseXML("<container :prop1=\"Prop\">Hello World</container>", new Component());
+      Language.Language.ParseXML("<Container :prop1=\"Integer\">Hello World</Container>", new Component());
     }
 
     [Fact]
     public void EventProp()
     {
-      Language.Language.ParseXML("<container @select=\"OnSelect($event)\">Hello World</container>", new Component());
+      Language.Language.ParseXML("<Container @select=\"OnSelect($event)\">Hello World</Container>", new Component());
     }
 
     public class Component : UIComponent

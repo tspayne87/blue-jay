@@ -1,19 +1,47 @@
 grammar BlueJayXML;
 prog                        : elementExpression EOF ;
 
-elementExpression           : STARTELEMENT elementNameExpression ((WS)+ attributeExpression)* (WS)* ENDSINGLE
-                            | STARTELEMENT elementNameExpression ((WS)+ attributeExpression)* ENDELEMENT textExpression ENDSTART elementNameExpression ENDELEMENT
-                            ;
-elementNameExpression       : LOWER (DIGIT | LOWER | MINUS)*
+elementExpression           : STARTELEMENT identifier ((WS)+ attributeExpression)* (WS)* ENDSINGLE
+                            | STARTELEMENT identifier ((WS)+ attributeExpression)* ENDELEMENT textExpression ENDSTART identifier ENDELEMENT
                             ;
 attributeExpression         : stringAttributeExpression
+                            | bindingAttributeExpression
                             ;
-stringAttributeExpression   : attributeNameExpression EQUALS SINGLEQUOTE textExpression SINGLEQUOTE
-                            | attributeNameExpression EQUALS DOUBLEQUOTE textExpression DOUBLEQUOTE
+stringAttributeExpression   : identifier EQUALS SINGLEQUOTE textExpression SINGLEQUOTE
+                            | identifier EQUALS DOUBLEQUOTE textExpression DOUBLEQUOTE
                             ;
-attributeNameExpression     : LOWER (DIGIT | LOWER | MINUS)*
+bindingAttributeExpression  : COLON identifier EQUALS SINGLEQUOTE basicExpression SINGLEQUOTE
+                            | COLON identifier EQUALS DOUBLEQUOTE basicExpression DOUBLEQUOTE
                             ;
 textExpression              : (UPPER | LOWER | DIGIT | WS)*
+                            ;
+basicExpression             : literalExpression
+                            | functionExpression
+                            | identifier
+                            | contextVarExpression
+                            ;
+literalExpression           : string
+                            | decimal
+                            | integer
+                            | boolean
+                            ;
+functionExpression          : identifier LPARAM argumentExpression RPARAM
+                            ;
+contextVarExpression        : DOLLAR EVENT
+                            ;
+argumentExpression          : basicExpression (COMMA basicExpression)*
+                            ;
+identifier                  : (LOWER | UPPER | UNDERSCORE) (LOWER | UPPER | DIGIT)*
+                            ;
+decimal                     : MINUS? DIGIT+ DOT DIGIT+
+                            ;
+integer                     : MINUS? DIGIT+
+                            ;
+string                      : SINGLEQUOTE textExpression SINGLEQUOTE
+                            | DOUBLEQUOTE textExpression DOUBLEQUOTE
+                            ;
+boolean                     : TRUE
+                            | FALSE
                             ;
 
 // Single tokens
@@ -23,6 +51,14 @@ STARTELEMENT      : '<' ;
 DOUBLEQUOTE       : '"' ;
 SINGLEQUOTE       : '\'' ;
 MINUS             : '-' ;
+COLON             : ':' ;
+UNDERSCORE        : '_' ;
+DOLLAR            : '$' ;
+LPARAM            : '(' ;
+RPARAM            : ')' ;
+COMMA             : ',' ;
+QUESTION          : '?' ;
+DOT               : '.' ;
 LOWER             : [a-z] ;
 UPPER             : [A-Z] ;
 DIGIT             : [0-9] ;
@@ -31,6 +67,9 @@ WS                : [ \t\r\n] ;
 // Multi token
 ENDSINGLE         : '/>' ;
 ENDSTART          : '</' ;
+EVENT             : E V E N T ;
+TRUE              : T R U E ;
+FALSE             : F A L S E ;
 
 // Case Insensitive found at https://github.com/antlr/antlr4/blob/master/doc/case-insensitive-lexing.md
 fragment A : [aA] ;
