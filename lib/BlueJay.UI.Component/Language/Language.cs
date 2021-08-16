@@ -38,16 +38,22 @@ namespace BlueJay.UI.Component.Language
       return (visitor.Style, visitor.ReactiveProperties);
     }
 
-    public static LanguageScope ParseUIComponet<T>(IServiceProvider serviceProvider)
+    public static ElementNode ParseUIComponet<T>(this IServiceProvider serviceProvider)
       where T : UIComponent
     {
-      var instance = ActivatorUtilities.CreateInstance(serviceProvider, typeof(T));
-      var view = (ViewAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ViewAttribute));
-
-      return ParseXML(view.XML, instance);
+      return ParseUIComponet(serviceProvider, typeof(T), out var instance);
     }
 
-    public static LanguageScope ParseXML(string xml, object instance)
+    internal static ElementNode ParseUIComponet(this IServiceProvider serviceProvider, Type type, out object instance)
+    {
+      instance = ActivatorUtilities.CreateInstance(serviceProvider, type);
+      var view = (ViewAttribute)Attribute.GetCustomAttribute(type, typeof(ViewAttribute));
+      var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
+
+      return ParseXML(serviceProvider, view.XML, instance, components?.Components);
+    }
+
+    public static ElementNode ParseXML(this IServiceProvider serviceProvider, string xml, object instance, List<Type> components = null)
     {
       var stream = new AntlrInputStream(xml);
       ITokenSource lexer = new BlueJayXMLLexer(stream);
@@ -56,9 +62,9 @@ namespace BlueJay.UI.Component.Language
 
       var expr = parser.prog();
       
-      var visitor = new BlueJayXMLVisitor(instance);
+      var visitor = new BlueJayXMLVisitor(serviceProvider, instance, components);
       visitor.Visit(expr);
-      return visitor.Scope;
+      return visitor.Root;
     }
   }
 }

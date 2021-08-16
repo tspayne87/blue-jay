@@ -10,10 +10,10 @@ using System.Collections.Generic;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<container style=""TextAlign: Left"" e:focus=""OnFocus"" e:blur=""OnBlur"" e:keyboardUp=""OnKeyboardUp"">
+<Container Style=""TextAlign: Left"" @Focus=""OnFocus()"" @Blur=""OnBlur()"" @KeyboardUp=""OnKeyboardUp($event)"">
   {{Value}}
-  <container b:if=""ShowBar"" style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
-</container>
+  <Container if=""ShowBar"" Style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
+</Container>
     ")]
   public class TextInput : UIComponent
   {
@@ -85,14 +85,14 @@ namespace BlueJay.UI.Component.Interactivity
       BarHeight.Value = (int)Root.MeasureString(" ", _fonts).Y;
     }
 
-    public bool OnFocus(FocusEvent evt)
+    public bool OnFocus()
     {
       UpdatePosition(Value.Value.Length);
       ShowBar.Value = true;
       return true;
     }
 
-    public bool OnBlur(BlurEvent evt)
+    public bool OnBlur()
     {
       ShowBar.Value = false;
       return true;

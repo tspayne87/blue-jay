@@ -5,9 +5,9 @@ using System.Text;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<container onSelect=""OnSelect"" style=""BackgroundColor: 200, 200, 200"">
-  <container style=""WidthPercentage: 0.5; HeightPercentage: 1; BackgroundColor: 60, 60, 60; HorizontalAlign: {{Align}}"" onSelect=""OnSelect"" />
-</container>
+<Container Style=""BackgroundColor: 200, 200, 200"" @Select=""OnSelect()"">
+  <Container Style=""WidthPercentage: 0.5; HeightPercentage: 1; BackgroundColor: 60, 60, 60; HorizontalAlign: {{Align}}"" @Select=""OnSelect()"" />
+</Container>
     ")]
   public class SwitchInput : UIComponent
   {
@@ -27,7 +27,7 @@ namespace BlueJay.UI.Component.Interactivity
       };
     }
 
-    public bool OnSelect(SelectEvent evt)
+    public bool OnSelect()
     {
       Model.Value = !Model.Value;
       Align.Value = Model.Value ? HorizontalAlign.Right : HorizontalAlign.Left;

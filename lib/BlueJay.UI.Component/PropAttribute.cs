@@ -30,6 +30,11 @@ namespace BlueJay.UI.Component
   public enum PropBinding
   {
     /// <summary>
+    /// If this prop does not have a binding
+    /// </summary>
+    None,
+
+    /// <summary>
     /// One way binding should only allow the parent to alter the data for the prop
     /// </summary>
     OneWay,

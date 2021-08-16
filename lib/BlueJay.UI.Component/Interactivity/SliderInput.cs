@@ -10,10 +10,10 @@ using System.Text;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<container onMouseMove.global=""OnMouseMove"" onMouseUp.global=""OnMouseUp"">
-  <container style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
-  <container style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; LeftOffset: {{Left}}"" onMouseDown=""OnMouseDown"" />
-</container>
+<Container @MouseMove.global=""OnMouseMove($event)"" @MouseUp.global=""OnMouseUp()"">
+  <Container Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
+  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; LeftOffset: {{Left}}"" @Select=""OnMouseDown()"" />
+</Container>
     ")]
   public class SliderInput : UIComponent
   {
@@ -49,7 +49,7 @@ namespace BlueJay.UI.Component.Interactivity
       Left = new ReactiveProperty<int>(_padding);
     }
 
-    public bool OnMouseDown(MouseDownEvent evt)
+    public bool OnMouseDown()
     {
       _selected = true;
 
@@ -63,7 +63,6 @@ namespace BlueJay.UI.Component.Interactivity
           _xOffset = (int)pa.Position.X + _padding;
           _innerWidth = innerWidth - (_padding * 2) - 16;
           _tickOffset = Math.Max((float)_innerWidth / Ticks.Value, 1f);
-          var i = 0;
         }
       }
       return true;
@@ -80,7 +79,7 @@ namespace BlueJay.UI.Component.Interactivity
       return true;
     }
 
-    public bool OnMouseUp(MouseUpEvent evt)
+    public bool OnMouseUp()
     {
       _selected = false;
       return true;

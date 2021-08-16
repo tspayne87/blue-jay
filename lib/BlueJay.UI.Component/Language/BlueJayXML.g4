@@ -1,11 +1,24 @@
 grammar BlueJayXML;
 prog                        : elementExpression EOF ;
 
-elementExpression           : STARTELEMENT identifier ((WS)+ attributeExpression)* (WS)* ENDSINGLE
-                            | STARTELEMENT identifier ((WS)+ attributeExpression)* ENDELEMENT textExpression ENDSTART identifier ENDELEMENT
+elementExpression           : containerExpression
+                            | slotExpression
+                            | customElementExpression
+                            ;
+containerExpression         : STARTELEMENT CONTAINER ((WS)+ attributeExpression)* (WS)* ENDSINGLE
+                            | STARTELEMENT CONTAINER ((WS)+ attributeExpression)* ENDELEMENT innerExpression ENDSTART CONTAINER ENDELEMENT
+                            ;
+slotExpression              : STARTELEMENT SLOT ((WS)+ attributeExpression)* (WS)* ENDSINGLE
+                            ;
+customElementExpression     : STARTELEMENT identifier ((WS)+ attributeExpression)* (WS)* ENDSINGLE
+                            | STARTELEMENT identifier ((WS)+ attributeExpression)* ENDELEMENT innerExpression ENDSTART identifier ENDELEMENT
+                            ;
+innerExpression             : textExpression (WS)* elementExpression*
+                            | elementExpression (WS)* elementExpression*
                             ;
 attributeExpression         : stringAttributeExpression
                             | bindingAttributeExpression
+                            | eventAttributeExpression
                             ;
 stringAttributeExpression   : identifier EQUALS SINGLEQUOTE textExpression SINGLEQUOTE
                             | identifier EQUALS DOUBLEQUOTE textExpression DOUBLEQUOTE
@@ -13,7 +26,10 @@ stringAttributeExpression   : identifier EQUALS SINGLEQUOTE textExpression SINGL
 bindingAttributeExpression  : COLON identifier EQUALS SINGLEQUOTE basicExpression SINGLEQUOTE
                             | COLON identifier EQUALS DOUBLEQUOTE basicExpression DOUBLEQUOTE
                             ;
-textExpression              : (UPPER | LOWER | DIGIT | WS)*
+eventAttributeExpression    : AT identifier (DOT GLOBAL)? EQUALS SINGLEQUOTE functionExpression SINGLEQUOTE
+                            | AT identifier (DOT GLOBAL)? EQUALS DOUBLEQUOTE functionExpression DOUBLEQUOTE
+                            ;
+textExpression              : (UPPER | LOWER | DIGIT | WS | CONTAINER | FALSE | TRUE | EVENT | GLOBAL)*
                             ;
 basicExpression             : literalExpression
                             | functionExpression
@@ -29,7 +45,7 @@ functionExpression          : identifier LPARAM argumentExpression RPARAM
                             ;
 contextVarExpression        : DOLLAR EVENT
                             ;
-argumentExpression          : basicExpression (COMMA basicExpression)*
+argumentExpression          : basicExpression (WS* COMMA WS* basicExpression)*
                             ;
 identifier                  : (LOWER | UPPER | UNDERSCORE) (LOWER | UPPER | DIGIT)*
                             ;
@@ -59,6 +75,7 @@ RPARAM            : ')' ;
 COMMA             : ',' ;
 QUESTION          : '?' ;
 DOT               : '.' ;
+AT                : '@' ;
 LOWER             : [a-z] ;
 UPPER             : [A-Z] ;
 DIGIT             : [0-9] ;
@@ -70,6 +87,9 @@ ENDSTART          : '</' ;
 EVENT             : E V E N T ;
 TRUE              : T R U E ;
 FALSE             : F A L S E ;
+CONTAINER         : C O N T A I N E R ;
+SLOT              : S L O T ;
+GLOBAL            : G L O B A L ;
 
 // Case Insensitive found at https://github.com/antlr/antlr4/blob/master/doc/case-insensitive-lexing.md
 fragment A : [aA] ;
