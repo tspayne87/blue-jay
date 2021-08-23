@@ -30,15 +30,15 @@ namespace BlueJay.UI.Component.Common
     /// </summary>
     /// <param name="parent">The current entity parent we are working with</param>
     /// <returns>The list of entities generated from processing in this way</returns>
-    public override IEntity Render(IEntity parent)
-    {
-      var parentComponents = (ComponentAttribute)Attribute.GetCustomAttribute(Parent.GetType(), typeof(ComponentAttribute));
-      var components = ServiceProviderExtension.Globals.Concat(parentComponents?.Components ?? new List<Type>());
-      for (var i = 0; i < Current.Node.ChildNodes.Count; ++i)
-      {
-        ServiceProviderExtension.GenerateItem(Current.Node.ChildNodes[i], this._serviceProvider, components, Parent, Parent.Parent, parent);
-      }
-      return null;
-    }
+    //public override IEntity Render(IEntity parent)
+    //{
+    //  var parentComponents = (ComponentAttribute)Attribute.GetCustomAttribute(Parent.GetType(), typeof(ComponentAttribute));
+    //  var components = ServiceProviderExtension.Globals.Concat(parentComponents?.Components ?? new List<Type>());
+    //  for (var i = 0; i < Current.Node.ChildNodes.Count; ++i)
+    //  {
+    //    // ServiceProviderExtension.GenerateItem(Current.Node.ChildNodes[i], this._serviceProvider, components, Parent, Parent.Parent, parent);
+    //  }
+    //  return null;
+    //}
   }
 }

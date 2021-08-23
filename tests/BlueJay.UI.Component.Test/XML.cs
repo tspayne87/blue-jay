@@ -1,3 +1,4 @@
+using BlueJay.UI.Component.Interactivity;
 using BlueJay.UI.Component.Language;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
@@ -16,28 +17,54 @@ namespace BlueJay.UI.Component.Test
     [Fact]
     public void Single()
     {
-      Provider.ParseXML("<Container />", new Component());
+      var tree = Provider.ParseXML("<Container />", new Component());
+
+      Assert.Empty(tree.Children);
+      Assert.Equal(ElementType.Container, tree.Type);
     }
 
     [Fact]
     public void InnerText()
     {
-      Provider.ParseXML("<Container>Hello World</Container>", new Component());
+      var tree = Provider.ParseXML("<Container>Hello World</Container>", new Component());
+
+      Assert.Single(tree.Children);
+      Assert.NotNull(tree.Children[0].Props.FirstOrDefault(x => x.Name == PropNames.Text));
+      Assert.Equal("Hello World", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
     }
 
     [Fact]
     public void StringProp()
     {
-      Provider.ParseXML("<Container prop1='Value 1'>Hello World</Container>", new Component());
+      var tree = Provider.ParseXML("<Container Prop1='Value 1' />", new Component());
+
+      Assert.Empty(tree.Children);
+      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Prop1"));
+      Assert.Equal("Value 1", tree.Props.First(x => x.Name == "Prop1").DataGetter(null));
     }
 
     [Fact]
     public void BindedLiteralProp()
     {
-      Provider.ParseXML("<Container :prop1=\"'string'\">Hello World</Container>", new Component());
-      Provider.ParseXML("<Container :prop1=\"15\">Hello World</Container>", new Component());
-      Provider.ParseXML("<Container :prop1=\"15.0\">Hello World</Container>", new Component());
-      Provider.ParseXML("<Container :prop1=\"true\">Hello World</Container>", new Component());
+      var tree = Provider.ParseXML("<Container :Prop1=\" 'Hello World'\" />", new Component());
+      Assert.Empty(tree.Children);
+      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Prop1"));
+      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "Prop1").DataGetter(null));
+
+      tree = Provider.ParseXML("<Container :Prop1=\"15\" />", new Component());
+      Assert.Empty(tree.Children);
+      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Prop1"));
+      Assert.Equal(15, tree.Props.First(x => x.Name == "Prop1").DataGetter(null));
+
+      tree = Provider.ParseXML("<Container :Prop1=\"15.0\" />", new Component());
+      Assert.Empty(tree.Children);
+      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Prop1"));
+      Assert.Equal(15.0f, tree.Props.First(x => x.Name == "Prop1").DataGetter(null));
+
+      tree = Provider.ParseXML("<Container :Prop1='true' />", new Component());
+      Assert.Empty(tree.Children);
+      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Prop1"));
+      Assert.Equal(true, tree.Props.First(x => x.Name == "Prop1").DataGetter(null));
     }
 
     [Fact]
@@ -45,11 +72,11 @@ namespace BlueJay.UI.Component.Test
     {
       var component = new Component();
 
-      var identifier = Provider.ParseXML("<Container :prop1=\"Integer\">Hello World</Container>", component);
-      var func = Provider.ParseXML("<Container :prop1=\"OnSelect($event, Integer)\">Hello World</Container>", component);
+      var identifier = Provider.ParseXML("<Container :Prop1=\"Integer\">Hello World</Container>", component);
+      var func = Provider.ParseXML("<Container :Prop1=\"OnSelect($event, Integer)\">Hello World</Container>", component);
 
-      var identifierExpression = identifier.Props.FirstOrDefault(x => x.Name == "prop1");
-      var funcExpression = func.Props.FirstOrDefault(x => x.Name == "prop1");
+      var identifierExpression = identifier.Props.FirstOrDefault(x => x.Name == "Prop1");
+      var funcExpression = func.Props.FirstOrDefault(x => x.Name == "Prop1");
 
       Assert.Equal(5, identifierExpression.DataGetter(null));
       Assert.True((bool)funcExpression.DataGetter(null));
@@ -70,7 +97,7 @@ namespace BlueJay.UI.Component.Test
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "ButtonText"));
 
       Assert.Equal(5, tree.Props.First(x => x.Name == "Int").DataGetter(null));
-      Assert.Equal("Value 1", tree.Props.First(x => x.Name == "String").Data);
+      Assert.Equal("Value 1", tree.Props.First(x => x.Name == "String").DataGetter(null));
       Assert.Equal("Hello World", tree.Props.First(x => x.Name == "ButtonText").DataGetter(null));
       Assert.Equal(ElementType.Container, tree.Type);
       Assert.Equal(2, tree.Children.Count);
@@ -80,8 +107,8 @@ namespace BlueJay.UI.Component.Test
 
       Assert.Equal(ElementType.Text, tree.Children[0].Type);
       Assert.Equal(ElementType.Text, tree.Children[1].Type);
-      Assert.Equal("Button Hello World", tree.Children[0].Props.First(x => x.Name == PropNames.Text).Data);
-      Assert.Equal("Hello World", tree.Children[1].Props.First(x => x.Name == PropNames.Text).Data);
+      Assert.Equal("Button Hello World", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
+      Assert.Equal("Hello World", tree.Children[1].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
     }
 
     [Fact]
@@ -104,8 +131,72 @@ namespace BlueJay.UI.Component.Test
     [Fact]
     public void EventProp()
     {
-      Provider.ParseXML("<Container @select=\"OnSelect($event, Integer)\">Hello World</Container>", new Component());
-      Provider.ParseXML("<Container @select.global=\"OnSelect($event, Integer)\">Hello World</Container>", new Component());
+      var tree = Provider.ParseXML("<Container @Select=\"OnSelect($event, Integer)\" />", new Component());
+      Assert.Empty(tree.Children);
+      Assert.NotNull(tree.Events.FirstOrDefault(x => x.Name == "Select"));
+      Assert.False(tree.Events.First(x => x.Name == "Select").IsGlobal);
+      Assert.True((bool)tree.Events.Find(x => x.Name == "Select").Callback(null));
+
+      var treeGlobal = Provider.ParseXML("<Container @Select.Global=\"OnSelect($event, Integer)\" />", new Component());
+      Assert.Empty(treeGlobal.Children);
+      Assert.NotNull(treeGlobal.Events.FirstOrDefault(x => x.Name == "Select"));
+      Assert.True(treeGlobal.Events.First(x => x.Name == "Select").IsGlobal);
+      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(null));
+    }
+
+    [Fact]
+    public void StyleProp()
+    {
+      var component = Provider.ParseXML("<Container Style=\"Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200\">Hello World</Container>", new Component());
+      Assert.NotNull(component.Props.FirstOrDefault(x => x.Name == PropNames.Style));
+
+      var test = new Color(200, 200, 200);
+
+      var style = component.Props.First(x => x.Name == PropNames.Style).DataGetter(null) as Style;
+      Assert.Equal(Position.Absolute, style.Position);
+      Assert.Equal(1f, style.WidthPercentage);
+      Assert.Equal(4, style.Height);
+      Assert.Equal(VerticalAlign.Center, style.VerticalAlign);
+      Assert.Equal(new Color(200, 200, 200), style.BackgroundColor);
+    }
+
+    [Fact]
+    public void TextExpression()
+    {
+      var instance = new Component();
+      var tree = Provider.ParseXML("<Container>Score: {{Integer}}</Container>", instance);
+
+      Assert.Single(tree.Children);
+      Assert.NotNull(tree.Children[0].Props.FirstOrDefault(x => x.Name == PropNames.Text));
+
+      Assert.Equal("Score: 5", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
+
+      instance.Integer.Value = 10;
+      Assert.Equal("Score: 10", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
+    }
+
+    [Fact]
+    public void ReactiveStyleProp()
+    {
+      var instance = new Component();
+      var component = Provider.ParseXML("<Container Style=\"Position: Absolute; WidthPercentage: 1; Height: {{Integer}}; VerticalAlign: Center; BackgroundColor: 200, 200, 200\">Hello World</Container>", instance);
+      Assert.NotNull(component.Props.FirstOrDefault(x => x.Name == PropNames.Style));
+
+      var style = component.Props.First(x => x.Name == PropNames.Style).DataGetter(null) as Style;
+      Assert.Equal(Position.Absolute, style.Position);
+      Assert.Equal(1f, style.WidthPercentage);
+      Assert.Equal(5, style.Height);
+      Assert.Equal(VerticalAlign.Center, style.VerticalAlign);
+      Assert.Equal(new Color(200, 200, 200), style.BackgroundColor);
+
+      // Re-apply style changes
+      instance.Integer.Value = 10;
+      component.Props.First(x => x.Name == PropNames.Style).DataGetter(style);
+      Assert.Equal(Position.Absolute, style.Position);
+      Assert.Equal(1f, style.WidthPercentage);
+      Assert.Equal(10, style.Height);
+      Assert.Equal(VerticalAlign.Center, style.VerticalAlign);
+      Assert.Equal(new Color(200, 200, 200), style.BackgroundColor);
     }
 
     public class Component : UIComponent

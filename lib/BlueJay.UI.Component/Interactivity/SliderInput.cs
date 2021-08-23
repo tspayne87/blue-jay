@@ -10,7 +10,7 @@ using System.Text;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<Container @MouseMove.global=""OnMouseMove($event)"" @MouseUp.global=""OnMouseUp()"">
+<Container @MouseMove.Global=""OnMouseMove($event)"" @MouseUp.Global=""OnMouseUp()"">
   <Container Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
   <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; LeftOffset: {{Left}}"" @Select=""OnMouseDown()"" />
 </Container>

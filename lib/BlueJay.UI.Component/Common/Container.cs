@@ -30,17 +30,17 @@ namespace BlueJay.UI.Component.Common
     /// </summary>
     /// <param name="parent">The parent that should be bound to this container</param>
     /// <returns>Will return an entity that represents the container</returns>
-    public override IEntity Render(IEntity parent)
-    {
-      var entity = _serviceProvider.AddContainer(new Style(), parent);
-      _serviceProvider.AddEventListener<SelectEvent>(x => Emit("Select", x), entity);
-      _serviceProvider.AddEventListener<BlurEvent>(x => Emit("Blur", x), entity);
-      _serviceProvider.AddEventListener<FocusEvent>(x => Emit("Focus", x), entity);
-      _serviceProvider.AddEventListener<KeyboardUpEvent>(x => Emit("KeyboardUp", x), entity);
-      _serviceProvider.AddEventListener<MouseDownEvent>(x => Emit("MouseDown", x), entity);
-      _serviceProvider.AddEventListener<MouseMoveEvent>(x => Emit("MouseMove", x), entity);
-      _serviceProvider.AddEventListener<MouseUpEvent>(x => Emit("MouseUp", x), entity);
-      return entity;
-    }
+    //public override IEntity Render(IEntity parent)
+    //{
+    //  var entity = _serviceProvider.AddContainer(new Style(), parent);
+    //  _serviceProvider.AddEventListener<SelectEvent>(x => Emit("Select", x), entity);
+    //  _serviceProvider.AddEventListener<BlurEvent>(x => Emit("Blur", x), entity);
+    //  _serviceProvider.AddEventListener<FocusEvent>(x => Emit("Focus", x), entity);
+    //  _serviceProvider.AddEventListener<KeyboardUpEvent>(x => Emit("KeyboardUp", x), entity);
+    //  _serviceProvider.AddEventListener<MouseDownEvent>(x => Emit("MouseDown", x), entity);
+    //  _serviceProvider.AddEventListener<MouseMoveEvent>(x => Emit("MouseMove", x), entity);
+    //  _serviceProvider.AddEventListener<MouseUpEvent>(x => Emit("MouseUp", x), entity);
+    //  return entity;
+    //}
   }
 }

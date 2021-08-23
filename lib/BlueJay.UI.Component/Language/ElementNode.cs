@@ -31,9 +31,12 @@ namespace BlueJay.UI.Component.Language
     public List<ElementEvent> Events { get; private set; }
     public List<IReactiveProperty> ReactiveProps { get; private set; }
 
-    public ElementNode(ElementType type)
+    public UIComponent Instance { get; private set; }
+
+    public ElementNode(ElementType type, UIComponent instance)
     {
       Type = type;
+      Instance = instance;
       Children = new List<ElementNode>();
       Props = new List<ElementProp>();
       Events = new List<ElementEvent>();
@@ -44,7 +47,6 @@ namespace BlueJay.UI.Component.Language
   public class ElementProp
   {
     public string Name { get; set; }
-    public object Data { get; set; }
     public Func<object, object> DataGetter { get; set; }
     public List<IReactiveProperty> ReactiveProps { get; set; }
     public PropBinding Type { get; set; }
@@ -72,5 +74,6 @@ namespace BlueJay.UI.Component.Language
   public static class PropNames
   {
     public const string Text = "Text";
+    public const string Style = "Style";
   }
 }

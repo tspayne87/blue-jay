@@ -50,54 +50,54 @@ namespace BlueJay.UI.Component.Common
     /// </summary>
     /// <param name="parent">The current parent component we need to add to the created entity</param>
     /// <returns>The generated text entity ready for rendering</returns>
-    public override IEntity Render(IEntity parent)
-    {
-      IEntity entity;
-      var txt = Node.InnerText;
-      if (ServiceProviderExtension.ExpressionRegex.IsMatch(txt))
-      {
-        entity = _serviceProvider.AddText(ServiceProviderExtension.ExpressionRegex.TranslateText(txt, Current).Trim(), parent);
+    //public override IEntity Render(IEntity parent)
+    //{
+    //  IEntity entity;
+    //  var txt = Node.InnerText;
+    //  if (ServiceProviderExtension.ExpressionRegex.IsMatch(txt))
+    //  {
+    //    entity = _serviceProvider.AddText(ServiceProviderExtension.ExpressionRegex.TranslateText(txt, Current).Trim(), parent);
 
-        // Calculate all the reactive props used and add a callback if a property changes
-        foreach (var prop in ServiceProviderExtension.ExpressionRegex.GetReactiveProps(txt, Current))
-        {
-          prop.PropertyChanged += (sender, o) =>
-          {
-            var ta = entity.GetAddon<TextAddon>();
-            ta.Text = ServiceProviderExtension.ExpressionRegex.TranslateText(txt, Current);
-            entity.Update(ta);
-            _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-          };
-        }
-      }
-      else
-      {
-        entity = _serviceProvider.AddText(txt, parent);
-      }
+    //    // Calculate all the reactive props used and add a callback if a property changes
+    //    foreach (var prop in ServiceProviderExtension.ExpressionRegex.GetReactiveProps(txt, Current))
+    //    {
+    //      prop.PropertyChanged += (sender, o) =>
+    //      {
+    //        var ta = entity.GetAddon<TextAddon>();
+    //        ta.Text = ServiceProviderExtension.ExpressionRegex.TranslateText(txt, Current);
+    //        entity.Update(ta);
+    //        _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+    //      };
+    //    }
+    //  }
+    //  else
+    //  {
+    //    entity = _serviceProvider.AddText(txt, parent);
+    //  }
 
-      // Add Event Listeners that should send event up to parent since text cannot handle events
-      _serviceProvider.AddEventListener(CallParentEmitCallback<SelectEvent>("onSelect"), entity);
-      _serviceProvider.AddEventListener(CallParentEmitCallback<BlurEvent>("onBlur"), entity);
-      _serviceProvider.AddEventListener(CallParentEmitCallback<FocusEvent>("onFocus"), entity);
-      _serviceProvider.AddEventListener(CallParentEmitCallback<KeyboardUpEvent>("onKeyboardUp"), entity);
-      _serviceProvider.AddEventListener(CallParentEmitCallback<MouseDownEvent>("MouseDown"), entity);
-      _serviceProvider.AddEventListener(CallParentEmitCallback<MouseMoveEvent>("MouseMove"), entity);
-      _serviceProvider.AddEventListener(CallParentEmitCallback<MouseUpEvent>("MouseUp"), entity);
+    //  // Add Event Listeners that should send event up to parent since text cannot handle events
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<SelectEvent>("onSelect"), entity);
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<BlurEvent>("onBlur"), entity);
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<FocusEvent>("onFocus"), entity);
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<KeyboardUpEvent>("onKeyboardUp"), entity);
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<MouseDownEvent>("MouseDown"), entity);
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<MouseMoveEvent>("MouseMove"), entity);
+    //  _serviceProvider.AddEventListener(CallParentEmitCallback<MouseUpEvent>("MouseUp"), entity);
 
-      return entity;
-    }
+    //  return entity;
+    //}
 
-    public Func<T, bool> CallParentEmitCallback<T>(string evt)
-    {
-      return x =>
-      {
-        var method = Current?.GetType().GetMethod(Node?.ParentNode?.Attributes?[evt]?.InnerText ?? string.Empty);
-        if (method != null)
-        {
-          return (bool)method.Invoke(Current, new object[] { x });
-        }
-        return true;
-      };
-    }
+    //public Func<T, bool> CallParentEmitCallback<T>(string evt)
+    //{
+    //  return x =>
+    //  {
+    //    var method = Current?.GetType().GetMethod(Node?.ParentNode?.Attributes?[evt]?.InnerText ?? string.Empty);
+    //    if (method != null)
+    //    {
+    //      return (bool)method.Invoke(Current, new object[] { x });
+    //    }
+    //    return true;
+    //  };
+    //}
   }
 }

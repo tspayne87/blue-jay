@@ -8,20 +8,19 @@ using System.Collections.Generic;
 namespace BlueJay.Shared.Components
 {
   [View(@"
-<container style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
-  <button style=""ColumnSpan: 2"" onSelect=""OnBackToTitleClick"">Back To Title</button>
+<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
+  <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <text-input style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 5"" />
+  <TextInput Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 5"" />
 
-  <switch-input style=""Height: 25"" Model=""{{Switch}}"" />
-  <container if=""{{Switch}}"" style=""ColumnSpan: 4; TextAlign: Left"">Switch On</container>
+  <SwitchInput Style=""Height: 25"" Model=""Switch"" />
+  <Container Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
 
-  <slider-input Model=""{{Slider}}"" Max=""20"" style=""ColumnSpan: 3"" />
-  <container style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</container>
-</container>
+  <SliderInput Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
+  <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
+</Container>
     ")]
   [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput))]
-  // <dropdown-input Model=""{{Dropdown}}"" Field=""Name"" Items=""DropdownItems"" style=""ColumnSpan: 2"" />
   public class UIComponentTestComponent : UIComponent
   {
     /// <summary>
@@ -75,7 +74,7 @@ namespace BlueJay.Shared.Components
     /// </summary>
     /// <param name="evt">The event that was sent from the triggered event</param>
     /// <returns>Will return true representing we should keep propegating this event</returns>
-    public bool OnBackToTitleClick(SelectEvent evt)
+    public bool OnBackToTitleClick()
     {
       _views.SetCurrent<TitleView>();
       return true;

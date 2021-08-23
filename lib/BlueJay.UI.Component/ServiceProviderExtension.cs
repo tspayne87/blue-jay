@@ -1,34 +1,19 @@
-﻿using BlueJay.Component.System.Interfaces;
-using BlueJay.Core;
-using BlueJay.Events;
+﻿using Antlr4.Runtime;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Keyboard;
 using BlueJay.Events.Mouse;
-using BlueJay.UI.Addons;
-using BlueJay.UI.Component.Common;
 using BlueJay.UI.Component.Language;
+using BlueJay.UI.Component.Language.Antlr;
+using BlueJay.UI.Factories;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace BlueJay.UI.Component
 {
   public static class ServiceProviderExtension
   {
-    /// <summary>
-    /// The set of global objects defined by the project
-    /// </summary>
-    internal static List<Type> Globals = new List<Type>() { typeof(Container), typeof(Slot) };
-
-    /// <summary>
-    /// The expression regex to process the text and convert the expressions into data from the component
-    /// </summary>
-    internal static Regex ExpressionRegex = new Regex(@"{{([^}]+)}}");
-
     /// <summary>
     /// Method is meant to add a UI component to the system
     /// </summary>
@@ -36,316 +21,110 @@ namespace BlueJay.UI.Component
     /// <param name="provider">The service provider we need to process the component with</param>
     /// <returns>Will return the generated root element for the component</returns>
     public static IEntity AddUIComponent<T>(this IServiceProvider provider)
+      where T : UIComponent
     {
-      return AddUIComponent(provider, typeof(T));
+      return ProcessElementNode(provider, provider.ParseUIComponet<T>(), null);
     }
 
-    /// <summary>
-    /// Internal add ui component that is meant to take a basic type on translate that type to a component
-    /// </summary>
-    /// <param name="provider">The service provider we need to process the component with</param>
-    /// <param name="type">The current UI component we need to process for the system</param>
-    /// <returns>Will return the generated root element for the component</returns>
-    internal static IEntity AddUIComponent(IServiceProvider provider, Type type)
+    public static ElementNode ParseXML(this IServiceProvider serviceProvider, string xml, UIComponent instance, List<Type> components = null)
     {
+      var stream = new AntlrInputStream(xml.Trim());
+      ITokenSource lexer = new XMLLexer(stream);
+      ITokenStream tokens = new CommonTokenStream(lexer);
+      var parser = new XMLParser(tokens);
+
+      var expr = parser.document();
+
+      var visitor = new XMLParserVisitor(serviceProvider, instance, components);
+      visitor.Visit(expr);
+      return visitor.Root;
+    }
+
+    internal static ExpressionResult ParseExpression(this IServiceProvider serviceProvider, string expression, UIComponent instance)
+    {
+      var stream = new AntlrInputStream(expression);
+      ITokenSource lexer = new ExpressionLexer(stream);
+      ITokenStream tokens = new CommonTokenStream(lexer);
+      var parser = new ExpressionParser(tokens);
+
+      var expr = parser.expr();
+
+      var visitor = new ExpressionVisitor(instance);
+      return visitor.Visit(expr) as ExpressionResult;
+    }
+
+    internal static ExpressionResult ParseStyle(this IServiceProvider serviceProvider, string expression, UIComponent instance)
+    {
+      var stream = new AntlrInputStream(expression);
+      ITokenSource lexer = new StyleLexer(stream);
+      ITokenStream tokens = new CommonTokenStream(lexer);
+      var parser = new StyleParser(tokens);
+
+      var expr = parser.expr();
+
+      var visitor = new StyleVisitor(serviceProvider, instance);
+      return visitor.Visit(expr) as ExpressionResult;
+    }
+
+    internal static ElementNode ParseUIComponet<T>(this IServiceProvider serviceProvider)
+      where T : UIComponent
+    {
+      return ParseUIComponet(serviceProvider, typeof(T), out var instance);
+    }
+
+    internal static ElementNode ParseUIComponet(this IServiceProvider serviceProvider, Type type, out UIComponent instance)
+    {
+      instance = ActivatorUtilities.CreateInstance(serviceProvider, type) as UIComponent;
       var view = (ViewAttribute)Attribute.GetCustomAttribute(type, typeof(ViewAttribute));
       var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
-      var collection = provider.GetRequiredService<UIComponentCollection>();
-      IEntity entity = null;
-      // if (view != null && view.View.ChildNodes.Count == 1)
-      // {
-      //   var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
-      //   instance.Initialize(view.View.ChildNodes[0], null, null);
-      //   entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, null);
-      //   collection.Add(instance);
-      // }
 
+      return ParseXML(serviceProvider, view.XML, instance, components?.Components);
+    }
+
+    internal static IEntity ProcessElementNode(IServiceProvider provider, ElementNode node, IEntity parent)
+    {
+      var style = new Style();
+      var processor = node.Props.FirstOrDefault(x => x.Name == PropNames.Style)?.DataGetter;
+      style = processor != null ? processor(null) as Style : new Style();
+
+      IEntity entity = null;
+      switch (node.Type)
+      {
+        case ElementType.Container:
+          entity = provider.AddContainer(style, parent);
+          provider.AddEventListener<SelectEvent>(x => InvokeEvent("Select", x, node.Events), entity);
+          provider.AddEventListener<BlurEvent>(x => InvokeEvent("Blur", x, node.Events), entity);
+          provider.AddEventListener<FocusEvent>(x => InvokeEvent("Focus", x, node.Events), entity);
+          provider.AddEventListener<KeyboardUpEvent>(x => InvokeEvent("KeyboardUp", x, node.Events), entity);
+          provider.AddEventListener<MouseDownEvent>(x => InvokeEvent("MouseDown", x, node.Events), entity);
+          provider.AddEventListener<MouseMoveEvent>(x => InvokeEvent("MouseMove", x, node.Events), entity);
+          provider.AddEventListener<MouseUpEvent>(x => InvokeEvent("MouseUp", x, node.Events), entity);
+          break;
+        case ElementType.Text:
+          var txt = node.Props.FirstOrDefault(x => x.Name == PropNames.Text).DataGetter(null) as string;
+          entity = provider.AddText(txt, style, parent);
+          if (node.Parent != null)
+          {
+            provider.AddEventListener<SelectEvent>(x => InvokeEvent("Select", x, node.Parent.Events), entity);
+            provider.AddEventListener<BlurEvent>(x => InvokeEvent("Blur", x, node.Parent.Events), entity);
+            provider.AddEventListener<FocusEvent>(x => InvokeEvent("Focus", x, node.Parent.Events), entity);
+            provider.AddEventListener<KeyboardUpEvent>(x => InvokeEvent("KeyboardUp", x, node.Parent.Events), entity);
+            provider.AddEventListener<MouseDownEvent>(x => InvokeEvent("MouseDown", x, node.Parent.Events), entity);
+            provider.AddEventListener<MouseMoveEvent>(x => InvokeEvent("MouseMove", x, node.Parent.Events), entity);
+            provider.AddEventListener<MouseUpEvent>(x => InvokeEvent("MouseUp", x, node.Parent.Events), entity);
+          }
+          break;
+      }
+
+      foreach (var child in node.Children)
+        ProcessElementNode(provider, child, entity);
       return entity;
     }
 
-    /// <summary>
-    /// Internal add ui component that is meant to take a basic type on translate that type to a component
-    /// </summary>
-    /// <param name="provider">The service provider we need to process the component with</param>
-    /// <param name="type">The current UI component we need to process for the system</param>
-    /// <param name="parentInstance">The parent instance we are processing</param>
-    /// <param name="node">The current node we are processing for the component type</param>
-    /// <returns>Will return the generated root element for the component</returns>
-    internal static IEntity AddUIComponent(IServiceProvider provider, Type type, UIComponent parentInstance, XmlNode node, IEntity parent = null)
+    internal static bool InvokeEvent<T>(string eventName, T data, List<ElementEvent> events)
     {
-      var view = (ViewAttribute)Attribute.GetCustomAttribute(type, typeof(ViewAttribute));
-      var components = (ComponentAttribute)Attribute.GetCustomAttribute(type, typeof(ComponentAttribute));
-      var collection = provider.GetRequiredService<UIComponentCollection>();
-      IEntity entity = null;
-      // if (view != null && view.View.ChildNodes.Count == 1)
-      // {
-      //   var instance = (UIComponent)ActivatorUtilities.CreateInstance(provider, type);
-      //   instance.Initialize(node, parentInstance, parentInstance);
-      //   entity = GenerateItem(view.View.ChildNodes[0], provider, Globals.Concat(components?.Components ?? new List<Type>()), instance, parentInstance, parent);
-      //   instance.Mounted();
-      //   collection.Add(instance);
-      // }
-
-      return entity;
-    }
-
-    /// <summary>
-    /// Helper method is meant to generate an item based on the xml node and the instance of the component
-    /// </summary>
-    /// <param name="node">The xml node representing the UI component being generated</param>
-    /// <param name="provider">The service provider we need to process the component with</param>
-    /// <param name="components">The components that are used in the xml</param>
-    /// <param name="instance">The current UI component instance we need to process</param>
-    /// <param name="parentInstance">The parent instance of the UI component</param>
-    /// <param name="parent">The current parent we are processing</param>
-    /// <returns>Will return the generated root entity based on the xml</returns>
-    internal static IEntity GenerateItem(XmlNode node, IServiceProvider provider, IEnumerable<Type> components, UIComponent instance, UIComponent parentInstance, IEntity parent = null)
-    {
-      IEntity entity = null;
-      var componentType = components.FirstOrDefault(x => x.Name.Equals(node.Name.Replace("-", ""), StringComparison.OrdinalIgnoreCase));
-      if (node.Name == "#text") componentType = typeof(Text);
-      if (componentType != null)
-      {
-        var processChildren = false;
-        if (Attribute.GetCustomAttribute(componentType, typeof(ViewAttribute)) != null)
-        {
-          entity = AddUIComponent(provider, componentType, instance, node, parent);
-        }
-        else
-        {
-          var component = (UIComponent)ActivatorUtilities.CreateInstance(provider, componentType);
-          component.Initialize(node, instance, parentInstance);
-          entity = component.Render(parent);
-          processChildren = true;
-        }
-
-        if (instance.Root == null)
-        {
-          instance.Root = entity;
-        }
-        
-        // Handle Style updates
-        if (entity != null)
-        {
-          ProcessAttributes(node, instance, entity, provider);
-
-          HandleStyle(node, instance, entity, provider, "style");
-          HandleStyle(node, instance, entity, provider, "hoverStyle");
-          HandleIf(node, instance, entity, provider);
-
-          HandleProps(node, instance, parentInstance, entity, provider);
-          HandleGlobalEvents(node, instance, provider);
-        }
-
-        // Add this ui component as a system if it needs to be added
-        var eventQueue = provider.GetRequiredService<EventQueue>();
-
-        // If this is an update system we need to add an event listener to the queue
-        if (instance is IUpdateSystem || instance is IUpdateEntitySystem || instance is IUpdateEndSystem)
-          eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(provider, new object[] { instance }));
-
-        // If this is a draw system we need to add an event listener to the queue
-        if (instance is IDrawSystem || instance is IDrawEntitySystem || instance is IDrawEndSystem)
-          eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<DrawEventListener>(provider, new object[] { instance }));
-
-        if (processChildren)
-        {
-          for (var i = 0; i < node.ChildNodes.Count; ++i)
-          {
-            GenerateItem(node.ChildNodes[i], provider, components, instance, parentInstance, entity);
-          }
-        }
-      }
-      return entity;
-    }
-
-    private static void ProcessAttributes(XmlNode node, UIComponent instance, IEntity entity, IServiceProvider provider)
-    {
-      if (node.Attributes != null)
-      {
-        var props = instance.GetType()
-          .GetFields()
-          .Select(x => new { Field = x, Attribute = x.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute })
-          .Where(x => x.Attribute != null)
-          .ToList();
-
-        foreach (XmlAttribute attr in node.Attributes)
-        {
-          var name = attr.Name;
-          if (name.StartsWith("b:"))
-          {
-          }
-
-          switch (name)
-          {
-            case "style":
-              break;
-            case "hoverStyle":
-              break;
-            case "if":
-              break;
-            case "foreach":
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    }
-
-    private static void HandleIf(XmlNode node, UIComponent current, IEntity entity, IServiceProvider provider)
-    {
-      if (node.Attributes != null && node.Attributes["if"] != null)
-      {
-        var txt = node.Attributes["if"].InnerText;
-        if (ExpressionRegex.IsMatch(txt))
-        {
-          SetActiveToSelfAndChildren(entity, ExpressionRegex.TranslateText(txt, current).ToLower() == "true");
-
-          foreach(var prop in ExpressionRegex.GetReactiveProps(txt, current))
-          {
-            prop.PropertyChanged += (sender, o) =>
-            {
-              SetActiveToSelfAndChildren(entity, ExpressionRegex.TranslateText(txt, current).ToLower() == "true");
-            };
-          }
-        }
-      }
-    }
-
-    private static void SetActiveToSelfAndChildren(IEntity entity, bool active)
-    {
-      entity.Active = active;
-
-      var la = entity.GetAddon<LineageAddon>();
-      for (var i = 0; i < la.Children.Count; ++i)
-      {
-        SetActiveToSelfAndChildren(la.Children[i], active);
-      }
-    }
-
-    private static void HandleGlobalEvents(XmlNode node, UIComponent current, IServiceProvider provider)
-    {
-      if (node.Attributes != null)
-      {
-        foreach (XmlAttribute attr in node.Attributes)
-        {
-          if (attr.Name.EndsWith(".global"))
-          {
-            switch (attr.Name.Replace(".global", string.Empty))
-            {
-              case "onKeyboardUp":
-                provider.AddEventListener<KeyboardUpEvent>(x => EmitGlobal(node, current, "KeyboardUp", x));
-                break;
-              case "onMouseDown":
-                provider.AddEventListener<MouseDownEvent>(x => EmitGlobal(node, current, "MouseDown", x));
-                break;
-              case "onMouseMove":
-                provider.AddEventListener<MouseMoveEvent>(x => EmitGlobal(node, current, "MouseMove", x));
-                break;
-              case "onMouseUp":
-                provider.AddEventListener<MouseUpEvent>(x => EmitGlobal(node, current, "MouseUp", x));
-                break;
-            }
-          }
-        }
-      }
-    }
-
-    private static void HandleProps(XmlNode node, UIComponent current, UIComponent parent, IEntity entity, IServiceProvider provider)
-    {
-      var props = current.GetType()
-        .GetFields()
-        .Select(x => new { Field = x, Attribute = x.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute })
-        .Where(x => x.Attribute != null)
-        .ToList();
-
-      if (props.Count > 0)
-      {
-        foreach (var prop in props)
-        {
-          if (current.Node.Attributes?[prop.Field.Name] != null)
-          {
-            var currentProp = prop.Field.GetValue(current) as IReactiveProperty;
-            var parentProp = ExpressionRegex.GetReactiveProps(current.Node.Attributes[prop.Field.Name].InnerText, parent).FirstOrDefault();
-            if (currentProp != null && parentProp != null)
-            {
-              currentProp.Value = parentProp.Value;
-              if (prop.Attribute.Binding == PropBinding.TwoWay)
-              {
-                parentProp.PropertyChanged += (sender, o) => currentProp.Value = parentProp.Value;
-                currentProp.PropertyChanged += (sender, o) => parentProp.Value = currentProp.Value;
-              }
-              else
-              {
-                parentProp.PropertyChanged += (sender, o) => currentProp.Value = parentProp.Value;
-              }
-            }
-            else if (currentProp != null)
-            {
-              // TODO: Handle case where the parentProp is not a reactive prop
-              currentProp.Value = current.Node.Attributes[prop.Field.Name].InnerText;
-            }
-          }
-        }
-      }
-    }
-
-    private static void HandleStyle(XmlNode node, UIComponent current, IEntity entity, IServiceProvider provider, string attrType)
-    {
-      if (node.Attributes != null && node.Attributes[attrType] != null) {
-        var contentManager = provider.GetRequiredService<ContentManager>();
-        Style style = null;
-
-        var text = node.Attributes[attrType].InnerText;
-        if (ExpressionRegex.IsMatch(text))
-        {
-          style = ExpressionRegex.TranslateText(text, current).GenerateStyle(contentManager);
-
-          var eventQueue = provider.GetRequiredService<EventQueue>();
-          var graphics = provider.GetRequiredService<GraphicsDevice>();
-          foreach(var prop in ExpressionRegex.GetReactiveProps(text, current))
-          {
-            prop.PropertyChanged += (sender, o) =>
-            {
-              ExpressionRegex.TranslateText(text, current).GenerateStyle(contentManager, style);
-              eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
-            };
-          }
-        }
-        else
-        {
-          style = text.GenerateStyle(contentManager);
-        }
-
-        if (style != null)
-        {
-          var sa = entity.GetAddon<StyleAddon>();
-
-          if (attrType == "style")
-          {
-            style.Parent = sa.Style;
-            sa.Style = style;
-          }
-
-          if (attrType == "hoverStyle")
-          {
-            style.Parent = sa.HoverStyle;
-            sa.HoverStyle = style;
-          }
-
-          entity.Update(sa);
-        }
-      }
-    }
-
-    public static bool EmitGlobal<T>(XmlNode node, UIComponent current, string eventName, T data)
-    {
-      var method = current?.GetType().GetMethod(node?.Attributes?[$"on{eventName}.global"]?.InnerText ?? string.Empty);
-      if (method != null)
-      {
-        return (bool)method.Invoke(current, new object[] { data });
-      }
+      var evt = events.FirstOrDefault(x => x.Name == eventName);
+      if (evt != null) return (bool)evt.Callback(data);
       return true;
     }
   }
