@@ -1,0 +1,38 @@
+﻿using System;
+using BlueJay.UI.Component.Language.Antlr;
+using System.Collections.Generic;
+using System.Text;
+using Antlr4.Runtime.Misc;
+
+namespace BlueJay.UI.Component.Language
+{
+  public class ForVisitor : ForParserBaseVisitor<object>
+  {
+    private readonly UIComponent _intance;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ForVisitor(IServiceProvider serviceProvider, UIComponent instance)
+    {
+      _intance = instance;
+      _serviceProvider = serviceProvider;
+    }
+
+    public override object VisitExpr([NotNull] ForParser.ExprContext context)
+    {
+      var name = Visit(context.GetChild(1)) as string;
+      var expression = Visit(context.GetChild(3)) as ExpressionResult;
+
+      return new ElementFor() { DataGetter = expression.Callback, ReactiveProps = expression.ReactiveProps, ScopeName = name };
+    }
+
+    public override object VisitName([NotNull] ForParser.NameContext context)
+    {
+      return context.GetText();
+    }
+
+    public override object VisitExpression([NotNull] ForParser.ExpressionContext context)
+    {
+      return _serviceProvider.ParseExpression(context.GetText(), _intance);
+    }
+  }
+}

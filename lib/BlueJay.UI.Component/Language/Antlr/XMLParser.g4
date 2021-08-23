@@ -9,9 +9,15 @@ slotElement         : OPEN SLOT SLASH_CLOSE
 element             : OPEN NAME attribute* CLOSE content* OPEN SLASH NAME CLOSE
                     | OPEN NAME attribute* SLASH_CLOSE
                     ;
-attribute           : basicAttribute
+attribute           : ifAttribute
+                    | forAttribute
+                    | basicAttribute
                     | bindAttribute
                     | eventAttribute
+                    ;
+ifAttribute         : IF EQUALS STRING
+                    ;
+forAttribute        : FOR EQUALS STRING
                     ;
 basicAttribute      : NAME EQUALS STRING
                     ;

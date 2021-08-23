@@ -1,6 +1,5 @@
 ﻿lexer grammar StyleLexer;
 
-
 COLON                       : ':' ;
 SEMICOLON                   : ';' ;
 COMMA                       : ',' ;

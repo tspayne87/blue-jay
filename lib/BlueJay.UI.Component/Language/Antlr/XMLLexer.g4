@@ -21,6 +21,8 @@ DOT                         : '.' ;
 STRING                      : '"' ~[<"]* '"'
                             | '\'' ~[<']* '\''
                             ;
+IF                          : 'if' ;
+FOR                         : 'for' ;
 SLOT                        : 'Slot' ;
 GLOBAL                      : 'Global' ;
 NAME                        : StartCharacter NameChar* ;

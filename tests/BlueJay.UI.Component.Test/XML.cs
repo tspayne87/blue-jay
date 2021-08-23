@@ -199,15 +199,26 @@ namespace BlueJay.UI.Component.Test
       Assert.Equal(new Color(200, 200, 200), style.BackgroundColor);
     }
 
+    [Fact]
+    public void ForProp()
+    {
+      var tree = Provider.ParseXML("<Container for='var item in Items' />", new Component());
+
+      Assert.NotNull(tree.For);
+      Assert.True((tree.For.DataGetter(null) as List<string>).SequenceEqual(new List<string>() { "Hello World" }));
+    }
+
     public class Component : UIComponent
     {
       public readonly ReactiveProperty<int> Integer;
       public readonly ReactiveProperty<string> Str;
+      public readonly ReactiveProperty<List<string>> Items;
 
       public Component(int integer = 5, string str = "Test")
       {
         Integer = new ReactiveProperty<int>(integer);
         Str = new ReactiveProperty<string>(str);
+        Items = new ReactiveProperty<List<string>>(new List<string>() { "Hello World" });
       }
 
       public bool OnSelect(SelectEvent evt, int integer)

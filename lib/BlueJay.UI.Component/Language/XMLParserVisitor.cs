@@ -87,6 +87,10 @@ namespace BlueJay.UI.Component.Language
           if (instance != null) events.Add(evt);
           node.Events.Add(evt);
         }
+        else if (attr is ElementFor)
+        {
+          node.For = attr as ElementFor;
+        }
       }
 
       if (instance != null)
@@ -187,6 +191,19 @@ namespace BlueJay.UI.Component.Language
       var expression = context.GetChild(context.ChildCount - 1).GetText();
       var result = _serviceProvider.ParseExpression(expression.Substring(1, expression.Length - 2), _intance);
       return new ElementEvent() { Name = name, Callback = result.Callback, IsGlobal = context.ChildCount == 6 };
+    }
+
+    public override object VisitIfAttribute([NotNull] XMLParser.IfAttributeContext context)
+    {
+      var expression = context.GetChild(context.ChildCount - 1).GetText();
+      var result = _serviceProvider.ParseExpression(expression.Substring(1, expression.Length - 2), _intance);
+      return new ElementProp() { Name = PropNames.If, DataGetter = result.Callback, ReactiveProps = result.ReactiveProps };
+    }
+
+    public override object VisitForAttribute([NotNull] XMLParser.ForAttributeContext context)
+    {
+      var expression = context.GetChild(context.ChildCount - 1).GetText();
+      return _serviceProvider.ParseFor(expression.Substring(1, expression.Length - 2), _intance);
     }
   }
 }

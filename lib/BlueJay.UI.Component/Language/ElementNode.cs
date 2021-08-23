@@ -26,6 +26,7 @@ namespace BlueJay.UI.Component.Language
     public ElementType Type { get; private set; }
     public List<ElementNode> Children { get; private set; }
     public ElementSlot Slot { get; set; }
+    public ElementFor For { get; set; }
 
     public List<ElementProp> Props { get; private set; }
     public List<ElementEvent> Events { get; private set; }
@@ -49,8 +50,6 @@ namespace BlueJay.UI.Component.Language
     public string Name { get; set; }
     public Func<object, object> DataGetter { get; set; }
     public List<IReactiveProperty> ReactiveProps { get; set; }
-    public PropBinding Type { get; set; }
-    public IReactiveProperty InstanceProp { get; set; }
   }
 
   public class ElementEvent
@@ -66,6 +65,13 @@ namespace BlueJay.UI.Component.Language
     public ElementNode Node { get; set; }
   }
 
+  public class ElementFor
+  {
+    public string ScopeName { get; set; }
+    public Func<object, object> DataGetter { get; set; }
+    public List<IReactiveProperty> ReactiveProps { get; set; }
+  }
+
   public enum ElementType
   {
     Container, Text, Slot
@@ -75,5 +81,6 @@ namespace BlueJay.UI.Component.Language
   {
     public const string Text = "Text";
     public const string Style = "Style";
+    public const string If = "if";
   }
 }

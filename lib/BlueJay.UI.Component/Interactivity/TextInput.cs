@@ -12,7 +12,7 @@ namespace BlueJay.UI.Component.Interactivity
   [View(@"
 <Container Style=""TextAlign: Left"" @Focus=""OnFocus()"" @Blur=""OnBlur()"" @KeyboardUp=""OnKeyboardUp($event)"">
   {{Value}}
-  <Container Style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
+  <Container if=""ShowBar"" Style=""Position: Absolute; Width: 2; Height: {{BarHeight}}; TopOffset: {{BarTop}}; LeftOffset: {{BarLeft}}; BackgroundColor: 60, 60, 60"" />
 </Container>
     ")]
   public class TextInput : UIComponent

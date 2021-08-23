@@ -66,6 +66,19 @@ namespace BlueJay.UI.Component
       return visitor.Visit(expr) as ExpressionResult;
     }
 
+    internal static ElementFor ParseFor(this IServiceProvider serviceProvider, string expression, UIComponent instance)
+    {
+      var stream = new AntlrInputStream(expression);
+      ITokenSource lexer = new ForLexer(stream);
+      ITokenStream tokens = new CommonTokenStream(lexer);
+      var parser = new ForParser(tokens);
+
+      var expr = parser.expr();
+
+      var visitor = new ForVisitor(serviceProvider, instance);
+      return visitor.Visit(expr) as ElementFor;
+    }
+
     internal static ElementNode ParseUIComponet<T>(this IServiceProvider serviceProvider)
       where T : UIComponent
     {
