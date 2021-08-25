@@ -2,19 +2,8 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace BlueJay.UI.Component
+namespace BlueJay.UI.Component.Reactivity
 {
-  /// <summary>
-  /// Wrapper to cast with so that we can get the value object
-  /// </summary>
-  public interface IReactiveProperty : INotifyPropertyChanged
-  {
-    /// <summary>
-    /// The object value we are currently processing
-    /// </summary>
-    object Value { get; set; }
-  }
-
   /// <summary>
   /// Reactive property that will handle when props change on the component
   /// </summary>

@@ -53,7 +53,7 @@ namespace BlueJay.UI.Component
       var evt = Events.FirstOrDefault(x => x.Name == eventName);
       if (evt != null)
       {
-        return (bool)evt.Callback(data);
+        return (bool)evt.Callback(new Dictionary<string, object>() { { "event", data } });
       }
       return true;
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlueJay.UI.Component.Reactivity;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -48,14 +49,14 @@ namespace BlueJay.UI.Component.Language
   public class ElementProp
   {
     public string Name { get; set; }
-    public Func<object, object> DataGetter { get; set; }
+    public Func<Dictionary<string, object>, object> DataGetter { get; set; }
     public List<IReactiveProperty> ReactiveProps { get; set; }
   }
 
   public class ElementEvent
   {
     public string Name { get; set; }
-    public Func<object, object> Callback { get; set; }
+    public Func<Dictionary<string, object>, object> Callback { get; set; }
     public bool IsGlobal { get; set; }
   }
 
@@ -68,7 +69,7 @@ namespace BlueJay.UI.Component.Language
   public class ElementFor
   {
     public string ScopeName { get; set; }
-    public Func<object, object> DataGetter { get; set; }
+    public Func<Dictionary<string, object>, object> DataGetter { get; set; }
     public List<IReactiveProperty> ReactiveProps { get; set; }
   }
 

@@ -7,7 +7,7 @@ expr                        : expression EOF
 expression                  : literalExpression
                             | functionExpression
                             | identifier
-                            | contextVarExpression
+                            | scopeVarExpression
                             ;
 literalExpression           : integer
                             | decimal
@@ -16,7 +16,7 @@ literalExpression           : integer
                             ;
 functionExpression          : identifier LPARAM argumentExpression? RPARAM
                             ;
-contextVarExpression        : DOLLAR EVENT
+scopeVarExpression          : DOLLAR SCOPEIDENTIFIER
                             ;
 argumentExpression          : expression (COMMA expression)*
                             ;

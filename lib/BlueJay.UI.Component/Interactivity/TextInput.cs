@@ -3,6 +3,8 @@ using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Keyboard;
 using BlueJay.UI.Addons;
+using BlueJay.UI.Component.Attributes;
+using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;

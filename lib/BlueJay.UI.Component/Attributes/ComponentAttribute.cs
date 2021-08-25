@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BlueJay.UI.Component
+namespace BlueJay.UI.Component.Attributes
 {
   /// <summary>
   /// Component attribute is meant to tell the UI component what other custom components will be

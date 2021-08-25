@@ -1,5 +1,6 @@
 ﻿using BlueJay.UI;
 using BlueJay.UI.Component;
+using BlueJay.UI.Component.Attributes;
 
 namespace BlueJay.Shared.Components
 {

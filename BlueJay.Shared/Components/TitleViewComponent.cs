@@ -2,6 +2,8 @@
 using BlueJay.Interfaces;
 using BlueJay.UI;
 using BlueJay.UI.Component;
+using BlueJay.UI.Component.Attributes;
+using BlueJay.UI.Component.Reactivity;
 
 namespace BlueJay.Shared.Components
 {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BlueJay.Core;
 using Microsoft.Xna.Framework;
 using System.Linq;
+using BlueJay.UI.Component.Reactivity;
 
 namespace BlueJay.UI.Component.Language
 {
@@ -28,7 +29,7 @@ namespace BlueJay.UI.Component.Language
       var props = styleItems.SelectMany(x => x.ReactiveProps).ToList();
       return new ExpressionResult(x =>
       {
-        var style = x as Style;
+        var style = x?[PropNames.Style] as Style;
         if (style == null)
           style = new Style();
 

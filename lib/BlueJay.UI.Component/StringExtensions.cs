@@ -16,10 +16,5 @@ namespace BlueJay.UI.Component
     {
       return str.Splice(index, length, new string(inserts));
     }
-
-    public static string KebabToPascal(this string str)
-    {
-      return new Regex(@"(^\w|-\w)").Replace(str, x => x.Value.Replace("-", string.Empty));
-    }
   }
 }

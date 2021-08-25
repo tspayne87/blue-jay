@@ -2,6 +2,7 @@
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Keyboard;
 using BlueJay.Events.Mouse;
+using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
 using BlueJay.UI.Component.Language.Antlr;
 using BlueJay.UI.Factories;
@@ -96,9 +97,8 @@ namespace BlueJay.UI.Component
 
     internal static IEntity ProcessElementNode(IServiceProvider provider, ElementNode node, IEntity parent)
     {
-      var style = new Style();
       var processor = node.Props.FirstOrDefault(x => x.Name == PropNames.Style)?.DataGetter;
-      style = processor != null ? processor(null) as Style : new Style();
+      var style = processor != null ? processor(null) as Style : new Style();
 
       IEntity entity = null;
       switch (node.Type)
@@ -137,7 +137,7 @@ namespace BlueJay.UI.Component
     internal static bool InvokeEvent<T>(string eventName, T data, List<ElementEvent> events)
     {
       var evt = events.FirstOrDefault(x => x.Name == eventName);
-      if (evt != null) return (bool)evt.Callback(data);
+      if (evt != null) return (bool)evt.Callback(new Dictionary<string, object>() { { "event", data } });
       return true;
     }
   }

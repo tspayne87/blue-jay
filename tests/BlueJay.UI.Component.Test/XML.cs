@@ -1,9 +1,12 @@
+using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Interactivity;
 using BlueJay.UI.Component.Language;
+using BlueJay.UI.Component.Reactivity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -71,6 +74,7 @@ namespace BlueJay.UI.Component.Test
     public void BindedProp()
     {
       var component = new Component();
+      var scope = new Dictionary<string, object>() { { "event", new SelectEvent() } };
 
       var identifier = Provider.ParseXML("<Container :Prop1=\"Integer\">Hello World</Container>", component);
       var func = Provider.ParseXML("<Container :Prop1=\"OnSelect($event, Integer)\">Hello World</Container>", component);
@@ -79,11 +83,11 @@ namespace BlueJay.UI.Component.Test
       var funcExpression = func.Props.FirstOrDefault(x => x.Name == "Prop1");
 
       Assert.Equal(5, identifierExpression.DataGetter(null));
-      Assert.True((bool)funcExpression.DataGetter(null));
+      Assert.True((bool)funcExpression.DataGetter(scope));
 
       component.Integer.Value = 10;
       Assert.Equal(10, identifierExpression.DataGetter(null));
-      Assert.False((bool)funcExpression.DataGetter(null));
+      Assert.False((bool)funcExpression.DataGetter(scope));
     }
 
     [Fact]
@@ -131,17 +135,18 @@ namespace BlueJay.UI.Component.Test
     [Fact]
     public void EventProp()
     {
+      var scope = new Dictionary<string, object>() { { "event", new SelectEvent() } };
       var tree = Provider.ParseXML("<Container @Select=\"OnSelect($event, Integer)\" />", new Component());
       Assert.Empty(tree.Children);
       Assert.NotNull(tree.Events.FirstOrDefault(x => x.Name == "Select"));
       Assert.False(tree.Events.First(x => x.Name == "Select").IsGlobal);
-      Assert.True((bool)tree.Events.Find(x => x.Name == "Select").Callback(null));
+      Assert.True((bool)tree.Events.Find(x => x.Name == "Select").Callback(scope));
 
       var treeGlobal = Provider.ParseXML("<Container @Select.Global=\"OnSelect($event, Integer)\" />", new Component());
       Assert.Empty(treeGlobal.Children);
       Assert.NotNull(treeGlobal.Events.FirstOrDefault(x => x.Name == "Select"));
       Assert.True(treeGlobal.Events.First(x => x.Name == "Select").IsGlobal);
-      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(null));
+      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(scope));
     }
 
     [Fact]
@@ -191,7 +196,7 @@ namespace BlueJay.UI.Component.Test
 
       // Re-apply style changes
       instance.Integer.Value = 10;
-      component.Props.First(x => x.Name == PropNames.Style).DataGetter(style);
+      component.Props.First(x => x.Name == PropNames.Style).DataGetter(new Dictionary<string, object>() { { PropNames.Style, style } });
       Assert.Equal(Position.Absolute, style.Position);
       Assert.Equal(1f, style.WidthPercentage);
       Assert.Equal(10, style.Height);
@@ -200,30 +205,48 @@ namespace BlueJay.UI.Component.Test
     }
 
     [Fact]
+    public void ScopeVariable()
+    {
+      var tree = Provider.ParseXML("<Container :HelloWorld='AppendWorld($Hello)' />", new Component());
+
+      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "HelloWorld"));
+      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "HelloWorld").DataGetter(new Dictionary<string, object>() { { "Hello", "Hello" } }));
+    }
+
+    [Fact]
     public void ForProp()
     {
-      var tree = Provider.ParseXML("<Container for='var item in Items' />", new Component());
+      var instance = new Component();
+      var tree = Provider.ParseXML("<Container for='var $item in Items' />", instance);
 
       Assert.NotNull(tree.For);
       Assert.True((tree.For.DataGetter(null) as List<string>).SequenceEqual(new List<string>() { "Hello World" }));
+
+      instance.Items.Add("Add One More");
+      Assert.True((tree.For.DataGetter(null) as List<string>).SequenceEqual(new List<string>() { "Hello World", "Add One More" }));
     }
 
     public class Component : UIComponent
     {
       public readonly ReactiveProperty<int> Integer;
       public readonly ReactiveProperty<string> Str;
-      public readonly ReactiveProperty<List<string>> Items;
+      public readonly ReactiveCollection<string> Items;
 
       public Component(int integer = 5, string str = "Test")
       {
         Integer = new ReactiveProperty<int>(integer);
         Str = new ReactiveProperty<string>(str);
-        Items = new ReactiveProperty<List<string>>(new List<string>() { "Hello World" });
+        Items = new ReactiveCollection<string>("Hello World");
       }
 
       public bool OnSelect(SelectEvent evt, int integer)
       {
         return integer % 2 == 1;
+      }
+
+      public string AppendWorld(string prefix)
+      {
+        return $"{prefix} World";
       }
     }
 

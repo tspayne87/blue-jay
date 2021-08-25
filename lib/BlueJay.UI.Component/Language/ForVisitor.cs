@@ -19,8 +19,11 @@ namespace BlueJay.UI.Component.Language
 
     public override object VisitExpr([NotNull] ForParser.ExprContext context)
     {
-      var name = Visit(context.GetChild(1)) as string;
-      var expression = Visit(context.GetChild(3)) as ExpressionResult;
+      var name = (Visit(context.GetChild(1)) as string).Substring(1);
+      var expression = Visit(context.GetChild(context.ChildCount - 2)) as ExpressionResult;
+
+      if (name == "event")
+        throw new ArgumentException("Cannot use the name event");
 
       return new ElementFor() { DataGetter = expression.Callback, ReactiveProps = expression.ReactiveProps, ScopeName = name };
     }

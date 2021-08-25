@@ -2,7 +2,9 @@
 using BlueJay.Shared.Views;
 using BlueJay.UI;
 using BlueJay.UI.Component;
+using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Interactivity;
+using BlueJay.UI.Component.Reactivity;
 using System.Collections.Generic;
 
 namespace BlueJay.Shared.Components

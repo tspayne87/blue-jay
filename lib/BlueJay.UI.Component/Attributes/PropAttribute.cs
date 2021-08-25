@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlueJay.UI.Component
+namespace BlueJay.UI.Component.Attributes
 {
   /// <summary>
   /// The prop attribute to allow for data to be sent into and taking out of components without an issue
