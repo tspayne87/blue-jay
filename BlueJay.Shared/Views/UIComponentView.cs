@@ -5,6 +5,7 @@ using BlueJay.UI;
 using BlueJay.Shared.Components;
 using BlueJay.Common.Systems;
 using BlueJay.UI.Component;
+using BlueJay.UI.Systems;
 
 namespace BlueJay.Shared.Views
 {
@@ -25,6 +26,7 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddUITouchSupport();
 
       serviceProvider.AddSystem<RenderingSystem>();
+      serviceProvider.AddSystem<DebugBoundingBoxSystem>();
 
       serviceProvider.AddUIComponent<UIComponentTestComponent>();
     }

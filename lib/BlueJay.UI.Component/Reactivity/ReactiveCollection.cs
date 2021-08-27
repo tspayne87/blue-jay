@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -9,8 +10,8 @@ namespace BlueJay.UI.Component.Reactivity
 {
   public class ReactiveCollection<T> : IReactiveProperty, IList<T>
   {
-    private List<T> _list;
-
+    private readonly List<T> _list;
+    private bool _notify;
     public event PropertyChangedEventHandler PropertyChanged;
 
     public int Count => _list.Count;
@@ -26,7 +27,10 @@ namespace BlueJay.UI.Component.Reactivity
       {
         if (!_list.Equals(value))
         {
-          _list = value;
+          _notify = false;
+          _list.Clear();
+          _list.AddRange(value);
+          _notify = true;
           NotifyPropertyChanged();
         }
       }
@@ -42,7 +46,16 @@ namespace BlueJay.UI.Component.Reactivity
       {
         if (!_list.Equals(value))
         {
-          _list = value as List<T>;
+          _notify = false;
+          _list.Clear();
+          foreach(var item in value as IList)
+          {
+            if (item.GetType() == typeof(T) || !(item is IConvertible))
+              _list.Add((T)item);
+            else
+              _list.Add((T)Convert.ChangeType(item, typeof(T)));
+          }
+          _notify = true;
           NotifyPropertyChanged();
         }
       }
@@ -57,12 +70,11 @@ namespace BlueJay.UI.Component.Reactivity
     public ReactiveCollection(IEnumerable<T> list)
     {
       _list = new List<T>(list);
+      _notify = true;
     }
 
     public ReactiveCollection(params T[] list)
-    {
-      _list = new List<T>(list);
-    }
+      : this(list.AsEnumerable()) { }
 
     public int IndexOf(T item)
     {
@@ -127,7 +139,8 @@ namespace BlueJay.UI.Component.Reactivity
     /// <param name="property">The property name that has been changed</param>
     private void NotifyPropertyChanged([CallerMemberName] string property = "")
     {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+      if (_notify)
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
     }
   }
 }

@@ -7,50 +7,47 @@ using System.Text;
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
-<container>
+<Container @Select=""OpenMenu()"">
   {{GetField(Model)}}
-  <container>
-    <container foreach=""var item in Items"" e:Select=""OnSelect(item)"">{{GetField(item)}}</container>
-  </container>
-</container>
+  <Container if=""ShowMenu"">
+    <Container for=""var $item in Items"" @Select=""OnSelect($item)"">{{GetField($item)}}</Container>
+  </Container>
+</Container>
     ")]
   public class DropdownInput : UIComponent
   {
     [Prop(PropBinding.TwoWay)]
     public readonly ReactiveProperty<object> Model;
     [Prop]
-    public readonly ReactiveProperty<string> Field;
+    public readonly ReactiveCollection<object> Items;
     [Prop]
-    public readonly ReactiveProperty<List<object>> Items;
+    public readonly ReactiveProperty<string> Placeholder;
+
+    public readonly ReactiveProperty<bool> ShowMenu;
 
     public DropdownInput()
     {
       Model = new ReactiveProperty<object>(null);
-      Field = new ReactiveProperty<string>(string.Empty);
-      Items = new ReactiveProperty<List<object>>(new List<object>());
-
-      foreach(var item in Items.Value)
-      {
-
-      }
+      Placeholder = new ReactiveProperty<string>("Select Item...");
+      Items = new ReactiveCollection<object>();
+      ShowMenu = new ReactiveProperty<bool>(false);
     }
 
-    public object GetField(object item)
+    public string GetField(object item)
     {
-      if (item == null) return null;
+      return item?.ToString() ?? Placeholder.Value;
+    }
 
-      var fieldProp = item.GetType().GetField(Field.Value);
-      if (fieldProp != null) return fieldProp.GetValue(item);
-
-      var prop = item.GetType().GetProperty(Field.Value);
-      if (prop != null) return fieldProp.GetValue(item);
-
-      return null;
+    public bool OpenMenu()
+    {
+      ShowMenu.Value = !ShowMenu.Value;
+      return true;
     }
 
     public bool OnSelect(object item)
     {
       Model.Value = item;
+      ShowMenu.Value = false;
       return true;
     }
   }

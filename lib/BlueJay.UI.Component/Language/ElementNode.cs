@@ -31,7 +31,6 @@ namespace BlueJay.UI.Component.Language
 
     public List<ElementProp> Props { get; private set; }
     public List<ElementEvent> Events { get; private set; }
-    public List<IReactiveProperty> ReactiveProps { get; private set; }
 
     public UIComponent Instance { get; private set; }
 
@@ -42,7 +41,6 @@ namespace BlueJay.UI.Component.Language
       Children = new List<ElementNode>();
       Props = new List<ElementProp>();
       Events = new List<ElementEvent>();
-      ReactiveProps = new List<IReactiveProperty>();
     }
   }
 
@@ -71,6 +69,7 @@ namespace BlueJay.UI.Component.Language
     public string ScopeName { get; set; }
     public Func<Dictionary<string, object>, object> DataGetter { get; set; }
     public List<IReactiveProperty> ReactiveProps { get; set; }
+    public bool Processed { get; set; }
   }
 
   public enum ElementType
@@ -82,6 +81,9 @@ namespace BlueJay.UI.Component.Language
   {
     public const string Text = "Text";
     public const string Style = "Style";
+    public const string HoverStyle = "HoverStyle";
     public const string If = "if";
+    public const string For = "for";
+    public const string Event = "event";
   }
 }

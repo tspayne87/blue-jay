@@ -15,14 +15,17 @@ namespace BlueJay.Shared.Components
 
   <TextInput Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 5"" />
 
-  <SwitchInput Style=""Height: 25"" Model=""Switch"" />
-  <Container Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
+  <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
+  <Container if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
 
-  <SliderInput Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
+  <SliderInput :Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
   <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
+
+  <DropdownInput Style=""ColumnSpan: 3"" :Items=""DropdownItems"" :Model=""Dropdown"" />
+  <Container Style=""ColumnSpan: 2; TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
     ")]
-  [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput))]
+  [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput), typeof(DropdownInput))]
   public class UIComponentTestComponent : UIComponent
   {
     /// <summary>
@@ -48,7 +51,7 @@ namespace BlueJay.Shared.Components
     /// <summary>
     /// The list of items that can be chosen from
     /// </summary>
-    public readonly ReactiveProperty<List<DropdownItem>> DropdownItems;
+    public readonly ReactiveCollection<DropdownItem> DropdownItems;
 
     /// <summary>
     /// Constructor to build out the breakcout UI Component
@@ -59,7 +62,7 @@ namespace BlueJay.Shared.Components
       Switch = new ReactiveProperty<bool>(false);
       Slider = new ReactiveProperty<int>(0);
       Dropdown = new ReactiveProperty<DropdownItem>(null);
-      DropdownItems = new ReactiveProperty<List<DropdownItem>>(new List<DropdownItem>()
+      DropdownItems = new ReactiveCollection<DropdownItem>(new List<DropdownItem>()
       {
         new DropdownItem() { Name = "Item 1", Id = 1 },
         new DropdownItem() { Name = "Item 2", Id = 2 },
@@ -82,6 +85,11 @@ namespace BlueJay.Shared.Components
       return true;
     }
 
+    public string ShowDropdownItem(DropdownItem item)
+    {
+      return item?.ToString() ?? string.Empty;
+    }
+
     /// <summary>
     /// A dropdown item for the dropdown input
     /// </summary>
@@ -96,6 +104,12 @@ namespace BlueJay.Shared.Components
       /// The id of the dropdown item
       /// </summary>
       public int Id { get; set; }
+
+      /// <inheritdoc />
+      public override string ToString()
+      {
+        return Name;
+      }
     }
   }
 }

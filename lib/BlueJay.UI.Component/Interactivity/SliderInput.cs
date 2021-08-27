@@ -14,7 +14,7 @@ namespace BlueJay.UI.Component.Interactivity
   [View(@"
 <Container @MouseMove.Global=""OnMouseMove($event)"" @MouseUp.Global=""OnMouseUp()"">
   <Container Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
-  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; LeftOffset: {{Left}}"" @Select=""OnMouseDown()"" />
+  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; LeftOffset: {{Left}}"" @MouseDown=""OnMouseDown()"" />
 </Container>
     ")]
   public class SliderInput : UIComponent

@@ -16,11 +16,13 @@ namespace BlueJay.UI.Component.Language
   {
     private readonly UIComponent _intance;
     private readonly IServiceProvider _serviceProvider;
+    private readonly string _name;
 
-    public StyleVisitor(IServiceProvider serviceProvider, UIComponent instance)
+    public StyleVisitor(IServiceProvider serviceProvider, UIComponent instance, string name)
     {
       _intance = instance;
       _serviceProvider = serviceProvider;
+      _name = name;
     }
 
     public override object VisitExpr([NotNull] StyleParser.ExprContext context)
@@ -29,7 +31,7 @@ namespace BlueJay.UI.Component.Language
       var props = styleItems.SelectMany(x => x.ReactiveProps).ToList();
       return new ExpressionResult(x =>
       {
-        var style = x?[PropNames.Style] as Style;
+        var style = x?[_name] as Style;
         if (style == null)
           style = new Style();
 

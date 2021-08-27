@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -26,8 +28,9 @@ namespace BlueJay.UI.Component.Reactivity
     public T Value
     {
       get => _value;
-      set {
-        if (!_value.Equals(value))
+      set
+      {
+        if ((_value == null && value != null) || (_value != null && !_value.Equals(value)))
         {
           _value = value;
           NotifyPropertyChanged();
@@ -43,9 +46,9 @@ namespace BlueJay.UI.Component.Reactivity
       get => _value;
       set
       {
-        if (!_value.Equals(value))
+        if ((_value == null && value != null) || (_value != null && !_value.Equals(value)))
         {
-          if (value.GetType() == typeof(T))
+          if (value.GetType() == typeof(T) || !(value is IConvertible))
             _value = (T)value;
           else
             _value = (T)Convert.ChangeType(value, typeof(T));

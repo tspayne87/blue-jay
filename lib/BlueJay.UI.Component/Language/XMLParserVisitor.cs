@@ -81,6 +81,18 @@ namespace BlueJay.UI.Component.Language
               }
             }
           }
+          if (prop.Name == PropNames.Style || prop.Name == PropNames.HoverStyle)
+          {
+            var existingProp = node.Props.FirstOrDefault(x => x.Name == prop.Name);
+            if (existingProp != null)
+            {
+              var oldGetter = existingProp.DataGetter;
+              existingProp.DataGetter = x => prop.DataGetter(new Dictionary<string, object>() { { prop.Name, oldGetter(x) } });
+              existingProp.ReactiveProps.AddRange(prop.ReactiveProps);
+              continue;
+            }
+          }
+
           node.Props.Add(prop);
         }
         else if (attr is ElementEvent)
@@ -112,7 +124,7 @@ namespace BlueJay.UI.Component.Language
             if (node.Slot != null)
               child.Parent = node.Slot.Node.Parent;
             else
-              node.Children.Add(child);
+              child.Parent = node;
           }
         }
 
@@ -127,7 +139,7 @@ namespace BlueJay.UI.Component.Language
 
     public override object VisitChardata([NotNull] XMLParser.ChardataContext context)
     {
-      var expressions = new List<Func<string>>();
+      var expressions = new List<Func<Dictionary<string, object>, string>>();
       var reactiveProps = new List<IReactiveProperty>();
       for (var i = 0; i < context.ChildCount; ++i)
       {
@@ -138,19 +150,19 @@ namespace BlueJay.UI.Component.Language
           {
             var expression = context.GetText();
             var result = _serviceProvider.ParseExpression(txt.Substring(2, txt.Length - 4), _intance);
-            expressions.Add(() => result.Callback(null).ToString());
+            expressions.Add(x => result.Callback(x)?.ToString() ?? string.Empty);
             reactiveProps.AddRange(result.ReactiveProps);
           }
           else
           {
-            expressions.Add(() => txt);
+            expressions.Add(x => txt);
           }
         }
       }
       if (expressions.Count == 0) return null;
 
       var node = new ElementNode(ElementType.Text, _intance);
-      node.Props.Add(new ElementProp() { Name = PropNames.Text, DataGetter = x => string.Join(string.Empty, expressions.Select(y => y())).Trim(), ReactiveProps = reactiveProps });
+      node.Props.Add(new ElementProp() { Name = PropNames.Text, DataGetter = x => string.Join(string.Empty, expressions.Select(y => y(x))).Trim(), ReactiveProps = reactiveProps });
       return node;
     }
 
@@ -171,9 +183,9 @@ namespace BlueJay.UI.Component.Language
       var name = context.GetChild(0).GetText();
       var text = context.GetChild(context.ChildCount - 1).GetText();
 
-      if (name == PropNames.Style)
+      if (name == PropNames.Style || name == PropNames.HoverStyle)
       { // Parse the style attribute since it is a special property and we want to parse the data
-        var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2), _intance);
+        var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2), _intance, name);
         return new ElementProp() { Name = name, DataGetter = result.Callback, ReactiveProps = result.ReactiveProps };
       }
       return new ElementProp() { Name = name, DataGetter = x => text.Substring(1, text.Length - 2) };

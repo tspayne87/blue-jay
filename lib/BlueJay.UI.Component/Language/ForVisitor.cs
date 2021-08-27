@@ -30,7 +30,7 @@ namespace BlueJay.UI.Component.Language
 
     public override object VisitName([NotNull] ForParser.NameContext context)
     {
-      return context.GetText();
+      return context.GetText().Substring(1);
     }
 
     public override object VisitExpression([NotNull] ForParser.ExpressionContext context)
