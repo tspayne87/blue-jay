@@ -14,6 +14,11 @@ namespace BlueJay.Common.Addons
     /// </summary>
     public Vector2 Position { get; set; }
 
+    /// <summary>
+    /// Constructor to build out the position for the addon
+    /// </summary>
+    /// <param name="x">The x position of the entity</param>
+    /// <param name="y">The y position of the entity</param>
     public PositionAddon(int x, int y)
 	 {
       Position = new Vector2(x, y);
