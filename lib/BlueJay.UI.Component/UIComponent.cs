@@ -1,5 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Component.Language;
+using BlueJay.UI.Component.Reactivity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -53,7 +54,7 @@ namespace BlueJay.UI.Component
       var evt = Events.FirstOrDefault(x => x.Name == eventName);
       if (evt != null)
       {
-        return (bool)evt.Callback(new Dictionary<string, object>() { { "event", data } });
+        return (bool)evt.Callback(new ReactiveScope(new Dictionary<string, object>() { { "event", data } }));
       }
       return true;
     }

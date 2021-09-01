@@ -25,10 +25,10 @@ namespace BlueJay.UI.Component.Language
       if (context.exception != null)
         throw context.exception;
 
-      _param = Expression.Parameter(typeof(Dictionary<string, object>), "x");
+      _param = Expression.Parameter(typeof(ReactiveScope), "x");
       var body = Visit(context.GetChild(0)) as BuilderExpression;
-      var expression = Expression.Lambda<Func<Dictionary<string, object>, object>>(Expression.Convert(body.Expression, typeof(object)), _param).Compile();
-      return new ExpressionResult(expression, body.ReactiveItems);
+      var expression = Expression.Lambda<Func<ReactiveScope, object>>(Expression.Convert(body.Expression, typeof(object)), _param).Compile();
+      return new ExpressionResult(expression, body.ScopePaths);
     }
 
     #region Literal Expressions
@@ -67,19 +67,13 @@ namespace BlueJay.UI.Component.Language
       var member = _intance.GetType().GetMember(propName)?[0];
       if (member != null)
       {
-        var obj = member is FieldInfo ? ((FieldInfo)member).GetValue(_intance) : ((PropertyInfo)member).GetValue(_intance);
-        var expression = Expression.PropertyOrField(Expression.Constant(_intance), propName);
-
-        var reactiveProps = new List<IReactiveProperty>();
-        if (obj is IReactiveProperty)
-        {
+        Expression expression = Expression.Property(_param, "Item", Expression.Constant(PropNames.Identifier));
+        expression = Expression.PropertyOrField(expression, propName);
+        if (typeof(IReactiveProperty).IsAssignableFrom(member.ReflectedType))
           expression = Expression.PropertyOrField(expression, "Value");
-          reactiveProps.Add(obj as IReactiveProperty);
-        }
 
-        return new BuilderExpression(expression, reactiveProps);
+        return new BuilderExpression(expression, new List<string>() { $"{PropNames.Identifier}.{propName}" });
       }
-
       return new BuilderExpression(Expression.Constant(null), null);
     }
 
@@ -104,7 +98,7 @@ namespace BlueJay.UI.Component.Language
           if (x.Expression.Type == typeof(object)) return Expression.Convert(x.Expression, method.GetParameters()[i].ParameterType);
           return x.Expression;
         });
-        return new BuilderExpression(Expression.Call(Expression.Constant(_intance), method, args), props.SelectMany(x => x.ReactiveItems));
+        return new BuilderExpression(Expression.Call(Expression.Constant(_intance), method, args), props.SelectMany(x => x.ScopePaths));
       }
       return new BuilderExpression(Expression.Constant(null), null);
     }
@@ -127,12 +121,12 @@ namespace BlueJay.UI.Component.Language
     private class BuilderExpression
     {
       public Expression Expression { get; private set; }
-      public List<IReactiveProperty> ReactiveItems { get; private set; }
+      public List<string> ScopePaths { get; private set; }
 
-      public BuilderExpression(Expression expression, IEnumerable<IReactiveProperty> reactiveItems = null)
+      public BuilderExpression(Expression expression, IEnumerable<string> scopePaths = null)
       {
         Expression = expression;
-        ReactiveItems = reactiveItems?.ToList() ?? new List<IReactiveProperty>();
+        ScopePaths = scopePaths?.ToList() ?? new List<string>();
       }
     }
   }

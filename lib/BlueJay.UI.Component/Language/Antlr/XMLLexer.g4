@@ -23,6 +23,7 @@ STRING                      : '"' ~[<"]* '"'
                             ;
 IF                          : 'if' ;
 FOR                         : 'for' ;
+REF                         : 'ref' ;
 SLOT                        : 'Slot' ;
 GLOBAL                      : 'Global' ;
 NAME                        : StartCharacter NameChar* ;

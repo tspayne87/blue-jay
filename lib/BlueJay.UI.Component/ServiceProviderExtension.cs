@@ -9,6 +9,7 @@ using BlueJay.UI.Component.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
 using BlueJay.UI.Component.Language.Antlr;
+using BlueJay.UI.Component.Reactivity;
 using BlueJay.UI.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Graphics;
@@ -30,7 +31,7 @@ namespace BlueJay.UI.Component
     public static IEntity AddUIComponent<T>(this IServiceProvider provider)
       where T : UIComponent
     {
-      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, null);
+      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, new ReactiveScope());
     }
 
     public static ElementNode ParseXML(this IServiceProvider serviceProvider, string xml, UIComponent instance, List<Type> components = null)
@@ -101,17 +102,47 @@ namespace BlueJay.UI.Component
       return ParseXML(serviceProvider, view.XML, instance, components?.Components);
     }
 
-    internal static IEntity ProcessElementNode(IServiceProvider provider, EventQueue eventQueue, GraphicsDevice graphics, ElementNode node, IEntity parent, Dictionary<string, object> scope)
+    internal static ReactiveEntity ProcessElementNode(IServiceProvider provider, EventQueue eventQueue, GraphicsDevice graphics, ElementNode node, ReactiveEntity parent, ReactiveScope scope)
     {
       if (node.For != null && !node.For.Processed)
       {
         node.For.Processed = true;
-        foreach(var item in node.For.DataGetter(scope) as IEnumerable)
-        {
-          var newScope = scope != null ? new Dictionary<string, object>(scope) : new Dictionary<string, object>();
-          newScope[node.For.ScopeName] = item;
-          ProcessElementNode(provider, eventQueue, graphics, node, parent, newScope);
-        }
+
+        var entities = new List<ReactiveEntity>();
+        parent.DisposableEvents.AddRange(
+          scope.Subscribe(x =>
+            {
+              var madeChange = false;
+              var i = 0;
+              foreach (var item in node.For.DataGetter(scope) as IEnumerable)
+              {
+                if (entities.Count <= i || item != entities[i].Data)
+                {
+                  madeChange = true;
+
+                  var newScope = scope != null ? scope.NewScope() : new ReactiveScope();
+                  newScope[node.For.ScopeName] = item;
+                  if (entities.Count > i)
+                  {
+                    entities[i].Scope = newScope;
+                    entities[i].Data = item;
+                    continue;
+                  }
+
+                  var newNode = ProcessElementNode(provider, eventQueue, graphics, node, node.IsGlobal ? null : parent, newScope);
+                  newNode.Data = item;
+                  entities.Add(newNode);
+                }
+                i++;
+              }
+              // TODO: Need to add function to destory an entity
+
+              if (madeChange)
+              {
+                eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
+              }
+            }, node.For.ScopePaths)
+          );
         return null;
       }
 
@@ -121,11 +152,11 @@ namespace BlueJay.UI.Component
       var hoverStyleProcessor = node.Props.FirstOrDefault(x => x.Name == PropNames.HoverStyle)?.DataGetter;
       var hoverStyle = hoverStyleProcessor != null ? hoverStyleProcessor(scope) as Style : new Style();
 
-      IEntity entity = null;
+      ReactiveEntity entity = null;
       switch (node.Type)
       {
         case ElementType.Container:
-          entity = provider.AddContainer(style, hoverStyle, parent);
+          entity = provider.AddContainer<ReactiveEntity>(style, hoverStyle, node.IsGlobal ? null : parent);
           foreach(var evt in node.Events)
           {
             ProcessEvent(provider, evt, entity, scope);
@@ -133,7 +164,7 @@ namespace BlueJay.UI.Component
           break;
         case ElementType.Text:
           var txt = node.Props.FirstOrDefault(x => x.Name == PropNames.Text).DataGetter(scope) as string;
-          entity = provider.AddText(txt, style, parent);
+          entity = provider.AddText<ReactiveEntity>(txt, style, node.IsGlobal ? null : parent);
           if (node.Parent != null)
           {
             foreach (var evt in node.Parent.Events)
@@ -146,56 +177,18 @@ namespace BlueJay.UI.Component
 
       if (entity != null)
       {
-        foreach (var prop in node.Props)
-        {
-          if (prop.Name == PropNames.If)
-            entity.Active = (bool)prop.DataGetter(scope);
+        entity.Scope = scope;
+        entity.Node = node;
+        entity.ProcessProperties();
+      }
 
-          if (prop.ReactiveProps?.Count > 0)
-          {
-            foreach (var reactive in prop.ReactiveProps)
-            {
-              switch (prop.Name)
-              {
-                case PropNames.Text:
-                  reactive.PropertyChanged += (sender, o) =>
-                  {
-                    var ta = entity.GetAddon<TextAddon>();
-                    var txt = prop.DataGetter(scope) as string;
-                    ta.Text = txt;
-                    entity.Update(ta);
-                    eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
-                  };
-                  break;
-                case PropNames.Style:
-                  reactive.PropertyChanged += (sender, o) =>
-                  {
-                    var newScope = scope != null ? new Dictionary<string, object>(scope) : new Dictionary<string, object>();
-                    newScope[PropNames.Style] = style;
-                    prop.DataGetter(newScope);
-                    eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
-                  };
-                  break;
-                case PropNames.HoverStyle:
-                  reactive.PropertyChanged += (sender, o) =>
-                  {
-                    var newScope = scope != null ? new Dictionary<string, object>(scope) : new Dictionary<string, object>();
-                    newScope[PropNames.Style] = style;
-                    prop.DataGetter(newScope);
-                    eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
-                  };
-                  break;
-                case PropNames.If:
-                  reactive.PropertyChanged += (sender, o) =>
-                  {
-                    SetActive(entity, (bool)prop.DataGetter(scope));
-                    eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
-                  };
-                  break;
-              }
-            }
-          }
-        }
+      foreach(var reference in node.Refs)
+      {
+        var fieldProp = node.Instance.GetType().GetField(reference.PropName);
+        if (fieldProp != null) fieldProp.SetValue(node.Instance, entity);
+
+        var prop = node.Instance.GetType().GetProperty(reference.PropName);
+        if (prop != null) prop.SetValue(node.Instance, entity);
       }
 
       var isRoot = false;
@@ -213,16 +206,7 @@ namespace BlueJay.UI.Component
       return entity;
     }
 
-    internal static void SetActive(IEntity entity, bool active)
-    {
-      entity.Active = active;
-
-      var la = entity.GetAddon<LineageAddon>();
-      for (var i = 0; i < la.Children.Count; ++i)
-        SetActive(la.Children[i], active);
-    }
-
-    internal static void ProcessEvent(IServiceProvider provider, ElementEvent evt, IEntity entity, Dictionary<string, object> scope)
+    internal static void ProcessEvent(IServiceProvider provider, ElementEvent evt, IEntity entity, ReactiveScope scope)
     {
       switch (evt.Name)
       {
@@ -250,9 +234,9 @@ namespace BlueJay.UI.Component
       }
     }
 
-    internal static bool InvokeEvent<T>(ElementEvent evt, Dictionary<string, object> scope, T obj)
+    internal static bool InvokeEvent<T>(ElementEvent evt, ReactiveScope scope, T obj)
     {
-      var newScope = scope != null ? new Dictionary<string, object>(scope) : new Dictionary<string, object>();
+      var newScope = scope != null ? scope.NewScope() : new ReactiveScope();
       newScope[PropNames.Event] = obj;
       return (bool)evt.Callback(newScope);
     }

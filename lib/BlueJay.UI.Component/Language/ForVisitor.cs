@@ -25,7 +25,7 @@ namespace BlueJay.UI.Component.Language
       if (name == "event")
         throw new ArgumentException("Cannot use the name event");
 
-      return new ElementFor() { DataGetter = expression.Callback, ReactiveProps = expression.ReactiveProps, ScopeName = name };
+      return new ElementFor() { DataGetter = expression.Callback, ScopePaths = expression.ScopePaths, ScopeName = name };
     }
 
     public override object VisitName([NotNull] ForParser.NameContext context)

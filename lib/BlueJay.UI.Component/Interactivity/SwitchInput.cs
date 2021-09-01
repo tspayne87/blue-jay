@@ -21,12 +21,6 @@ namespace BlueJay.UI.Component.Interactivity
     {
       Model = new ReactiveProperty<bool>(false);
       Align = new ReactiveProperty<HorizontalAlign>(HorizontalAlign.Left);
-
-      // Add Property changes
-      Model.PropertyChanged += (sender, o) =>
-      {
-        Emit("Input", Model.Value);
-      };
     }
 
     public bool OnSelect()

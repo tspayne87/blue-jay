@@ -28,9 +28,11 @@ namespace BlueJay.UI.Component.Language
     public List<ElementNode> Children { get; private set; }
     public ElementSlot Slot { get; set; }
     public ElementFor For { get; set; }
+    public bool IsGlobal { get; set; }
 
     public List<ElementProp> Props { get; private set; }
     public List<ElementEvent> Events { get; private set; }
+    public List<ElementRef> Refs { get; private set; }
 
     public UIComponent Instance { get; private set; }
 
@@ -41,20 +43,21 @@ namespace BlueJay.UI.Component.Language
       Children = new List<ElementNode>();
       Props = new List<ElementProp>();
       Events = new List<ElementEvent>();
+      Refs = new List<ElementRef>();
     }
   }
 
   public class ElementProp
   {
     public string Name { get; set; }
-    public Func<Dictionary<string, object>, object> DataGetter { get; set; }
-    public List<IReactiveProperty> ReactiveProps { get; set; }
+    public Func<ReactiveScope, object> DataGetter { get; set; }
+    public List<string> ScopePaths { get; set; }
   }
 
   public class ElementEvent
   {
     public string Name { get; set; }
-    public Func<Dictionary<string, object>, object> Callback { get; set; }
+    public Func<ReactiveScope, object> Callback { get; set; }
     public bool IsGlobal { get; set; }
   }
 
@@ -64,11 +67,16 @@ namespace BlueJay.UI.Component.Language
     public ElementNode Node { get; set; }
   }
 
+  public class ElementRef
+  {
+    public string PropName { get; set; }
+  }
+
   public class ElementFor
   {
     public string ScopeName { get; set; }
-    public Func<Dictionary<string, object>, object> DataGetter { get; set; }
-    public List<IReactiveProperty> ReactiveProps { get; set; }
+    public Func<ReactiveScope, object> DataGetter { get; set; }
+    public List<string> ScopePaths { get; set; }
     public bool Processed { get; set; }
   }
 
@@ -85,5 +93,6 @@ namespace BlueJay.UI.Component.Language
     public const string If = "if";
     public const string For = "for";
     public const string Event = "event";
+    public const string Identifier = "_identifier";
   }
 }

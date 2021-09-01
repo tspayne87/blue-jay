@@ -10,20 +10,18 @@ namespace BlueJay.UI.Component.Reactivity
   /// Reactive property that will handle when props change on the component
   /// </summary>
   /// <typeparam name="T">The type of property this is</typeparam>
-  public class ReactiveProperty<T> : IReactiveProperty
+  public class ReactiveProperty<T> : IReactiveProperty, IDisposable
   {
+    private readonly List<IDisposable> _subscriptions;
+    private readonly List<IObserver<ReactiveUpdateEvent>> _observers;
+
     /// <summary>
     /// The internal value that was set for this property
     /// </summary>
     private T _value;
 
     /// <summary>
-    /// The change event handler we will need to bind to
-    /// </summary>
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    /// <summary>
-    /// The value for this property
+    /// Getter that is meant to update all the observers and the internal value
     /// </summary>
     public T Value
     {
@@ -33,7 +31,8 @@ namespace BlueJay.UI.Component.Reactivity
         if ((_value == null && value != null) || (_value != null && !_value.Equals(value)))
         {
           _value = value;
-          NotifyPropertyChanged();
+          Next(_value);
+          BindValue();
         }
       }
     }
@@ -52,7 +51,8 @@ namespace BlueJay.UI.Component.Reactivity
             _value = (T)value;
           else
             _value = (T)Convert.ChangeType(value, typeof(T));
-          NotifyPropertyChanged();
+          Next(_value);
+          BindValue();
         }
       }
     }
@@ -64,16 +64,91 @@ namespace BlueJay.UI.Component.Reactivity
     public ReactiveProperty(T value)
     {
       _value = value;
-      PropertyChanged = default;
+      _observers = new List<IObserver<ReactiveUpdateEvent>>();
+      _subscriptions = new List<IDisposable>();
+      BindValue();
     }
 
     /// <summary>
-    /// Notification helper that will call the property change events
+    /// Subscription method is meant to attach a subscription to the observable so we can dispose of it if needed
     /// </summary>
-    /// <param name="property">The property name that has been changed</param>
-    private void NotifyPropertyChanged([CallerMemberName] string property = "")
+    /// <param name="observer">The observer we are wanting to send details to</param>
+    /// <returns>The disposable object that is meant to remove the observer on dispose</returns>
+    public IDisposable Subscribe(IObserver<ReactiveUpdateEvent> observer)
     {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+      if (!_observers.Contains(observer))
+      {
+        _observers.Add(observer);
+
+        var propObserver = observer as ReactivePropertyObserver;
+        if (propObserver != null)
+        {
+          observer.OnNext(new ReactiveUpdateEvent() { Path = propObserver.Path, Data = Utils.GetObject(this, propObserver.Path), Type = ReactiveUpdateEvent.EventType.Update });
+        }
+        else
+        {
+          observer.OnNext(new ReactiveUpdateEvent() { Data = _value, Type = ReactiveUpdateEvent.EventType.Update });
+        }
+      }
+      return new ReactivePropertyUnsubscriber(_observers, observer);
+    }
+
+    /// <inheritdoc />
+    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, string path = null)
+    {
+      return Subscribe(new ReactivePropertyObserver(nextAction, path));
+    }
+
+    /// <inheritdoc />
+    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type)
+    {
+      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type));
+    }
+
+    public void Dispose()
+    {
+      ClearSubscriptions();
+    }
+
+    /// <summary>
+    /// Helper method is meant to notify all the observers of this subscription
+    /// </summary>
+    private void Next(object value, string path = "")
+    {
+      foreach (var observer in _observers)
+        observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = ReactiveUpdateEvent.EventType.Update });
+    }
+
+    private void BindValue()
+    {
+      ClearSubscriptions();
+      if (_value != null)
+      {
+        var fields = _value.GetType().GetFields();
+        foreach(var field in fields)
+        {
+          if (field.IsInitOnly && typeof(IReactiveProperty).IsAssignableFrom(field.FieldType))
+          {
+            var reactive = field.GetValue(_value) as IReactiveProperty;
+            if (reactive != null)
+            {
+              _subscriptions.Add(
+                reactive.Subscribe(x =>
+                {
+                  Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? field.Name : $"{field.Name}.{x.Path}");
+                })
+              );
+            }
+          }
+        }
+      }
+    }
+
+    private void ClearSubscriptions()
+    {
+      foreach (var subscription in _subscriptions)
+        subscription.Dispose();
+      _subscriptions.Clear();
     }
   }
 }

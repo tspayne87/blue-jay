@@ -52,43 +52,23 @@ namespace BlueJay.UI.Component.Language
       var events = new List<ElementEvent>();
       for (; i < context.ChildCount && !context.GetChild(i).GetText().Contains(">"); ++i)
       {
+        if (context.GetChild(i).GetText() == "Global")
+        {
+          node.IsGlobal = true;
+          continue;
+        }
         var attr = Visit(context.GetChild(i));
         if (attr is ElementProp)
         {
           var prop = attr as ElementProp;
-          if (instance != null && prop.ReactiveProps?.Count > 0)
-          { // Process binding properties together, so they can keep the one-way and two-way binding
-            var bindable = instance.GetType().GetField(prop.Name);
-            if (bindable != null)
-            {
-              var bAttr = bindable.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute;
-              var reactive = bindable.GetValue(instance) as IReactiveProperty;
-              if (bAttr != null && reactive != null)
-              {
-                reactive.Value = prop.DataGetter(null);
-                if (bAttr.Binding == PropBinding.TwoWay && prop.ReactiveProps.Count == 1)
-                {
-                  reactive.PropertyChanged += (sender, o) => prop.ReactiveProps[0].Value = reactive.Value;
-                  prop.ReactiveProps[0].PropertyChanged += (sender, o) => reactive.Value = prop.DataGetter(null);
-                }
-                else if (bAttr.Binding == PropBinding.OneWay)
-                {
-                  foreach(var item in prop.ReactiveProps)
-                  {
-                    item.PropertyChanged += (sender, o) => reactive.Value = prop.DataGetter(null);
-                  }
-                }
-              }
-            }
-          }
           if (prop.Name == PropNames.Style || prop.Name == PropNames.HoverStyle)
           {
             var existingProp = node.Props.FirstOrDefault(x => x.Name == prop.Name);
             if (existingProp != null)
             {
               var oldGetter = existingProp.DataGetter;
-              existingProp.DataGetter = x => prop.DataGetter(new Dictionary<string, object>() { { prop.Name, oldGetter(x) } });
-              existingProp.ReactiveProps.AddRange(prop.ReactiveProps);
+              existingProp.DataGetter = x => prop.DataGetter(new ReactiveScope(new Dictionary<string, object>() { { prop.Name, oldGetter(x) } }));
+              existingProp.ScopePaths.AddRange(prop.ScopePaths);
               continue;
             }
           }
@@ -104,6 +84,10 @@ namespace BlueJay.UI.Component.Language
         else if (attr is ElementFor)
         {
           node.For = attr as ElementFor;
+        }
+        else if (attr is ElementRef)
+        {
+          node.Refs.Add(attr as ElementRef);
         }
       }
 
@@ -139,8 +123,8 @@ namespace BlueJay.UI.Component.Language
 
     public override object VisitChardata([NotNull] XMLParser.ChardataContext context)
     {
-      var expressions = new List<Func<Dictionary<string, object>, string>>();
-      var reactiveProps = new List<IReactiveProperty>();
+      var expressions = new List<Func<ReactiveScope, string>>();
+      var scopePaths = new List<string>();
       for (var i = 0; i < context.ChildCount; ++i)
       {
         var txt = context.GetChild(i).GetText();
@@ -151,7 +135,7 @@ namespace BlueJay.UI.Component.Language
             var expression = context.GetText();
             var result = _serviceProvider.ParseExpression(txt.Substring(2, txt.Length - 4), _intance);
             expressions.Add(x => result.Callback(x)?.ToString() ?? string.Empty);
-            reactiveProps.AddRange(result.ReactiveProps);
+            scopePaths.AddRange(result.ScopePaths);
           }
           else
           {
@@ -162,7 +146,7 @@ namespace BlueJay.UI.Component.Language
       if (expressions.Count == 0) return null;
 
       var node = new ElementNode(ElementType.Text, _intance);
-      node.Props.Add(new ElementProp() { Name = PropNames.Text, DataGetter = x => string.Join(string.Empty, expressions.Select(y => y(x))).Trim(), ReactiveProps = reactiveProps });
+      node.Props.Add(new ElementProp() { Name = PropNames.Text, DataGetter = x => string.Join(string.Empty, expressions.Select(y => y(x))).Trim(), ScopePaths = scopePaths });
       return node;
     }
 
@@ -186,7 +170,7 @@ namespace BlueJay.UI.Component.Language
       if (name == PropNames.Style || name == PropNames.HoverStyle)
       { // Parse the style attribute since it is a special property and we want to parse the data
         var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2), _intance, name);
-        return new ElementProp() { Name = name, DataGetter = result.Callback, ReactiveProps = result.ReactiveProps };
+        return new ElementProp() { Name = name, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
       }
       return new ElementProp() { Name = name, DataGetter = x => text.Substring(1, text.Length - 2) };
     }
@@ -196,7 +180,7 @@ namespace BlueJay.UI.Component.Language
       var name = context.GetChild(1).GetText();
       var expression = context.GetChild(context.ChildCount - 1).GetText();
       var result = _serviceProvider.ParseExpression(expression.Substring(1, expression.Length - 2), _intance);
-      return new ElementProp() { Name = name, DataGetter = result.Callback, ReactiveProps = result.ReactiveProps };
+      return new ElementProp() { Name = name, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
     }
 
     public override object VisitEventAttribute([NotNull] XMLParser.EventAttributeContext context)
@@ -211,13 +195,19 @@ namespace BlueJay.UI.Component.Language
     {
       var expression = context.GetChild(context.ChildCount - 1).GetText();
       var result = _serviceProvider.ParseExpression(expression.Substring(1, expression.Length - 2), _intance);
-      return new ElementProp() { Name = PropNames.If, DataGetter = result.Callback, ReactiveProps = result.ReactiveProps };
+      return new ElementProp() { Name = PropNames.If, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
     }
 
     public override object VisitForAttribute([NotNull] XMLParser.ForAttributeContext context)
     {
       var expression = context.GetChild(context.ChildCount - 1).GetText();
       return _serviceProvider.ParseFor(expression.Substring(1, expression.Length - 2), _intance);
+    }
+
+    public override object VisitRefAttribute([NotNull] XMLParser.RefAttributeContext context)
+    {
+      var propName = context.GetChild(context.ChildCount - 1).GetText();
+      return new ElementRef() { PropName = propName.Substring(1, propName.Length - 2) };
     }
   }
 }

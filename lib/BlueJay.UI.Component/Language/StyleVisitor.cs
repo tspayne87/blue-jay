@@ -28,12 +28,10 @@ namespace BlueJay.UI.Component.Language
     public override object VisitExpr([NotNull] StyleParser.ExprContext context)
     {
       var styleItems = Visit(context.GetChild(0)) as List<StyleExpression>;
-      var props = styleItems.SelectMany(x => x.ReactiveProps).ToList();
+      var props = styleItems.SelectMany(x => x.ScopePaths).ToList();
       return new ExpressionResult(x =>
       {
-        var style = x?[_name] as Style;
-        if (style == null)
-          style = new Style();
+        var style = (x?.ContainsKey(_name) == true ? x[_name] as Style : null) ?? new Style();
 
         foreach(var item in styleItems)
         {
@@ -118,7 +116,7 @@ namespace BlueJay.UI.Component.Language
     {
       var expression = context.GetText();
       var result = _serviceProvider.ParseExpression(expression.Substring(2, expression.Length - 4), _intance);
-      return new StyleExpression(() => result.Callback(null), result.ReactiveProps);
+      return new StyleExpression(() => result.Callback(null), result.ScopePaths);
     }
     #endregion
 
@@ -163,12 +161,12 @@ namespace BlueJay.UI.Component.Language
     {
       public string Name { get; set; }
       public Func<object> Callback { get; private set; }
-      public List<IReactiveProperty> ReactiveProps { get; private set; }
+      public List<string> ScopePaths { get; private set; }
 
-      public StyleExpression(Func<object> callback, List<IReactiveProperty> reactiveProps = null)
+      public StyleExpression(Func<object> callback, List<string> scopePaths = null)
       {
         Callback = callback;
-        ReactiveProps = reactiveProps ?? new List<IReactiveProperty>();
+        ScopePaths = scopePaths ?? new List<string>();
       }
     }
   }

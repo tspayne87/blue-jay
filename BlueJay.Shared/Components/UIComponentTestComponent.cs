@@ -6,6 +6,7 @@ using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Interactivity;
 using BlueJay.UI.Component.Reactivity;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace BlueJay.Shared.Components
 {
@@ -21,8 +22,12 @@ namespace BlueJay.Shared.Components
   <SliderInput :Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
   <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
 
-  <DropdownInput Style=""ColumnSpan: 3"" :Items=""DropdownItems"" :Model=""Dropdown"" />
-  <Container Style=""ColumnSpan: 2; TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
+  <DropdownInput Style=""ColumnSpan: 2"" :Items=""DropdownItems"" :Model=""Dropdown"" />
+  <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5"">
+    <Button @Select=""AddItem()"">Add Item</Button>
+    <Button @Select=""SwitchItem()"">Switch Last</Button>
+  </Container>
+  <Container Style=""TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
     ")]
   [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput), typeof(DropdownInput))]
@@ -82,6 +87,22 @@ namespace BlueJay.Shared.Components
     public bool OnBackToTitleClick()
     {
       _views.SetCurrent<TitleView>();
+      return true;
+    }
+
+    public bool AddItem()
+    {
+      DropdownItems.Add(new DropdownItem()
+      {
+        Name = $"Item {DropdownItems.Count + 1}",
+        Id = DropdownItems.Count + 1
+      });
+      return true;
+    }
+
+    public bool SwitchItem()
+    {
+      DropdownItems.Insert(1, new DropdownItem() { Name = "Changed Item 2", Id = 20000000 });
       return true;
     }
 

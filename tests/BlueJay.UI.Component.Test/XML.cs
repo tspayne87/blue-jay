@@ -74,7 +74,7 @@ namespace BlueJay.UI.Component.Test
     public void BindedProp()
     {
       var component = new Component();
-      var scope = new Dictionary<string, object>() { { "event", new SelectEvent() } };
+      var scope = new ReactiveScope(new Dictionary<string, object>() { { "event", new SelectEvent() } });
 
       var identifier = Provider.ParseXML("<Container :Prop1=\"Integer\">Hello World</Container>", component);
       var func = Provider.ParseXML("<Container :Prop1=\"OnSelect($event, Integer)\">Hello World</Container>", component);
@@ -126,16 +126,12 @@ namespace BlueJay.UI.Component.Test
 
       Assert.Equal("Testing This", tree.Props.First(x => x.Name == "Name").DataGetter(null));
       Assert.Equal("Testing This", tree.Props.First(x => x.Name == "ButtonText").DataGetter(null));
-
-      component.Str.Value = "Hello World";
-      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "Name").DataGetter(null));
-      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "ButtonText").DataGetter(null));
     }
 
     [Fact]
     public void EventProp()
     {
-      var scope = new Dictionary<string, object>() { { "event", new SelectEvent() } };
+      var scope = new ReactiveScope(new Dictionary<string, object>() { { "event", new SelectEvent() } });
       var tree = Provider.ParseXML("<Container @Select=\"OnSelect($event, Integer)\" />", new Component());
       Assert.Empty(tree.Children);
       Assert.NotNull(tree.Events.FirstOrDefault(x => x.Name == "Select"));
@@ -196,7 +192,7 @@ namespace BlueJay.UI.Component.Test
 
       // Re-apply style changes
       instance.Integer.Value = 10;
-      component.Props.First(x => x.Name == PropNames.Style).DataGetter(new Dictionary<string, object>() { { PropNames.Style, style } });
+      component.Props.First(x => x.Name == PropNames.Style).DataGetter(new ReactiveScope(new Dictionary<string, object>() { { PropNames.Style, style } }));
       Assert.Equal(Position.Absolute, style.Position);
       Assert.Equal(1f, style.WidthPercentage);
       Assert.Equal(10, style.Height);
@@ -210,7 +206,7 @@ namespace BlueJay.UI.Component.Test
       var tree = Provider.ParseXML("<Container :HelloWorld='AppendWorld($Hello)' />", new Component());
 
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "HelloWorld"));
-      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "HelloWorld").DataGetter(new Dictionary<string, object>() { { "Hello", "Hello" } }));
+      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "HelloWorld").DataGetter(new ReactiveScope(new Dictionary<string, object>() { { "Hello", "Hello" } })));
     }
 
     [Fact]
@@ -224,6 +220,23 @@ namespace BlueJay.UI.Component.Test
 
       instance.Items.Add("Add One More");
       Assert.True((tree.For.DataGetter(null) as List<string>).SequenceEqual(new List<string>() { "Hello World", "Add One More" }));
+    }
+
+    [Fact]
+    public void RefProp()
+    {
+      var tree = Provider.ParseXML("<Container ref='HelloWorld' />", new Component());
+
+      Assert.NotEmpty(tree.Refs);
+      Assert.NotNull(tree.Refs.FirstOrDefault(x => x.PropName == "HelloWorld"));
+    }
+
+    [Fact]
+    public void GlobalCheck()
+    {
+      var tree = Provider.ParseXML("<Container Global />", new Component());
+
+      Assert.True(tree.IsGlobal);
     }
 
     public class Component : UIComponent

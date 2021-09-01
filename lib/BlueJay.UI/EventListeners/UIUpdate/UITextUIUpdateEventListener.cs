@@ -108,19 +108,22 @@ namespace BlueJay.UI.EventListeners.UIUpdate
               sa.CalculatedBounds.Height = (int)Math.Ceiling(finalBounds.Y) + ((sa.CurrentStyle.Padding ?? 0) * 2);
             }
 
-            // Generate texture and add it to the texture addon so it can be rendered to the screen
-            var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
-            _graphics.SetRenderTarget(target);
-            _graphics.Clear(Color.Transparent);
-            _batch.Begin();
-            if (entity.TryGetStyle(x => x.Font, out var font))
-              _batch.DrawString(_fonts.SpriteFonts[font], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black);
-            else if (entity.TryGetStyle(x => x.TextureFont, out var textureFont))
-              _batch.DrawString(_fonts.TextureFonts[textureFont], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black, entity.GetStyle(x => x.TextureFontSize) ?? 1);
-            _batch.End();
-            _graphics.SetRenderTarget(null);
+            if (sa.CalculatedBounds.Width != 0 && sa.CalculatedBounds.Height != 0)
+            {
+              // Generate texture and add it to the texture addon so it can be rendered to the screen
+              var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
+              _graphics.SetRenderTarget(target);
+              _graphics.Clear(Color.Transparent);
+              _batch.Begin();
+              if (entity.TryGetStyle(x => x.Font, out var font))
+                _batch.DrawString(_fonts.SpriteFonts[font], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black);
+              else if (entity.TryGetStyle(x => x.TextureFont, out var textureFont))
+                _batch.DrawString(_fonts.TextureFonts[textureFont], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black, entity.GetStyle(x => x.TextureFontSize) ?? 1);
+              _batch.End();
+              _graphics.SetRenderTarget(null);
 
-            ta.Texture = target;
+              ta.Texture = target;
+            }
 
             entity.Update(sa);
           }

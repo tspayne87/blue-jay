@@ -61,7 +61,7 @@ namespace BlueJay.UI.EventListeners
       for (var i = entities.Count - 1; i >= 0; --i)
       {
         var entity = entities[i];
-        if (Contains(entity, evt.Data.Position))
+        if (entity.Active && Contains(entity, evt.Data.Position))
         {
           foundEntity = entity;
           break;

@@ -14,10 +14,14 @@ attribute           : ifAttribute
                     | basicAttribute
                     | bindAttribute
                     | eventAttribute
+                    | GLOBAL
+                    | refAttribute
                     ;
 ifAttribute         : IF EQUALS STRING
                     ;
 forAttribute        : FOR EQUALS STRING
+                    ;
+refAttribute        : REF EQUALS STRING
                     ;
 basicAttribute      : NAME EQUALS STRING
                     ;
