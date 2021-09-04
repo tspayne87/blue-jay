@@ -38,7 +38,7 @@ namespace BlueJay.UI.Component.Language
           var prop = style.GetType().GetProperty(item.Name);
           if (prop != null)
           {
-            prop.SetValue(style, item.Callback());
+            prop.SetValue(style, item.Callback(x));
           }
         }
 
@@ -70,14 +70,14 @@ namespace BlueJay.UI.Component.Language
     public override object VisitDecimal([NotNull] StyleParser.DecimalContext context)
     {
       if (float.TryParse(context.GetText(), out var dec))
-        return new StyleExpression(() => dec);
+        return new StyleExpression(x => dec);
       return null;
     }
 
     public override object VisitInteger([NotNull] StyleParser.IntegerContext context)
     {
       if (int.TryParse(context.GetText(), out var integer))
-        return new StyleExpression(() => integer);
+        return new StyleExpression(x => integer);
       return null;
     }
 
@@ -85,7 +85,7 @@ namespace BlueJay.UI.Component.Language
     {
       var content = _serviceProvider.GetRequiredService<ContentManager>();
       var texture = content.Load<Texture2D>(context.GetText());
-      return new StyleExpression(() => new NinePatch(texture));
+      return new StyleExpression(x => new NinePatch(texture));
     }
 
     public override object VisitColor([NotNull] StyleParser.ColorContext context)
@@ -93,21 +93,21 @@ namespace BlueJay.UI.Component.Language
       var r = Visit(context.GetChild(0)) as StyleExpression;
       var g = Visit(context.GetChild(2)) as StyleExpression;
       var b = Visit(context.GetChild(4)) as StyleExpression;
-      var a = context.ChildCount > 6 ? Visit(context.GetChild(6)) as StyleExpression : new StyleExpression(() => 255);
+      var a = context.ChildCount > 6 ? Visit(context.GetChild(6)) as StyleExpression : new StyleExpression(x => 255);
 
-      return new StyleExpression(() => new Color((int)r.Callback(), (int)g.Callback(), (int)b.Callback(), (int)a.Callback()));
+      return new StyleExpression(x => new Color((int)r.Callback(x), (int)g.Callback(x), (int)b.Callback(x), (int)a.Callback(x)));
     }
 
     public override object VisitPoint([NotNull] StyleParser.PointContext context)
     {
       var x = Visit(context.GetChild(0)) as StyleExpression;
-      var y = context.ChildCount > 2 ? Visit(context.GetChild(2)) as StyleExpression : new StyleExpression(() => x.Callback());
-      return new StyleExpression(() => new Point((int)x.Callback(), (int)y.Callback()));
+      var y = context.ChildCount > 2 ? Visit(context.GetChild(2)) as StyleExpression : new StyleExpression(z => x.Callback(z));
+      return new StyleExpression(z => new Point((int)x.Callback(z), (int)y.Callback(z)));
     }
 
     public override object VisitWord([NotNull] StyleParser.WordContext context)
     {
-      return new StyleExpression(() => context.GetText());
+      return new StyleExpression(x => context.GetText());
     }
     #endregion
 
@@ -116,7 +116,7 @@ namespace BlueJay.UI.Component.Language
     {
       var expression = context.GetText();
       var result = _serviceProvider.ParseExpression(expression.Substring(2, expression.Length - 4), _intance);
-      return new StyleExpression(() => result.Callback(null), result.ScopePaths);
+      return new StyleExpression(x => result.Callback(x), result.ScopePaths);
     }
     #endregion
 
@@ -124,35 +124,35 @@ namespace BlueJay.UI.Component.Language
     public override object VisitHorizontalAlign([NotNull] StyleParser.HorizontalAlignContext context)
     {
       if (Enum.TryParse<HorizontalAlign>(context.GetText(), out var horizontalAlign))
-        return new StyleExpression(() => horizontalAlign);
+        return new StyleExpression(x => horizontalAlign);
       return null;
     }
 
     public override object VisitVerticalAlign([NotNull] StyleParser.VerticalAlignContext context)
     {
       if (Enum.TryParse<VerticalAlign>(context.GetText(), out var verticalAlign))
-        return new StyleExpression(() => verticalAlign);
+        return new StyleExpression(x => verticalAlign);
       return null;
     }
 
     public override object VisitTextAlign([NotNull] StyleParser.TextAlignContext context)
     {
       if (Enum.TryParse<TextAlign>(context.GetText(), out var textAlign))
-        return new StyleExpression(() => textAlign);
+        return new StyleExpression(x => textAlign);
       return null;
     }
 
     public override object VisitTextBaseline([NotNull] StyleParser.TextBaselineContext context)
     {
       if (Enum.TryParse<TextBaseline>(context.GetText(), out var textBaseline))
-        return new StyleExpression(() => textBaseline);
+        return new StyleExpression(x => textBaseline);
       return null;
     }
 
     public override object VisitPosition([NotNull] StyleParser.PositionContext context)
     {
       if (Enum.TryParse<Position>(context.GetText(), out var position))
-        return new StyleExpression(() => position);
+        return new StyleExpression(x => position);
       return null;
     }
     #endregion
@@ -160,10 +160,10 @@ namespace BlueJay.UI.Component.Language
     private class StyleExpression
     {
       public string Name { get; set; }
-      public Func<object> Callback { get; private set; }
+      public Func<ReactiveScope, object> Callback { get; private set; }
       public List<string> ScopePaths { get; private set; }
 
-      public StyleExpression(Func<object> callback, List<string> scopePaths = null)
+      public StyleExpression(Func<ReactiveScope, object> callback, List<string> scopePaths = null)
       {
         Callback = callback;
         ScopePaths = scopePaths ?? new List<string>();

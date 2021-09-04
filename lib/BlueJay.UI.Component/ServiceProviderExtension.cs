@@ -31,7 +31,7 @@ namespace BlueJay.UI.Component
     public static IEntity AddUIComponent<T>(this IServiceProvider provider)
       where T : UIComponent
     {
-      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, new ReactiveScope());
+      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, null);
     }
 
     public static ElementNode ParseXML(this IServiceProvider serviceProvider, string xml, UIComponent instance, List<Type> components = null)
@@ -104,6 +104,9 @@ namespace BlueJay.UI.Component
 
     internal static ReactiveEntity ProcessElementNode(IServiceProvider provider, EventQueue eventQueue, GraphicsDevice graphics, ElementNode node, ReactiveEntity parent, ReactiveScope scope)
     {
+      scope = scope?.NewScope() ?? new ReactiveScope();
+      scope[PropNames.Identifier] = node.Instance;
+
       if (node.For != null && !node.For.Processed)
       {
         node.For.Processed = true;
@@ -120,7 +123,7 @@ namespace BlueJay.UI.Component
                 {
                   madeChange = true;
 
-                  var newScope = scope != null ? scope.NewScope() : new ReactiveScope();
+                  var newScope = scope.NewScope();
                   newScope[node.For.ScopeName] = item;
                   if (entities.Count > i)
                   {

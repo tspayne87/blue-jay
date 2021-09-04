@@ -34,91 +34,80 @@ namespace BlueJay.UI.Component.Reactivity
 
     public void ProcessProperties()
     {
-      //foreach (var prop in Node.Props)
-      //{
-      //  if (prop.Name == PropNames.If)
-      //    Active = (bool)prop.DataGetter(Scope);
+      foreach (var prop in Node.Props)
+      {
+        if (prop.Name == PropNames.If)
+          Active = (bool)prop.DataGetter(Scope);
 
-      //  if (prop.ReactiveProps?.Count > 0)
-      //  {
-      //    foreach (var reactive in prop.ReactiveProps)
-      //    {
-      //      switch (prop.Name)
-      //      {
-      //        case PropNames.Text:
-      //          DisposableEvents.Add(
-      //            reactive.Subscribe(x =>
-      //            {
-      //              var ta = GetAddon<TextAddon>();
-      //              var txt = prop.DataGetter(Scope) as string;
-      //              ta.Text = txt;
-      //              Update(ta);
-      //              _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-      //            })
-      //          );
-      //          break;
-      //        case PropNames.Style:
-      //          DisposableEvents.Add(
-      //            reactive.Subscribe(x =>
-      //            {
-      //              var newScope = Scope != null ? new Dictionary<string, object>(Scope) : new Dictionary<string, object>();
-      //              newScope[PropNames.Style] = GetAddon<StyleAddon>().Style;
-      //              prop.DataGetter(newScope);
-      //              _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-      //            })
-      //          );
-      //          break;
-      //        case PropNames.HoverStyle:
-      //          DisposableEvents.Add(
-      //            reactive.Subscribe(x =>
-      //            {
-      //              var newScope = Scope != null ? new Dictionary<string, object>(Scope) : new Dictionary<string, object>();
-      //              newScope[PropNames.Style] = GetAddon<StyleAddon>().Style;
-      //              prop.DataGetter(newScope);
-      //              _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-      //            })
-      //          );
-      //          break;
-      //        case PropNames.If:
-      //          DisposableEvents.Add(
-      //            reactive.Subscribe(x =>
-      //            {
-      //              SetActive(this, (bool)prop.DataGetter(Scope));
-      //              _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-      //            })
-      //          );
-      //          break;
-      //        default:
-      //          if (prop.ReactiveProps?.Count > 0)
-      //          { // Process binding properties together, so they can keep the one-way and two-way binding
-      //            var bindable = Node.Instance.GetType().GetField(prop.Name);
-      //            if (bindable != null)
-      //            {
-      //              var bAttr = bindable.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute;
-      //              var reactiveAttr = bindable.GetValue(Node.Instance) as IReactiveProperty;
-      //              if (bAttr != null && reactiveAttr != null)
-      //              {
-      //                if (bAttr.Binding == PropBinding.TwoWay && prop.ReactiveProps.Count == 1)
-      //                {
-      //                  DisposableEvents.Add(reactiveAttr.Subscribe(x => prop.ReactiveProps[0].Value = x));
-      //                  DisposableEvents.Add(prop.ReactiveProps[0].Subscribe(x => reactiveAttr.Value = x));
-      //                }
-      //                else if (bAttr.Binding == PropBinding.OneWay)
-      //                {
-      //                  foreach (var item in prop.ReactiveProps)
-      //                  {
-      //                    // TODO: This could cause an issue with scoped elements
-      //                    DisposableEvents.Add(item.Subscribe(x => reactiveAttr.Value = prop.DataGetter(Scope)));
-      //                  }
-      //                }
-      //              }
-      //            }
-      //          }
-      //          break;
-      //      }
-      //    }
-      //  }
-      //}
+        if (prop.ScopePaths?.Count > 0)
+        {
+          switch (prop.Name)
+          {
+            case PropNames.Text:
+              DisposableEvents.AddRange(
+                Scope.Subscribe(x =>
+                {
+                  var ta = GetAddon<TextAddon>();
+                  var txt = prop.DataGetter(Scope) as string;
+                  ta.Text = txt;
+                  Update(ta);
+                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+                }, prop.ScopePaths)
+              );
+              break;
+            case PropNames.Style:
+              DisposableEvents.AddRange(
+                Scope.Subscribe(x =>
+                {
+                  var newScope = Scope.NewScope();
+                  newScope[PropNames.Style] = GetAddon<StyleAddon>().Style;
+                  prop.DataGetter(newScope);
+                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+                }, prop.ScopePaths)
+              );
+              break;
+            case PropNames.HoverStyle:
+              DisposableEvents.AddRange(
+                Scope.Subscribe(x =>
+                {
+                  var newScope = Scope.NewScope();
+                  newScope[PropNames.Style] = GetAddon<StyleAddon>().Style;
+                  prop.DataGetter(newScope);
+                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+                }, prop.ScopePaths)
+              );
+              break;
+            case PropNames.If:
+              DisposableEvents.AddRange(
+                Scope.Subscribe(x =>
+                {
+                  SetActive(this, (bool)prop.DataGetter(Scope));
+                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+                }, prop.ScopePaths)
+              );
+              break;
+            default:
+              var bindable = Node.Instance.GetType().GetField(prop.Name);
+              if (bindable != null)
+              {
+                var bAttr = bindable.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute;
+                if (bAttr != null)
+                {
+                  if (bAttr.Binding == PropBinding.TwoWay && prop.ScopePaths.Count == 1)
+                  {
+                    DisposableEvents.Add(Scope.Subscribe(x => Scope.Parent[prop.ScopePaths[0]] = x.Data, $"{PropNames.Identifier}.{prop.Name}"));
+                    DisposableEvents.Add(Scope.Parent.Subscribe(x => Scope[$"{PropNames.Identifier}.{prop.Name}"] = x.Data, prop.ScopePaths[0]));
+                  }
+                  else if (bAttr.Binding == PropBinding.OneWay)
+                  {
+                    DisposableEvents.AddRange(Scope.Subscribe(x => Scope[$"{PropNames.Identifier}.{prop.Name}"] = prop.DataGetter(Scope.Parent), prop.ScopePaths));
+                  }
+                }
+              }
+              break;
+          }
+        }
+      }
     }
 
     private void SetActive(IEntity entity, bool active)

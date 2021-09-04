@@ -115,7 +115,7 @@ namespace BlueJay.UI.Component.Reactivity
     /// </summary>
     private void Next(object value, string path = "")
     {
-      foreach (var observer in _observers)
+      foreach (var observer in _observers.ToArray())
         observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = ReactiveUpdateEvent.EventType.Update });
     }
 

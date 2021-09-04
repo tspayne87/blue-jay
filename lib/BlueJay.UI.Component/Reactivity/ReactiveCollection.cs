@@ -95,7 +95,7 @@ namespace BlueJay.UI.Component.Reactivity
         {
           ClearSubscriptions(index);
           _list[index] = value;
-          _subscriptions[index] = BindSubscriptions(value);
+          _subscriptions.Insert(index, BindSubscriptions(value));
           Next(value, $"[{index}]");
         }
       }
@@ -258,21 +258,38 @@ namespace BlueJay.UI.Component.Reactivity
       var subscriptions = new List<IDisposable>();
       if (value != null)
       {
-        var fields = value.GetType().GetFields();
-        foreach (var field in fields)
+        if (typeof(IReactiveProperty).IsAssignableFrom(value.GetType()))
         {
-          if (field.IsInitOnly && typeof(IReactiveProperty).IsAssignableFrom(field.FieldType))
+          var reactive = value as IReactiveProperty;
+          if (reactive != null)
           {
-            var reactive = field.GetValue(value) as IReactiveProperty;
-            if (reactive != null)
+            subscriptions.Add(
+              reactive.Subscribe(x =>
+              {
+                var index = _list.IndexOf(value);
+                Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"[{index}]" : $"[{index}].{x.Path}");
+              })
+            );
+          }
+        }
+        else
+        {
+          var fields = value.GetType().GetFields();
+          foreach (var field in fields)
+          {
+            if (field.IsInitOnly && typeof(IReactiveProperty).IsAssignableFrom(field.FieldType))
             {
-              subscriptions.Add(
-                reactive.Subscribe(x =>
-                {
-                  var index = _list.IndexOf(value);
-                  Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"[{index}].{field.Name}" : $"[{index}].{field.Name}.{x.Path}");
-                })
-              );
+              var reactive = field.GetValue(value) as IReactiveProperty;
+              if (reactive != null)
+              {
+                subscriptions.Add(
+                  reactive.Subscribe(x =>
+                  {
+                    var index = _list.IndexOf(value);
+                    Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"[{index}].{field.Name}" : $"[{index}].{field.Name}.{x.Path}");
+                  })
+                );
+              }
             }
           }
         }

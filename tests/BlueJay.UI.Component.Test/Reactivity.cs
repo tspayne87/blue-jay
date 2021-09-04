@@ -123,6 +123,57 @@ namespace BlueJay.UI.Component.Test
       Assert.Equal(5, i);
     }
 
+    [Fact]
+    public void ReactiveScope()
+    {
+      var simple = new Simple();
+      var scope = new ReactiveScope(new Dictionary<string, object>() { { "Simple", simple } });
+
+      var i = 0;
+      scope.Subscribe(x => i += (int)x.Data, "Simple.Integer");
+      Assert.Equal(5, i);
+
+      simple.Integer.Value = 10;
+      Assert.Equal(15, i);
+    }
+
+    [Fact]
+    public void ReactiveCollectionScope()
+    {
+      var collection = new ReactiveCollection<int>() { 1, 2, 3 };
+      var scope = new ReactiveScope() { { "Collection", collection } };
+
+    var i = 0;
+      scope.Subscribe(x => i += (int)x.Data, "Collection.[2]");
+
+      Assert.Equal(3, i);
+      collection[2] = 10;
+      Assert.Equal(13, i);
+
+      collection[2] = 11;
+      Assert.Equal(24, i);
+
+      collection[2] = 12;
+      Assert.Equal(36, i);
+    }
+
+    [Fact]
+    public void ComplexScope()
+    {
+      var collection = new ReactiveCollection<Nested>() { new Nested() };
+      var scope = new ReactiveScope() { { "Collection", collection } };
+
+      var i = 0;
+      scope.Subscribe(x => i += (int)x.Data, "Collection.[0].Simple.Integer");
+      Assert.Equal(5, i);
+
+      collection[0].Simple.Value.Integer.Value = 10;
+      Assert.Equal(15, i);
+
+      collection[0].Simple.Value = new Simple();
+      Assert.Equal(20, i);
+    }
+
     private class Simple
     {
       public readonly ReactiveProperty<int> Integer;
