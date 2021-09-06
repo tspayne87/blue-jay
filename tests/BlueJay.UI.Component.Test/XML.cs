@@ -71,38 +71,19 @@ namespace BlueJay.UI.Component.Test
     }
 
     [Fact]
-    public void BindedProp()
-    {
-      var component = new Component();
-      var scope = new ReactiveScope(new Dictionary<string, object>() { { "event", new SelectEvent() } });
-
-      var identifier = Provider.ParseXML("<Container :Prop1=\"Integer\">Hello World</Container>", component);
-      var func = Provider.ParseXML("<Container :Prop1=\"OnSelect($event, Integer)\">Hello World</Container>", component);
-
-      var identifierExpression = identifier.Props.FirstOrDefault(x => x.Name == "Prop1");
-      var funcExpression = func.Props.FirstOrDefault(x => x.Name == "Prop1");
-
-      Assert.Equal(5, identifierExpression.DataGetter(null));
-      Assert.True((bool)funcExpression.DataGetter(scope));
-
-      component.Integer.Value = 10;
-      Assert.Equal(10, identifierExpression.DataGetter(null));
-      Assert.False((bool)funcExpression.DataGetter(scope));
-    }
-
-    [Fact]
     public void BasicComponent()
     {
       var component = new Component();
       var tree = Provider.ParseXML("<Button :Int=\"Integer\" String='Value 1'>Hello World</Button>", component, new List<Type>() { typeof(Button) });
+      var scope = tree.GenerateScope();
 
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Int"));
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "String"));
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "ButtonText"));
 
-      Assert.Equal(5, tree.Props.First(x => x.Name == "Int").DataGetter(null));
-      Assert.Equal("Value 1", tree.Props.First(x => x.Name == "String").DataGetter(null));
-      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "ButtonText").DataGetter(null));
+      Assert.Equal(5, tree.Props.First(x => x.Name == "Int").DataGetter(scope));
+      Assert.Equal("Value 1", tree.Props.First(x => x.Name == "String").DataGetter(scope));
+      Assert.Equal("Hello World", tree.Props.First(x => x.Name == "ButtonText").DataGetter(scope));
       Assert.Equal(ElementType.Container, tree.Type);
       Assert.Equal(2, tree.Children.Count);
 
@@ -111,38 +92,27 @@ namespace BlueJay.UI.Component.Test
 
       Assert.Equal(ElementType.Text, tree.Children[0].Type);
       Assert.Equal(ElementType.Text, tree.Children[1].Type);
-      Assert.Equal("Button Hello World", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
-      Assert.Equal("Hello World", tree.Children[1].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
-    }
-
-    [Fact]
-    public void TwoWayBinding()
-    {
-      var component = new Component(5, "Testing This");
-      var tree = Provider.ParseXML("<Button :Name=\"Str\">Hello World</Button>", component, new List<Type>() { typeof(Button) });
-
-      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Name"));
-      Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "ButtonText"));
-
-      Assert.Equal("Testing This", tree.Props.First(x => x.Name == "Name").DataGetter(null));
-      Assert.Equal("Testing This", tree.Props.First(x => x.Name == "ButtonText").DataGetter(null));
+      Assert.Equal("Button Hello World", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(scope));
+      Assert.Equal("Hello World", tree.Children[1].Props.First(x => x.Name == PropNames.Text).DataGetter(scope));
     }
 
     [Fact]
     public void EventProp()
     {
-      var scope = new ReactiveScope(new Dictionary<string, object>() { { "event", new SelectEvent() } });
-      var tree = Provider.ParseXML("<Container @Select=\"OnSelect($event, Integer)\" />", new Component());
+      var instance = new Component();
+      var tree = Provider.ParseXML("<Container @Select=\"OnSelect($event, Integer)\" />", instance);
+      var scope = tree.GenerateScope();
       Assert.Empty(tree.Children);
       Assert.NotNull(tree.Events.FirstOrDefault(x => x.Name == "Select"));
       Assert.False(tree.Events.First(x => x.Name == "Select").IsGlobal);
       Assert.True((bool)tree.Events.Find(x => x.Name == "Select").Callback(scope));
 
-      var treeGlobal = Provider.ParseXML("<Container @Select.Global=\"OnSelect($event, Integer)\" />", new Component());
+      var treeGlobal = Provider.ParseXML("<Container @Select.Global=\"OnSelect($event, Integer)\" />", instance);
+      var newScope = treeGlobal.GenerateScope();
       Assert.Empty(treeGlobal.Children);
       Assert.NotNull(treeGlobal.Events.FirstOrDefault(x => x.Name == "Select"));
       Assert.True(treeGlobal.Events.First(x => x.Name == "Select").IsGlobal);
-      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(scope));
+      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(newScope));
     }
 
     [Fact]
@@ -153,7 +123,7 @@ namespace BlueJay.UI.Component.Test
 
       var test = new Color(200, 200, 200);
 
-      var style = component.Props.First(x => x.Name == PropNames.Style).DataGetter(null) as Style;
+      var style = (Style)component.Props.First(x => x.Name == PropNames.Style).DataGetter(null);
       Assert.Equal(Position.Absolute, style.Position);
       Assert.Equal(1f, style.WidthPercentage);
       Assert.Equal(4, style.Height);
@@ -166,38 +136,15 @@ namespace BlueJay.UI.Component.Test
     {
       var instance = new Component();
       var tree = Provider.ParseXML("<Container>Score: {{Integer}}</Container>", instance);
+      var scope = tree.GenerateScope();
 
       Assert.Single(tree.Children);
       Assert.NotNull(tree.Children[0].Props.FirstOrDefault(x => x.Name == PropNames.Text));
 
-      Assert.Equal("Score: 5", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
+      Assert.Equal("Score: 5", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(scope));
 
       instance.Integer.Value = 10;
-      Assert.Equal("Score: 10", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(null));
-    }
-
-    [Fact]
-    public void ReactiveStyleProp()
-    {
-      var instance = new Component();
-      var component = Provider.ParseXML("<Container Style=\"Position: Absolute; WidthPercentage: 1; Height: {{Integer}}; VerticalAlign: Center; BackgroundColor: 200, 200, 200\">Hello World</Container>", instance);
-      Assert.NotNull(component.Props.FirstOrDefault(x => x.Name == PropNames.Style));
-
-      var style = component.Props.First(x => x.Name == PropNames.Style).DataGetter(null) as Style;
-      Assert.Equal(Position.Absolute, style.Position);
-      Assert.Equal(1f, style.WidthPercentage);
-      Assert.Equal(5, style.Height);
-      Assert.Equal(VerticalAlign.Center, style.VerticalAlign);
-      Assert.Equal(new Color(200, 200, 200), style.BackgroundColor);
-
-      // Re-apply style changes
-      instance.Integer.Value = 10;
-      component.Props.First(x => x.Name == PropNames.Style).DataGetter(new ReactiveScope(new Dictionary<string, object>() { { PropNames.Style, style } }));
-      Assert.Equal(Position.Absolute, style.Position);
-      Assert.Equal(1f, style.WidthPercentage);
-      Assert.Equal(10, style.Height);
-      Assert.Equal(VerticalAlign.Center, style.VerticalAlign);
-      Assert.Equal(new Color(200, 200, 200), style.BackgroundColor);
+      Assert.Equal("Score: 10", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(scope));
     }
 
     [Fact]
@@ -213,19 +160,20 @@ namespace BlueJay.UI.Component.Test
     public void ForProp()
     {
       var instance = new Component();
-      var tree = Provider.ParseXML("<Container for='var $item in Items' />", instance);
+      var tree = Provider.ParseXML("<Container :for='$item in Items' />", instance);
+      var scope = tree.GenerateScope();
 
       Assert.NotNull(tree.For);
-      Assert.True((tree.For.DataGetter(null) as List<string>).SequenceEqual(new List<string>() { "Hello World" }));
+      Assert.True((tree.For.DataGetter(scope) as List<string>).SequenceEqual(new List<string>() { "Hello World" }));
 
       instance.Items.Add("Add One More");
-      Assert.True((tree.For.DataGetter(null) as List<string>).SequenceEqual(new List<string>() { "Hello World", "Add One More" }));
+      Assert.True((tree.For.DataGetter(scope) as List<string>).SequenceEqual(new List<string>() { "Hello World", "Add One More" }));
     }
 
     [Fact]
     public void RefProp()
     {
-      var tree = Provider.ParseXML("<Container ref='HelloWorld' />", new Component());
+      var tree = Provider.ParseXML("<Container :ref='HelloWorld' />", new Component());
 
       Assert.NotEmpty(tree.Refs);
       Assert.NotNull(tree.Refs.FirstOrDefault(x => x.PropName == "HelloWorld"));

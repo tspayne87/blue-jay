@@ -1,4 +1,5 @@
 ﻿using BlueJay.Common.Addons;
+using BlueJay.Component.System;
 using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
@@ -47,10 +48,9 @@ namespace BlueJay.UI.EventListeners
     /// <param name="evt">The event that triggered this listener</param>
     public override void Process(IEvent<StyleUpdateEvent> evt)
     {
-      var sa = evt.Data.Entity.GetAddon<StyleAddon>();
-      
-      if (sa.CurrentStyle.NinePatch != null || sa.CurrentStyle.BackgroundColor != null)
+      if (!evt.Data.Entity.MatchKey(AddonHelper.Identifier<TextAddon>()))
       {
+        var sa = evt.Data.Entity.GetAddon<StyleAddon>();
         var ba = evt.Data.Entity.GetAddon<BoundsAddon>();
         var ta = evt.Data.Entity.GetAddon<TextureAddon>();
 

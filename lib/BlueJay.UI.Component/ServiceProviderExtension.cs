@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
@@ -31,7 +32,7 @@ namespace BlueJay.UI.Component
     public static IEntity AddUIComponent<T>(this IServiceProvider provider)
       where T : UIComponent
     {
-      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, null);
+      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, new ReactiveScope());
     }
 
     public static ElementNode ParseXML(this IServiceProvider serviceProvider, string xml, UIComponent instance, List<Type> components = null)
@@ -61,7 +62,7 @@ namespace BlueJay.UI.Component
       return visitor.Visit(expr) as ExpressionResult;
     }
 
-    internal static ExpressionResult ParseStyle(this IServiceProvider serviceProvider, string expression, UIComponent instance, string name)
+    internal static ExpressionResult ParseStyle(this IServiceProvider serviceProvider, string expression, string name)
     {
       var stream = new AntlrInputStream(expression);
       ITokenSource lexer = new StyleLexer(stream);
@@ -70,7 +71,7 @@ namespace BlueJay.UI.Component
 
       var expr = parser.expr();
 
-      var visitor = new StyleVisitor(serviceProvider, instance, name);
+      var visitor = new StyleVisitor(serviceProvider, name);
       return visitor.Visit(expr) as ExpressionResult;
     }
 
@@ -104,21 +105,25 @@ namespace BlueJay.UI.Component
 
     internal static ReactiveEntity ProcessElementNode(IServiceProvider provider, EventQueue eventQueue, GraphicsDevice graphics, ElementNode node, ReactiveEntity parent, ReactiveScope scope)
     {
-      scope = scope?.NewScope() ?? new ReactiveScope();
-      scope[PropNames.Identifier] = node.Instance;
+      if (!scope.ContainsKey(node.Instance.Identifier))
+      {
+        scope[node.Instance.Identifier] = node.Instance;
+      }
 
       if (node.For != null && !node.For.Processed)
       {
         node.For.Processed = true;
 
         var entities = new List<ReactiveEntity>();
-        parent.DisposableEvents.AddRange(
+        parent.Subscriptions.AddRange(
           scope.Subscribe(x =>
             {
               var madeChange = false;
-              var i = 0;
+              var i = -1;
+              var pla = parent.GetAddon<LineageAddon>();
               foreach (var item in node.For.DataGetter(scope) as IEnumerable)
               {
+                i++;
                 if (entities.Count <= i || item != entities[i].Data)
                 {
                   madeChange = true;
@@ -127,8 +132,18 @@ namespace BlueJay.UI.Component
                   newScope[node.For.ScopeName] = item;
                   if (entities.Count > i)
                   {
-                    entities[i].Scope = newScope;
-                    entities[i].Data = item;
+                    var updatedNode = ProcessElementNode(provider, eventQueue, graphics, node, null, newScope);
+                    updatedNode.Data = item;
+
+                    var la = updatedNode.GetAddon<LineageAddon>();
+                    var oldEntity = entities[i];
+
+                    la.Parent = parent;
+                    pla.Children[i] = updatedNode;
+                    entities[i] = updatedNode;
+
+                    updatedNode.Update(la);
+                    RemoveEntity(provider.GetRequiredService<LayerCollection>(), oldEntity);
                     continue;
                   }
 
@@ -136,38 +151,40 @@ namespace BlueJay.UI.Component
                   newNode.Data = item;
                   entities.Add(newNode);
                 }
-                i++;
               }
-              // TODO: Need to add function to destory an entity
+
+              var start = ++i;
+              for (; i < entities.Count; ++i)
+              {
+                madeChange = true;
+                RemoveEntity(provider.GetRequiredService<LayerCollection>(), entities[i]);
+              }
+
+              pla.Children.RemoveRange(start, entities.Count - start);
+              entities.RemoveRange(start, entities.Count - start);
+              parent.Update(pla);
 
               if (madeChange)
               {
                 eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(graphics.Viewport.Width, graphics.Viewport.Height) });
               }
             }, node.For.ScopePaths)
-          );
+        );
         return null;
       }
-
-      var styleProcessor = node.Props.FirstOrDefault(x => x.Name == PropNames.Style)?.DataGetter;
-      var style = styleProcessor != null ? styleProcessor(scope) as Style : new Style();
-
-      var hoverStyleProcessor = node.Props.FirstOrDefault(x => x.Name == PropNames.HoverStyle)?.DataGetter;
-      var hoverStyle = hoverStyleProcessor != null ? hoverStyleProcessor(scope) as Style : new Style();
 
       ReactiveEntity entity = null;
       switch (node.Type)
       {
         case ElementType.Container:
-          entity = provider.AddContainer<ReactiveEntity>(style, hoverStyle, node.IsGlobal ? null : parent);
+          entity = provider.AddContainer<ReactiveEntity>(new Style(), node.IsGlobal ? null : parent);
           foreach(var evt in node.Events)
           {
             ProcessEvent(provider, evt, entity, scope);
           }
           break;
         case ElementType.Text:
-          var txt = node.Props.FirstOrDefault(x => x.Name == PropNames.Text).DataGetter(scope) as string;
-          entity = provider.AddText<ReactiveEntity>(txt, style, node.IsGlobal ? null : parent);
+          entity = provider.AddText<ReactiveEntity>(string.Empty, node.IsGlobal ? null : parent);
           if (node.Parent != null)
           {
             foreach (var evt in node.Parent.Events)
@@ -180,9 +197,8 @@ namespace BlueJay.UI.Component
 
       if (entity != null)
       {
-        entity.Scope = scope;
         entity.Node = node;
-        entity.ProcessProperties();
+        entity.Scope = scope;
       }
 
       foreach(var reference in node.Refs)
@@ -239,9 +255,22 @@ namespace BlueJay.UI.Component
 
     internal static bool InvokeEvent<T>(ElementEvent evt, ReactiveScope scope, T obj)
     {
-      var newScope = scope != null ? scope.NewScope() : new ReactiveScope();
-      newScope[PropNames.Event] = obj;
-      return (bool)evt.Callback(newScope);
+      scope[PropNames.Event] = obj;
+      var result = (bool)evt.Callback(scope);
+      scope.Remove(PropNames.Event);
+      return result;
+    }
+
+    internal static void RemoveEntity(LayerCollection layers, IEntity entity)
+    {
+      // Remove the entity
+      layers[entity.Layer].Entities.Remove(entity);
+      entity.Dispose();
+
+      // Remove all children
+      var la = entity.GetAddon<LineageAddon>();
+      foreach (var child in la.Children)
+        RemoveEntity(layers, child);
     }
   }
 }

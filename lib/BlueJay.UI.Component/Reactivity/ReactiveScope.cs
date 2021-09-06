@@ -9,7 +9,6 @@ namespace BlueJay.UI.Component.Reactivity
 {
   public class ReactiveScope : IReactiveProperty, IDictionary<string, object>
   {
-    private readonly Dictionary<string, List<IDisposable>> _subscriptions;
     private List<IObserver<ReactiveUpdateEvent>> _observers;
     private readonly Dictionary<string, object> _scope;
 
@@ -36,7 +35,7 @@ namespace BlueJay.UI.Component.Reactivity
     {
       get
       {
-        return Utils.GetObject(_scope, key);
+        return Utils.GetObject(_scope, key) ?? Parent?[key];
       }
       set
       {
@@ -51,33 +50,33 @@ namespace BlueJay.UI.Component.Reactivity
         else
         {
           _scope[key] = value;
-          ClearSubscriptions(key);
-          _subscriptions[key] = BindSubscriptions(key, value);
+          BindValue(key, value);
         }
       }
     }
+
+    public IReactiveParentProperty ReactiveParent { get; set; }
 
     public ReactiveScope()
       : this(new Dictionary<string, object>()) { }
 
     public ReactiveScope(Dictionary<string, object> scope)
     {
-      _subscriptions = new Dictionary<string, List<IDisposable>>();
       _observers = new List<IObserver<ReactiveUpdateEvent>>();
 
       _scope = scope;
       foreach (var item in scope)
-        _subscriptions[item.Key] = BindSubscriptions(item.Key, item.Value);
+        BindValue(item.Key, item.Value);
     }
 
     public bool ContainsKey(string key)
     {
-      return _scope.ContainsKey(key);
+      return _scope.ContainsKey(key) || (Parent != null && Parent.ContainsKey(key));
     }
 
     public ReactiveScope NewScope()
     {
-      return new ReactiveScope(new Dictionary<string, object>(_scope)) { Parent = this };
+      return new ReactiveScope() { Parent = this };
     }
 
     public IEnumerable<IDisposable> Subscribe(Action<object> nextAction, List<string> paths)
@@ -93,13 +92,18 @@ namespace BlueJay.UI.Component.Reactivity
       return Subscribe(new ReactivePropertyObserver(nextAction, path));
     }
 
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type)
+    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type, string path = null)
     {
-      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type));
+      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type, path));
     }
 
     public IDisposable Subscribe(IObserver<ReactiveUpdateEvent> observer)
     {
+      if (Parent != null)
+      {
+        return Parent.Subscribe(observer);
+      }
+
       if (!_observers.Contains(observer))
       {
         _observers.Add(observer);
@@ -123,10 +127,7 @@ namespace BlueJay.UI.Component.Reactivity
 
     public bool Remove(string key)
     {
-      var result = _scope.Remove(key);
-      if (result)
-        ClearSubscriptions(key);
-      return result;
+      return _scope.Remove(key);
     }
 
     public bool TryGetValue(string key, out object value)
@@ -148,7 +149,6 @@ namespace BlueJay.UI.Component.Reactivity
     public void Clear()
     {
       _scope.Clear();
-      ClearSubscriptions();
     }
 
     public bool Contains(KeyValuePair<string, object> item)
@@ -177,13 +177,16 @@ namespace BlueJay.UI.Component.Reactivity
       return _scope.GetEnumerator();
     }
 
-    private void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
+    public void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
     {
-      foreach (var observer in _observers)
+      foreach (var observer in _observers.ToArray())
         observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = type });
+
+      if (ReactiveParent != null)
+        ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
     }
 
-    private List<IDisposable> BindSubscriptions(string key, object value)
+    private void BindValue(string key, object value)
     {
       var subscriptions = new List<IDisposable>();
       if (value != null)
@@ -193,12 +196,8 @@ namespace BlueJay.UI.Component.Reactivity
           var reactive = value as IReactiveProperty;
           if (reactive != null)
           {
-            subscriptions.Add(
-              reactive.Subscribe(x =>
-              {
-                Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"{key}" : $"{key}.{x.Path}");
-              })
-            );
+            reactive.ReactiveParent = new ReactiveParentProperty(this, key);
+            reactive.Next(reactive.Value);
           }
         }
         else
@@ -211,37 +210,11 @@ namespace BlueJay.UI.Component.Reactivity
               var reactive = field.GetValue(value) as IReactiveProperty;
               if (reactive != null)
               {
-                subscriptions.Add(
-                  reactive.Subscribe(x =>
-                  {
-                    Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"{key}.{field.Name}" : $"{key}.{field.Name}.{x.Path}");
-                  })
-                );
+                reactive.ReactiveParent = new ReactiveParentProperty(this, $"{key}.{field.Name}");
+                reactive.Next(reactive.Value);
               }
             }
           }
-        }
-      }
-      return subscriptions;
-    }
-
-    private void ClearSubscriptions(string index = null)
-    {
-      if (string.IsNullOrWhiteSpace(index))
-      {
-        foreach (var subscriptions in _subscriptions)
-          foreach (var subscription in subscriptions.Value)
-            subscription.Dispose();
-        _subscriptions.Clear();
-      }
-      else
-      {
-        if (_subscriptions.ContainsKey(index))
-        {
-          foreach (var subscription in _subscriptions[index])
-            subscription.Dispose();
-          _subscriptions[index].Clear();
-          _subscriptions.Remove(index);
         }
       }
     }

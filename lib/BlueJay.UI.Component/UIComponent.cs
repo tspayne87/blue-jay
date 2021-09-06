@@ -28,6 +28,11 @@ namespace BlueJay.UI.Component
     public List<ElementEvent> Events { get; private set; }
 
     /// <summary>
+    /// The identifier that exists on the scope
+    /// </summary>
+    internal string Identifier { get; set; }
+
+    /// <summary>
     /// Initialization method is menat to set all the basic properties on this component
     /// </summary>
     /// <param name="parent">The parent component we are processing</param>

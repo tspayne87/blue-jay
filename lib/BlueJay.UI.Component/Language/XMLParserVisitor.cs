@@ -20,6 +20,7 @@ namespace BlueJay.UI.Component.Language
     {
       _serviceProvider = serviceProvider;
       _intance = instance;
+      _intance.Identifier = $"{PropNames.Identifier}_{instance.GetType().Name}_{Utils.GetNextIdentifier()}";
       _components = components ?? new List<Type>();
     }
 
@@ -66,9 +67,7 @@ namespace BlueJay.UI.Component.Language
             var existingProp = node.Props.FirstOrDefault(x => x.Name == prop.Name);
             if (existingProp != null)
             {
-              var oldGetter = existingProp.DataGetter;
-              existingProp.DataGetter = x => prop.DataGetter(new ReactiveScope(new Dictionary<string, object>() { { prop.Name, oldGetter(x) } }));
-              existingProp.ScopePaths.AddRange(prop.ScopePaths);
+              MergeStyles(prop, existingProp);
               continue;
             }
           }
@@ -169,7 +168,7 @@ namespace BlueJay.UI.Component.Language
 
       if (name == PropNames.Style || name == PropNames.HoverStyle)
       { // Parse the style attribute since it is a special property and we want to parse the data
-        var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2), _intance, name);
+        var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2), name);
         return new ElementProp() { Name = name, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
       }
       return new ElementProp() { Name = name, DataGetter = x => text.Substring(1, text.Length - 2) };
@@ -208,6 +207,19 @@ namespace BlueJay.UI.Component.Language
     {
       var propName = context.GetChild(context.ChildCount - 1).GetText();
       return new ElementRef() { PropName = propName.Substring(1, propName.Length - 2) };
+    }
+
+    private void MergeStyles(ElementProp prop, ElementProp existingProp)
+    {
+      var oldGetter = existingProp.DataGetter;
+      var oldIsOverride = existingProp.ScopePaths.Count == 0;
+      existingProp.DataGetter = x => {
+        var ovride = (oldIsOverride ? oldGetter(x) : prop.DataGetter(x)) as Style;
+        var data = (oldIsOverride ? prop.DataGetter(x) : oldGetter(x)) as Style;
+        data.Merge(ovride);
+        return data;
+      };
+      existingProp.ScopePaths.AddRange(prop.ScopePaths);
     }
   }
 }

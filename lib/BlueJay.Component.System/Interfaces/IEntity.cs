@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Interfaces
 {
   /// <summary>
   /// The basic building block for the component system that determines the objects in the game
   /// </summary>
-  public interface IEntity
+  public interface IEntity : IDisposable
   {
     /// <summary>
     /// The current unique identifier for this entity so it can be rebuilt through networking

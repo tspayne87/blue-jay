@@ -1,32 +1,31 @@
 ﻿using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BlueJay.UI.Component.Interactivity
 {
   [View(@"
 <Container Style=""BackgroundColor: 200, 200, 200"" @Select=""OnSelect()"">
-  <Container Style=""WidthPercentage: 0.5; HeightPercentage: 1; BackgroundColor: 60, 60, 60; HorizontalAlign: {{Align}}"" @Select=""OnSelect()"" />
+  <Container Style=""WidthPercentage: 0.5; HeightPercentage: 1; BackgroundColor: 60, 60, 60"" :Style=""SwitchStyle"" @Select=""OnSelect()"" />
 </Container>
     ")]
   public class SwitchInput : UIComponent
   {
     [Prop(PropBinding.TwoWay)]
     public readonly ReactiveProperty<bool> Model;
-    public readonly ReactiveProperty<HorizontalAlign> Align;
+    [Prop]
+    public readonly ReactiveStyle SwitchStyle;
 
     public SwitchInput()
     {
       Model = new ReactiveProperty<bool>(false);
-      Align = new ReactiveProperty<HorizontalAlign>(HorizontalAlign.Left);
+      SwitchStyle = new ReactiveStyle();
+      SwitchStyle.HorizontalAlign = HorizontalAlign.Left;
     }
 
     public bool OnSelect()
     {
       Model.Value = !Model.Value;
-      Align.Value = Model.Value ? HorizontalAlign.Right : HorizontalAlign.Left;
+      SwitchStyle.HorizontalAlign = Model.Value ? HorizontalAlign.Right : HorizontalAlign.Left;
       return true;
     }
   }

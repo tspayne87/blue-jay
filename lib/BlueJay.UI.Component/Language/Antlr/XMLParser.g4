@@ -17,11 +17,11 @@ attribute           : ifAttribute
                     | GLOBAL
                     | refAttribute
                     ;
-ifAttribute         : IF EQUALS STRING
+ifAttribute         : COLON IF EQUALS STRING
                     ;
-forAttribute        : FOR EQUALS STRING
+forAttribute        : COLON FOR EQUALS STRING
                     ;
-refAttribute        : REF EQUALS STRING
+refAttribute        : COLON REF EQUALS STRING
                     ;
 basicAttribute      : NAME EQUALS STRING
                     ;

@@ -87,6 +87,7 @@ namespace BlueJay.UI.EventListeners
         {
           if (!sa.Hovering)
             _eventQueue.DispatchEvent(new StyleUpdateEvent(hoverEntity));
+
           sa.Hovering = true;
           hoverEntity.Update(sa);
 

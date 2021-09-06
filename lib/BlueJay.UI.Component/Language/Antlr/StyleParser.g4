@@ -4,28 +4,28 @@ options { tokenVocab=StyleLexer; }
 
 expr                        : style EOF ;
 style                       : styleItem (SEMICOLON styleItem)* ;
-styleItem                   : WIDTH COLON (integer | expression)
-                            | WIDTHPERCENTAGE COLON (decimal | expression)
-                            | HEIGHT COLON (integer | expression)
-                            | HEIGHTPERCENTAGE COLON (decimal | expression)
-                            | TOPOFFSET COLON (integer | expression)
-                            | LEFTOFFSET COLON (integer | expression)
-                            | PADDING COLON (integer | expression)
-                            | HORIZONTALALIGN COLON (horizontalAlign | expression)
-                            | VERTICALALIGN COLON (verticalAlign | expression)
-                            | POSITION COLON (position | expression)
-                            | NINEPATCH COLON (ninePatch | expression)
-                            | TEXTCOLOR COLON (color | expression)
-                            | BACKGROUNDCOLOR COLON (color | expression)
-                            | TEXTALIGN COLON (textAlign | expression)
-                            | TEXTBASELINE COLON (textBaseline | expression)
-                            | GRIDCOLUMNS COLON (integer | expression)
-                            | COLUMNGAP COLON (point | expression)
-                            | COLUMNSPAN COLON (integer | expression)
-                            | COLUMNOFFSET COLON (integer | expression)
-                            | FONT COLON (word | expression)
-                            | TEXTUREFONT COLON (word | expression)
-                            | TEXTUREFONTSIZE COLON (integer | expression)
+styleItem                   : WIDTH COLON integer
+                            | WIDTHPERCENTAGE COLON decimal
+                            | HEIGHT COLON integer
+                            | HEIGHTPERCENTAGE COLON decimal
+                            | TOPOFFSET COLON integer
+                            | LEFTOFFSET COLON integer
+                            | PADDING COLON integer
+                            | HORIZONTALALIGN COLON horizontalAlign
+                            | VERTICALALIGN COLON verticalAlign
+                            | POSITION COLON position
+                            | NINEPATCH COLON ninePatch
+                            | TEXTCOLOR COLON color
+                            | BACKGROUNDCOLOR COLON color
+                            | TEXTALIGN COLON textAlign
+                            | TEXTBASELINE COLON textBaseline
+                            | GRIDCOLUMNS COLON integer
+                            | COLUMNGAP COLON point
+                            | COLUMNSPAN COLON integer
+                            | COLUMNOFFSET COLON integer
+                            | FONT COLON word
+                            | TEXTUREFONT COLON word
+                            | TEXTUREFONTSIZE COLON integer
                             ;
 decimal                     : DECIMAL
                             | INTEGER
@@ -39,8 +39,6 @@ color                       : integer COMMA integer COMMA integer COMMA (integer
 point                       : integer COMMA (integer COMMA)?
                             ;
 word                        : WORD
-                            ;
-expression                  : EXPRESSION
                             ;
 
 // --- Enumerations ---

@@ -64,13 +64,13 @@ namespace BlueJay.UI.Component.Language
     public override object VisitIdentifier([NotNull] ExpressionParser.IdentifierContext context)
     {
       var propName = context.GetText();
-      Expression expression = Expression.Property(_param, "Item", Expression.Constant(PropNames.Identifier));
+      Expression expression = Expression.Property(_param, "Item", Expression.Constant(_intance.Identifier));
       expression = Expression.Convert(expression, _intance.GetType());
       expression = Expression.PropertyOrField(expression, propName);
       if (typeof(IReactiveProperty).IsAssignableFrom(expression.Type))
         expression = Expression.PropertyOrField(expression, "Value");
 
-      return new BuilderExpression(expression, new List<string>() { $"{PropNames.Identifier}.{propName}" });
+      return new BuilderExpression(expression, new List<string>() { $"{_intance.Identifier}.{propName}" });
     }
 
     public override object VisitScopeVarExpression([NotNull] ExpressionParser.ScopeVarExpressionContext context)

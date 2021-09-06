@@ -45,6 +45,18 @@ namespace BlueJay.UI.Component.Language
       Events = new List<ElementEvent>();
       Refs = new List<ElementRef>();
     }
+
+    public ReactiveScope GenerateScope(ReactiveScope scope = null)
+    {
+      scope = scope ?? new ReactiveScope();
+      if (!scope.ContainsKey(Instance.Identifier))
+        scope[Instance.Identifier] = Instance;
+
+      foreach (var child in Children)
+        child.GenerateScope(scope);
+
+      return scope;
+    }
   }
 
   public class ElementProp
@@ -52,6 +64,7 @@ namespace BlueJay.UI.Component.Language
     public string Name { get; set; }
     public Func<ReactiveScope, object> DataGetter { get; set; }
     public List<string> ScopePaths { get; set; }
+    public int Weight { get; set; }
   }
 
   public class ElementEvent

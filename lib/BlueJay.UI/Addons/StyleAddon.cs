@@ -61,7 +61,7 @@ namespace BlueJay.UI.Addons
     /// <summary>
     /// The current style that we should be using
     /// </summary>
-    public Style CurrentStyle => Hovering && HoverStyle != null ? HoverStyle : Style;
+    public Style CurrentStyle => Hovering && _hoverStyle != null ? HoverStyle : Style;
 
     /// <summary>
     /// If this style needs to change based on hovering status
@@ -83,7 +83,7 @@ namespace BlueJay.UI.Addons
     /// </summary>
     /// <param name="style">The style that should process the UI element bounds</param>
     public StyleAddon(Style style)
-      : this(style, null) { }
+      : this(style, default) { }
 
     /// <summary>
     /// Constructor to give a default to the style component

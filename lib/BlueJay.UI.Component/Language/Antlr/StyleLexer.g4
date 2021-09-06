@@ -5,7 +5,6 @@ SEMICOLON                   : ';' ;
 COMMA                       : ',' ;
 INTEGER                     : Minus? Digit+ ;
 DECIMAL                     : Minus? Digit+ Dot Digit+ ;
-EXPRESSION                  : '{{' ~[}]+ '}}' ;
 WS                          : [ \t\r\n]+ -> skip ;
 
 // --- Field Names ---

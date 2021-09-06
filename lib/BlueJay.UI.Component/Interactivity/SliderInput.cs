@@ -14,7 +14,7 @@ namespace BlueJay.UI.Component.Interactivity
   [View(@"
 <Container @MouseMove.Global=""OnMouseMove($event)"" @MouseUp.Global=""OnMouseUp()"">
   <Container Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
-  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; LeftOffset: {{Left}}"" @MouseDown=""OnMouseDown()"" />
+  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60"" :Style=""SliderStyle"" @MouseDown=""OnMouseDown()"" />
 </Container>
     ")]
   public class SliderInput : UIComponent
@@ -33,8 +33,8 @@ namespace BlueJay.UI.Component.Interactivity
     public readonly ReactiveProperty<int> Max;
     [Prop]
     public readonly ReactiveProperty<int> Ticks;
-
-    public readonly ReactiveProperty<int> Left;
+    [Prop]
+    public readonly ReactiveStyle SliderStyle;
 
     public SliderInput()
     {
@@ -47,8 +47,8 @@ namespace BlueJay.UI.Component.Interactivity
       Min = new ReactiveProperty<int>(0);
       Max = new ReactiveProperty<int>(100);
       Ticks = new ReactiveProperty<int>(20);
-
-      Left = new ReactiveProperty<int>(_padding);
+      SliderStyle = new ReactiveStyle();
+      SliderStyle.LeftOffset = _padding;
     }
 
     public bool OnMouseDown()
@@ -75,7 +75,7 @@ namespace BlueJay.UI.Component.Interactivity
       if (_selected && _tickOffset != 0)
       {
         var tick = (evt.Position.X - _xOffset) / _tickOffset;
-        Left.Value = MathHelper.Clamp((int)((int)tick * _tickOffset) + _padding, _padding, _innerWidth);
+        SliderStyle.LeftOffset = MathHelper.Clamp((int)((int)tick * _tickOffset) + _padding, _padding, _innerWidth);
         Model.Value = MathHelper.Clamp((int)tick * (Max.Value / Ticks.Value), Min.Value, Max.Value);
       }
       return true;

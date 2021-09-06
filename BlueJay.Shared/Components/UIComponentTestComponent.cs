@@ -1,10 +1,14 @@
-﻿using BlueJay.Interfaces;
+﻿using BlueJay.Core;
+using BlueJay.Interfaces;
 using BlueJay.Shared.Views;
 using BlueJay.UI;
 using BlueJay.UI.Component;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Interactivity;
 using BlueJay.UI.Component.Reactivity;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -17,15 +21,17 @@ namespace BlueJay.Shared.Components
   <TextInput Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 5"" />
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
-  <Container if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
+  <Container :if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
 
   <SliderInput :Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
   <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
 
-  <DropdownInput Style=""ColumnSpan: 2"" :Items=""DropdownItems"" :Model=""Dropdown"" />
+  <DropdownInput Style=""ColumnSpan: 2"" :Items=""DropdownItems"" :Model=""Dropdown"" :MenuStyle=""DropdownMenuStyle"" :ItemHoverStyle=""DropdownHoverItemStyle"" />
   <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5"">
     <Button @Select=""AddItem()"">Add Item</Button>
-    <Button @Select=""SwitchItem()"">Switch Last</Button>
+    <Button @Select=""InsertItem()"">Insert Item</Button>
+    <Button @Select=""SwitchItem()"">Switch Item</Button>
+    <Button @Select=""RemoveRandomItem()"">Remove Random</Button>
   </Container>
   <Container Style=""TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
@@ -37,6 +43,11 @@ namespace BlueJay.Shared.Components
     /// The view collection we need to switch between
     /// </summary>
     private IViewCollection _views;
+
+    /// <summary>
+    /// Random builder
+    /// </summary>
+    private Random _rand;
 
     /// <summary>
     /// The switch value that is currently set in the input component
@@ -59,10 +70,20 @@ namespace BlueJay.Shared.Components
     public readonly ReactiveCollection<DropdownItem> DropdownItems;
 
     /// <summary>
+    /// The dropdown menu style
+    /// </summary>
+    public readonly ReactiveStyle DropdownMenuStyle;
+
+    /// <summary>
+    /// The hover item style that should be used for the dropdown
+    /// </summary>
+    public readonly ReactiveStyle DropdownHoverItemStyle;
+
+    /// <summary>
     /// Constructor to build out the breakcout UI Component
     /// </summary>
     /// <param name="views">The injected views component so we can switch between views</param>
-    public UIComponentTestComponent(IViewCollection views)
+    public UIComponentTestComponent(IViewCollection views, ContentManager content)
     {
       Switch = new ReactiveProperty<bool>(false);
       Slider = new ReactiveProperty<int>(0);
@@ -75,8 +96,15 @@ namespace BlueJay.Shared.Components
         new DropdownItem() { Name = "Item 4", Id = 4 },
         new DropdownItem() { Name = "Item 5", Id = 5 }
       });
+      DropdownMenuStyle = new ReactiveStyle();
+      DropdownMenuStyle.NinePatch = new NinePatch(content.Load<Texture2D>("Sample_NinePatch"));
+      DropdownMenuStyle.Padding = 13;
+
+      DropdownHoverItemStyle = new ReactiveStyle();
+      DropdownHoverItemStyle.BackgroundColor = new Microsoft.Xna.Framework.Color(217, 87, 99);
 
       _views = views;
+      _rand = new Random();
     }
 
     /// <summary>
@@ -100,9 +128,24 @@ namespace BlueJay.Shared.Components
       return true;
     }
 
-    public bool SwitchItem()
+    public bool InsertItem()
     {
       DropdownItems.Insert(1, new DropdownItem() { Name = "Changed Item 2", Id = 20000000 });
+      return true;
+    }
+
+    public bool SwitchItem()
+    {
+      var item = DropdownItems[0];
+      DropdownItems[0] = DropdownItems[DropdownItems.Count - 1];
+      DropdownItems[DropdownItems.Count - 1] = item;
+      return true;
+    }
+
+    public bool RemoveRandomItem()
+    {
+      if (DropdownItems.Count > 0)
+        DropdownItems.RemoveAt(_rand.Next(0, DropdownItems.Count));
       return true;
     }
 

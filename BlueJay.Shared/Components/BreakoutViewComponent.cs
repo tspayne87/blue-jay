@@ -11,13 +11,13 @@ namespace BlueJay.Shared.Components
   /// The breakout view component we need to show some UI on the screen
   /// </summary>
   [View(@"
-<container style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
-  <button style=""ColumnSpan: 2"" onSelect=""OnBackToTitleClick"">Back To Title</button>
+<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
+  <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <container>Round: {{Round}}</container>
-  <container>Balls: {{Balls}}</container>
-  <container>Score: {{Score}}</container>
-</container>
+  <Container>Round: {{Round}}</Container>
+  <Container>Balls: {{Balls}}</Container>
+  <Container>Score: {{Score}}</Container>
+</Container>
     ")]
   [Component(typeof(Button))]
   public class BreakoutViewComponent : UIComponent
@@ -60,7 +60,7 @@ namespace BlueJay.Shared.Components
     /// </summary>
     /// <param name="evt">The event that was sent from the triggered event</param>
     /// <returns>Will return true representing we should keep propegating this event</returns>
-    public bool OnBackToTitleClick(SelectEvent evt)
+    public bool OnBackToTitleClick()
     {
       _views.SetCurrent<TitleView>();
       return true;

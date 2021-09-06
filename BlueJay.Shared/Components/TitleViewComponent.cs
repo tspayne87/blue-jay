@@ -11,13 +11,13 @@ namespace BlueJay.Shared.Components
   /// The basic title view
   /// </summary>
   [View(@"
-<container style=""WidthPercentage: 0.66; TopOffset: 50; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 13; TextureFont: Default"">
-  <container style=""ColumnSpan: 3; Padding: 15; TextureFontSize: 2"">BlueJay Component System</container>
+<Container Style=""WidthPercentage: 0.66; TopOffset: 50; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 13; TextureFont: Default"">
+  <Container Style=""ColumnSpan: 3; Padding: 15; TextureFontSize: 2"">BlueJay Component System</Container>
 
-  <button onSelect=""OnBreakoutClick"">{{BreakoutTitle}}</button>
-  <button style=""ColumnOffset: 1"" onSelect=""OnTetrisClick"">{{TetrisTitle}}</button>
-  <button style=""ColumnSpan: 3"" onSelect=""OnUIComponentClick"">{{UIComponentTitle}}</button>
-</container>
+  <Button @Select=""OnBreakoutClick()"">{{BreakoutTitle}}</Button>
+  <Button Style=""ColumnOffset: 1"" @Select=""OnTetrisClick()"">{{TetrisTitle}}</Button>
+  <Button Style=""ColumnSpan: 3"" @Select=""OnUIComponentClick()"">{{UIComponentTitle}}</Button>
+</Container>
     ")]
   [Component(typeof(Button))]
   public class TitleViewComponent : UIComponent
@@ -60,7 +60,7 @@ namespace BlueJay.Shared.Components
     /// </summary>
     /// <param name="evt">The select event</param>
     /// <returns>will return true to continue propegation</returns>
-    public bool OnBreakoutClick(SelectEvent evt)
+    public bool OnBreakoutClick()
     {
       _views.SetCurrent<BreakOutView>();
       return true;
@@ -71,7 +71,7 @@ namespace BlueJay.Shared.Components
     /// </summary>
     /// <param name="evt">The select event</param>
     /// <returns>will return true to continue propegation</returns>
-    public bool OnTetrisClick(SelectEvent evt)
+    public bool OnTetrisClick()
     {
       // TODO: Set Current to Tetris
       return true;
@@ -82,7 +82,7 @@ namespace BlueJay.Shared.Components
     /// </summary>
     /// <param name="evt">The select event</param>
     /// <returns>Will return true to continue propegation</returns>
-    public bool OnUIComponentClick(SelectEvent evt)
+    public bool OnUIComponentClick()
     {
       _views.SetCurrent<UIComponentView>();
       return true;

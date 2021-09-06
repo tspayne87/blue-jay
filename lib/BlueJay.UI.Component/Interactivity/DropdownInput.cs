@@ -12,8 +12,8 @@ namespace BlueJay.UI.Component.Interactivity
   [View(@"
 <Container @Select=""OpenMenu()"">
   {{GetField(Model)}}
-  <Container if=""ShowMenu"" ref=""Dropdown"" Style=""Position: Absolute; TopOffset: {{Height}}"">
-    <Container for=""var $item in Items"" @Select=""OnSelect($item)"" Style=""Padding: 5"">{{GetField($item)}}</Container>
+  <Container :if=""ShowMenu"" Style=""Position: Absolute"" :Style=""MenuStyle"" :HoverStyle=""MenuHoverStyle"">
+    <Container :for=""$item in Items"" @Select=""OnSelect($item)"" Style=""Padding: 5"" :Style=""ItemStyle"" :HoverStyle=""ItemHoverStyle"">{{GetField($item)}}</Container>
   </Container>
 </Container>
     ")]
@@ -27,11 +27,15 @@ namespace BlueJay.UI.Component.Interactivity
     public readonly ReactiveCollection<object> Items;
     [Prop]
     public readonly ReactiveProperty<string> Placeholder;
-    public readonly ReactiveProperty<int> Height;
+    [Prop]
+    public readonly ReactiveStyle MenuStyle;
+    [Prop]
+    public readonly ReactiveStyle MenuHoverStyle;
+    [Prop]
+    public readonly ReactiveStyle ItemStyle;
+    [Prop]
+    public readonly ReactiveStyle ItemHoverStyle;
     public readonly ReactiveProperty<bool> ShowMenu;
-
-
-    public IEntity Dropdown { get; set; }
 
     public DropdownInput(FontCollection fonts)
     {
@@ -39,14 +43,17 @@ namespace BlueJay.UI.Component.Interactivity
       Placeholder = new ReactiveProperty<string>("Select Item...");
       Items = new ReactiveCollection<object>();
       ShowMenu = new ReactiveProperty<bool>(false);
-      Height = new ReactiveProperty<int>(0);
+      MenuStyle = new ReactiveStyle();
+      MenuHoverStyle = new ReactiveStyle();
+      ItemStyle = new ReactiveStyle();
+      ItemHoverStyle = new ReactiveStyle();
 
       _fonts = fonts;
     }
 
     public override void Mounted()
     {
-      Height.Value = (int)Root.MeasureString(" ", _fonts).Y + 5;
+      MenuStyle.TopOffset = (int)Root.MeasureString(" ", _fonts).Y + 5;
     }
 
     public string GetField(object item)

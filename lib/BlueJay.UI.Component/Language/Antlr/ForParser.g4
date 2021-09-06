@@ -2,9 +2,9 @@
 
 options { tokenVocab=ForLexer; }
 
-expr        : VAR name IN expression EOF
+expr        : name IN expression EOF
             ;
 name        : SCOPENAME
             ;
-expression  : (Text | SCOPENAME)+
+expression  : (TEXT | SCOPENAME)+
             ;

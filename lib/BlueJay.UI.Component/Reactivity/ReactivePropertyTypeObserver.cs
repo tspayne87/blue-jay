@@ -8,11 +8,13 @@ namespace BlueJay.UI.Component.Reactivity
   {
     private readonly Action<ReactiveUpdateEvent> _action;
     private readonly ReactiveUpdateEvent.EventType _type;
+    private readonly string _path;
 
-    internal ReactivePropertyTypeObserver(Action<ReactiveUpdateEvent> action, ReactiveUpdateEvent.EventType type)
+    internal ReactivePropertyTypeObserver(Action<ReactiveUpdateEvent> action, ReactiveUpdateEvent.EventType type, string path)
     {
       _action = action;
       _type = type;
+      _path = path;
     }
 
     public void OnCompleted()
@@ -28,7 +30,7 @@ namespace BlueJay.UI.Component.Reactivity
 
     public void OnNext(ReactiveUpdateEvent value)
     {
-      if (value.Type == _type)
+      if (value.Type == _type && (string.IsNullOrWhiteSpace(_path) || value.Path == _path))
         _action(value);
     }
   }

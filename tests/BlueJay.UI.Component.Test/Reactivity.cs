@@ -74,7 +74,7 @@ namespace BlueJay.UI.Component.Test
 
       collection[0].Integer.Value = 10;
       Assert.Equal(15, i);
-      Assert.Equal(2, j);
+      Assert.Equal(1, j);
     }
 
     [Fact]

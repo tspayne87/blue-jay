@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace BlueJay.UI.Component.Reactivity
 {
@@ -10,9 +7,8 @@ namespace BlueJay.UI.Component.Reactivity
   /// Reactive property that will handle when props change on the component
   /// </summary>
   /// <typeparam name="T">The type of property this is</typeparam>
-  public class ReactiveProperty<T> : IReactiveProperty, IDisposable
+  public class ReactiveProperty<T> : IReactiveProperty
   {
-    private readonly List<IDisposable> _subscriptions;
     private readonly List<IObserver<ReactiveUpdateEvent>> _observers;
 
     /// <summary>
@@ -57,6 +53,8 @@ namespace BlueJay.UI.Component.Reactivity
       }
     }
 
+    public IReactiveParentProperty ReactiveParent { get; set; }
+
     /// <summary>
     /// Constructor to build out a reactive property starting with a value
     /// </summary>
@@ -65,7 +63,6 @@ namespace BlueJay.UI.Component.Reactivity
     {
       _value = value;
       _observers = new List<IObserver<ReactiveUpdateEvent>>();
-      _subscriptions = new List<IDisposable>();
       BindValue();
     }
 
@@ -100,28 +97,25 @@ namespace BlueJay.UI.Component.Reactivity
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type)
+    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type, string path = null)
     {
-      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type));
-    }
-
-    public void Dispose()
-    {
-      ClearSubscriptions();
+      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type, path));
     }
 
     /// <summary>
     /// Helper method is meant to notify all the observers of this subscription
     /// </summary>
-    private void Next(object value, string path = "")
+    public void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
     {
       foreach (var observer in _observers.ToArray())
-        observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = ReactiveUpdateEvent.EventType.Update });
+        observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = type });
+
+      if (ReactiveParent != null)
+        ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
     }
 
     private void BindValue()
     {
-      ClearSubscriptions();
       if (_value != null)
       {
         var fields = _value.GetType().GetFields();
@@ -132,23 +126,12 @@ namespace BlueJay.UI.Component.Reactivity
             var reactive = field.GetValue(_value) as IReactiveProperty;
             if (reactive != null)
             {
-              _subscriptions.Add(
-                reactive.Subscribe(x =>
-                {
-                  Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? field.Name : $"{field.Name}.{x.Path}");
-                })
-              );
+              reactive.ReactiveParent = new ReactiveParentProperty(this, field.Name);
+              reactive.Next(reactive.Value);
             }
           }
         }
       }
-    }
-
-    private void ClearSubscriptions()
-    {
-      foreach (var subscription in _subscriptions)
-        subscription.Dispose();
-      _subscriptions.Clear();
     }
   }
 }

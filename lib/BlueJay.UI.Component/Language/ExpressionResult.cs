@@ -10,10 +10,10 @@ namespace BlueJay.UI.Component.Language
     public Func<ReactiveScope, object> Callback { get; private set; }
     public List<string> ScopePaths { get; private set; }
 
-    public ExpressionResult(Func<ReactiveScope, object> callback, List<string> scopePaths)
+    public ExpressionResult(Func<ReactiveScope, object> callback, List<string> scopePaths = null)
     {
       Callback = callback;
-      ScopePaths = scopePaths;
+      ScopePaths = scopePaths ?? new List<string>();
     }
   }
 }

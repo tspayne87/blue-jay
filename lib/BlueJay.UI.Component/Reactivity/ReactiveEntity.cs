@@ -8,6 +8,7 @@ using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,21 @@ namespace BlueJay.UI.Component.Reactivity
     private readonly EventQueue _eventQueue;
     private readonly GraphicsDevice _graphics;
 
-    public List<IDisposable> DisposableEvents { get; private set; }
+    private ReactiveScope _scope;
+    private List<IDisposable> _subscriptions;
+
+    public List<IDisposable> Subscriptions => _subscriptions;
     public object Data { get; set; }
-    public ReactiveScope Scope { get; set; }
+    public ReactiveScope Scope
+    {
+      get => _scope;
+      set
+      {
+        ClearSubscriptions();
+        _scope = value;
+        ProcessProperties();
+      }
+    }
     public ElementNode Node { get; set; }
 
     public ReactiveEntity(LayerCollection layerCollection, EventQueue eventQueue, GraphicsDevice graphics)
@@ -29,82 +42,137 @@ namespace BlueJay.UI.Component.Reactivity
     {
       _eventQueue = eventQueue;
       _graphics = graphics;
-      DisposableEvents = new List<IDisposable>();
+      _subscriptions = new List<IDisposable>();
     }
 
     public void ProcessProperties()
     {
       foreach (var prop in Node.Props)
       {
-        if (prop.Name == PropNames.If)
-          Active = (bool)prop.DataGetter(Scope);
-
-        if (prop.ScopePaths?.Count > 0)
+        switch (prop.Name)
         {
-          switch (prop.Name)
+          case PropNames.Text:
+            ProcessText(prop);
+            break;
+          case PropNames.Style:
+            ProcessStyle(prop);
+            break;
+          case PropNames.HoverStyle:
+            ProcessHoverStyle(prop);
+            break;
+          case PropNames.If:
+            ProcessIf(prop);
+            break;
+          default:
+            ProcessBoundProps(prop);
+            break;
+        }
+      }
+    }
+
+    private void ProcessText(ElementProp prop)
+    {
+      if (prop.ScopePaths.Count > 0)
+      {
+        _subscriptions.AddRange(
+          Scope.Subscribe(x =>
           {
-            case PropNames.Text:
-              DisposableEvents.AddRange(
-                Scope.Subscribe(x =>
-                {
-                  var ta = GetAddon<TextAddon>();
-                  var txt = prop.DataGetter(Scope) as string;
-                  ta.Text = txt;
-                  Update(ta);
-                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-                }, prop.ScopePaths)
-              );
-              break;
-            case PropNames.Style:
-              DisposableEvents.AddRange(
-                Scope.Subscribe(x =>
-                {
-                  var newScope = Scope.NewScope();
-                  newScope[PropNames.Style] = GetAddon<StyleAddon>().Style;
-                  prop.DataGetter(newScope);
-                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-                }, prop.ScopePaths)
-              );
-              break;
-            case PropNames.HoverStyle:
-              DisposableEvents.AddRange(
-                Scope.Subscribe(x =>
-                {
-                  var newScope = Scope.NewScope();
-                  newScope[PropNames.Style] = GetAddon<StyleAddon>().Style;
-                  prop.DataGetter(newScope);
-                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-                }, prop.ScopePaths)
-              );
-              break;
-            case PropNames.If:
-              DisposableEvents.AddRange(
-                Scope.Subscribe(x =>
-                {
-                  SetActive(this, (bool)prop.DataGetter(Scope));
-                  _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
-                }, prop.ScopePaths)
-              );
-              break;
-            default:
-              var bindable = Node.Instance.GetType().GetField(prop.Name);
-              if (bindable != null)
-              {
-                var bAttr = bindable.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute;
-                if (bAttr != null)
-                {
-                  if (bAttr.Binding == PropBinding.TwoWay && prop.ScopePaths.Count == 1)
-                  {
-                    DisposableEvents.Add(Scope.Subscribe(x => Scope.Parent[prop.ScopePaths[0]] = x.Data, $"{PropNames.Identifier}.{prop.Name}"));
-                    DisposableEvents.Add(Scope.Parent.Subscribe(x => Scope[$"{PropNames.Identifier}.{prop.Name}"] = x.Data, prop.ScopePaths[0]));
-                  }
-                  else if (bAttr.Binding == PropBinding.OneWay)
-                  {
-                    DisposableEvents.AddRange(Scope.Subscribe(x => Scope[$"{PropNames.Identifier}.{prop.Name}"] = prop.DataGetter(Scope.Parent), prop.ScopePaths));
-                  }
-                }
-              }
-              break;
+            var ta = GetAddon<TextAddon>();
+            ta.Text = prop.DataGetter(Scope) as string;
+            Update(ta);
+            _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+          }, prop.ScopePaths)
+        );
+        return;
+      }
+
+      var t = GetAddon<TextAddon>();
+      t.Text = prop.DataGetter(Scope) as string;
+      Update(t);
+    }
+
+    private void ProcessStyle(ElementProp prop)
+    {
+      if (prop.ScopePaths.Count > 0)
+      {
+        _subscriptions.AddRange(
+          Scope.Subscribe(x =>
+          {
+            var sa = GetAddon<StyleAddon>();
+            sa.Style = prop.DataGetter(Scope) as Style;
+            Update(sa);
+            _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+          }, prop.ScopePaths)
+        );
+        return;
+      }
+
+      var s = GetAddon<StyleAddon>();
+      s.Style = prop.DataGetter(Scope) as Style;
+      Update(s);
+    }
+
+    private void ProcessHoverStyle(ElementProp prop)
+    {
+      if (prop.ScopePaths.Count > 0)
+      {
+        _subscriptions.AddRange(
+          Scope.Subscribe(x =>
+          {
+            var node = Node;
+            var sa = GetAddon<StyleAddon>();
+            var newStyle = prop.DataGetter(Scope) as Style;
+            newStyle.Parent = null;
+            sa.HoverStyle = newStyle;
+            Update(sa);
+
+            _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+          }, prop.ScopePaths)
+        );
+        return;
+      }
+
+      var s = GetAddon<StyleAddon>();
+      s.HoverStyle = prop.DataGetter(Scope) as Style;
+      Update(s);
+    }
+
+    private void ProcessIf(ElementProp prop)
+    {
+      if (prop.ScopePaths.Count > 0)
+      {
+        _subscriptions.AddRange(
+          Scope.Subscribe(x =>
+          {
+            SetActive(this, (bool)prop.DataGetter(Scope));
+            _eventQueue.DispatchEvent(new UIUpdateEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });
+          }, prop.ScopePaths)
+        );
+        return;
+      }
+
+      SetActive(this, (bool)prop.DataGetter(Scope));
+    }
+
+    private void ProcessBoundProps(ElementProp prop)
+    {
+      if (prop.ScopePaths?.Count > 0)
+      {
+        var bindable = Node.Instance.GetType().GetField(prop.Name);
+        if (bindable != null)
+        {
+          var bAttr = bindable.GetCustomAttributes(typeof(PropAttribute), false).FirstOrDefault() as PropAttribute;
+          if (bAttr != null)
+          {
+            if (bAttr.Binding == PropBinding.TwoWay && prop.ScopePaths.Count == 1)
+            {
+              _subscriptions.Add(Scope.Subscribe(x => Scope[prop.ScopePaths[0]] = x.Data, $"{Node.Instance.Identifier}.{prop.Name}"));
+              _subscriptions.Add(Scope.Subscribe(x => Scope[$"{Node.Instance.Identifier}.{prop.Name}"] = x.Data, prop.ScopePaths[0]));
+            }
+            else if (bAttr.Binding == PropBinding.OneWay)
+            {
+              _subscriptions.AddRange(Scope.Subscribe(x => Scope[$"{Node.Instance.Identifier}.{prop.Name}"] = prop.DataGetter(Scope), prop.ScopePaths));
+            }
           }
         }
       }
@@ -117,6 +185,18 @@ namespace BlueJay.UI.Component.Reactivity
       var la = entity.GetAddon<LineageAddon>();
       for (var i = 0; i < la.Children.Count; ++i)
         SetActive(la.Children[i], active);
+    }
+
+    private void ClearSubscriptions()
+    {
+      foreach (var subscription in _subscriptions)
+        subscription.Dispose();
+      _subscriptions.Clear();
+    }
+
+    public override void Dispose()
+    {
+      ClearSubscriptions();
     }
   }
 }

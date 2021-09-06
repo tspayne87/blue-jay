@@ -8,9 +8,15 @@ using System.Text.RegularExpressions;
 
 namespace BlueJay.UI.Component
 {
-  public static class Utils
+  internal static class Utils
   {
     private static Regex ArrayIndexRegex = new Regex(@"^\[(\d+)\]$");
+    private static int ScopeIdentifier = 0;
+
+    public static int GetNextIdentifier()
+    {
+      return ++ScopeIdentifier;
+    }
 
     public static object GetObject(object val, string path)
     {

@@ -29,7 +29,21 @@ namespace BlueJay.UI
     private string _textureFont = null;
     private int? _textureFontSize = null;
 
-    public Style Parent { get; set; }
+    private Style _parent;
+
+    public Style Parent {
+      get => _parent;
+      set
+      {
+        var oldParent = _parent;
+        _parent = value;
+        if (WouldCreateCircularReference(this))
+        {
+          _parent = oldParent;
+          // TODO: Need to send a warning
+        }
+      }
+    }
 
     public int? Width { get => _width ?? Parent?.Width; set => _width = value; }
     public float? WidthPercentage { get => _widthPercentage ?? Parent?.WidthPercentage; set => _widthPercentage = value; }
@@ -61,5 +75,38 @@ namespace BlueJay.UI
     public string Font { get => _font ?? Parent?.Font; set => _font = value; }
     public string TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
     public int? TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize; set { if (value != null) _textureFontSize = Math.Max(value ?? 1, 1); else _textureFontSize = null; } }
+
+    private bool WouldCreateCircularReference(Style t)
+    {
+      if (Parent == null) return false;
+      if (Parent == t) return true;
+      return Parent.WouldCreateCircularReference(t);
+    }
+
+    public void Merge(Style merge)
+    {
+      if (merge._width != null) Width = merge._width;
+      if (merge._widthPercentage != null) WidthPercentage = merge._widthPercentage;
+      if (merge._height != null) Height = merge._height;
+      if (merge._heightPercentage != null) HeightPercentage = merge._heightPercentage;
+      if (merge._topOffset != null) TopOffset = merge._topOffset;
+      if (merge._leftOffset != null) LeftOffset = merge._leftOffset;
+      if (merge._padding != null) Padding = merge._padding;
+      if (merge._horizontalAlign != null) HorizontalAlign = merge._horizontalAlign;
+      if (merge._verticalAlign != null) VerticalAlign = merge._verticalAlign;
+      if (merge._position != null) Position = merge._position;
+      if (merge._ninePatch != null) NinePatch = merge._ninePatch;
+      if (merge._textColor != null) TextColor = merge._textColor;
+      if (merge._backgroundColor != null) BackgroundColor = merge._backgroundColor;
+      if (merge._textAlign != null) TextAlign = merge._textAlign;
+      if (merge._textBaseline != null) TextBaseline = merge._textBaseline;
+      if (merge._gridColumns != null) GridColumns = merge._gridColumns.Value;
+      if (merge._columnGap != null) ColumnGap = merge._columnGap.Value;
+      if (merge._columnSpan != null) ColumnSpan = merge._columnSpan.Value;
+      if (merge._columnOffset != null) ColumnOffset = merge._columnOffset.Value;
+      if (merge._font != null) Font = merge._font;
+      if (merge._textureFont != null) TextureFont = merge._textureFont;
+      if (merge._textureFontSize != null) TextureFontSize = merge._textureFontSize;
+    }
   }
 }

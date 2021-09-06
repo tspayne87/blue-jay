@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace BlueJay.UI.Component.Reactivity
 {
-  public class ReactiveCollection<T> : IReactiveProperty, IList<T>, IDisposable, IList
+  public class ReactiveCollection<T> : IReactiveProperty, IList<T>, IList
   {
-    private readonly List<List<IDisposable>> _subscriptions;
     private List<IObserver<ReactiveUpdateEvent>> _observers;
     private readonly List<T> _list;
 
@@ -29,8 +25,8 @@ namespace BlueJay.UI.Component.Reactivity
         {
           _list.Clear();
           _list.AddRange(value);
-          ClearSubscriptions();
-          _subscriptions.AddRange(value.Select(x => BindSubscriptions(x)));
+          for (var i = 0; i < value.Count; ++i)
+            BindValue(value[i], i);
           Next(_list, "");
         }
       }
@@ -55,8 +51,8 @@ namespace BlueJay.UI.Component.Reactivity
               _list.Add((T)Convert.ChangeType(item, typeof(T)));
           }
 
-          ClearSubscriptions();
-          _subscriptions.AddRange(_list.Select(x => BindSubscriptions(x)));
+          for (var i = 0; i < _list.Count; ++i)
+            BindValue(_list[i], i);
           Next(_list, "");
         }
       }
@@ -68,6 +64,8 @@ namespace BlueJay.UI.Component.Reactivity
 
     public object SyncRoot => ((IList)_list).SyncRoot;
 
+    public IReactiveParentProperty ReactiveParent { get; set; }
+
     object IList.this[int index]
     {
       get => _list[index];
@@ -76,10 +74,10 @@ namespace BlueJay.UI.Component.Reactivity
         if (index >= _list.Count) throw new ArgumentOutOfRangeException(nameof(index));
         if ((_list[index] == null && value != null) || (_list[index] != null && !_list[index].Equals(value)))
         {
-          ClearSubscriptions(index);
           _list[index] = (T)value;
-          _subscriptions[index] = BindSubscriptions((T)value);
+          BindValue((T)value, index);
           Next(value, $"[{index}]");
+          Next(_list);
         }
       }
     }
@@ -93,10 +91,10 @@ namespace BlueJay.UI.Component.Reactivity
         if (index >= _list.Count) throw new ArgumentOutOfRangeException(nameof(index));
         if ((_list[index] == null && value != null) || (_list[index] != null && !_list[index].Equals(value)))
         {
-          ClearSubscriptions(index);
           _list[index] = value;
-          _subscriptions.Insert(index, BindSubscriptions(value));
+          BindValue(value, index);
           Next(value, $"[{index}]");
+          Next(_list);
         }
       }
     }
@@ -109,7 +107,8 @@ namespace BlueJay.UI.Component.Reactivity
     {
       _list = new List<T>(list);
       _observers = new List<IObserver<ReactiveUpdateEvent>>();
-      _subscriptions = new List<List<IDisposable>>(list.Select(x => BindSubscriptions(x)));
+      for (var i = 0; i < _list.Count; ++i)
+        BindValue(_list[i], i);
     }
 
     /// <summary>
@@ -129,10 +128,13 @@ namespace BlueJay.UI.Component.Reactivity
     public void Insert(int index, T item)
     {
       _list.Insert(index, item);
-      _subscriptions.Insert(index, BindSubscriptions(item));
 
       for (var i = index; i < _list.Count; ++i)
+      {
+        BindValue(_list[i], i);
         Next(_list[index], $"[{index}]", _list.Count - 1 == i ? ReactiveUpdateEvent.EventType.Add : ReactiveUpdateEvent.EventType.Update);
+      }
+      Next(_list);
     }
 
     /// <inheritdoc cref="IList" />
@@ -142,10 +144,9 @@ namespace BlueJay.UI.Component.Reactivity
 
       var item = _list[index];
       _list.RemoveAt(index);
-      ClearSubscriptions(index);
 
       for (var i = index; i < _list.Count; ++i)
-        Next(_list[index], $"[{index}]");
+        BindValue(_list[i], i);
       Next(item, type: ReactiveUpdateEvent.EventType.Remove);
     }
 
@@ -153,8 +154,8 @@ namespace BlueJay.UI.Component.Reactivity
     public void Add(T item)
     {
       _list.Add(item);
-      _subscriptions.Add(BindSubscriptions(item));
-      Next(item, $"[{_list.Count - 1}]", ReactiveUpdateEvent.EventType.Add);
+      BindValue(item, _list.Count - 1);
+      Next(item, type: ReactiveUpdateEvent.EventType.Add);
     }
 
     /// <inheritdoc cref="IList" />
@@ -162,7 +163,6 @@ namespace BlueJay.UI.Component.Reactivity
     {
       var removed = _list.ToArray();
       _list.Clear();
-      ClearSubscriptions();
 
       foreach (var item in removed)
         Next(item, type: ReactiveUpdateEvent.EventType.Remove);
@@ -178,6 +178,9 @@ namespace BlueJay.UI.Component.Reactivity
     public void CopyTo(T[] array, int arrayIndex)
     {
       _list.CopyTo(array, arrayIndex);
+
+      for (var i = arrayIndex; i < _list.Count; ++i)
+        BindValue(_list[i], i);
       Next(_list);
     }
 
@@ -188,10 +191,9 @@ namespace BlueJay.UI.Component.Reactivity
       if (index == -1) return false;
 
       _list.RemoveAt(index);
-      _subscriptions.RemoveAt(index);
 
       for (var i = index; i < _list.Count; ++i)
-        Next(_list[index], $"[{index}]");
+        BindValue(_list[index], index);
       Next(item, type: ReactiveUpdateEvent.EventType.Remove);
       return true;
     }
@@ -243,19 +245,13 @@ namespace BlueJay.UI.Component.Reactivity
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type)
+    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type, string path = null)
     {
-      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type));
+      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type, path));
     }
 
-    public void Dispose()
+    private void BindValue(T value, int index)
     {
-      ClearSubscriptions();
-    }
-
-    private List<IDisposable> BindSubscriptions(T value)
-    {
-      var subscriptions = new List<IDisposable>();
       if (value != null)
       {
         if (typeof(IReactiveProperty).IsAssignableFrom(value.GetType()))
@@ -263,13 +259,8 @@ namespace BlueJay.UI.Component.Reactivity
           var reactive = value as IReactiveProperty;
           if (reactive != null)
           {
-            subscriptions.Add(
-              reactive.Subscribe(x =>
-              {
-                var index = _list.IndexOf(value);
-                Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"[{index}]" : $"[{index}].{x.Path}");
-              })
-            );
+            reactive.ReactiveParent = new ReactiveParentProperty(this, $"[{index}]");
+            reactive.Next(reactive.Value);
           }
         }
         else
@@ -282,43 +273,24 @@ namespace BlueJay.UI.Component.Reactivity
               var reactive = field.GetValue(value) as IReactiveProperty;
               if (reactive != null)
               {
-                subscriptions.Add(
-                  reactive.Subscribe(x =>
-                  {
-                    var index = _list.IndexOf(value);
-                    Next(x.Data, string.IsNullOrWhiteSpace(x.Path) ? $"[{index}].{field.Name}" : $"[{index}].{field.Name}.{x.Path}");
-                  })
-                );
+                reactive.ReactiveParent = new ReactiveParentProperty(this, $"[{index}].{field.Name}");
+                reactive.Next(reactive.Value);
               }
             }
           }
         }
       }
-      return subscriptions;
     }
 
-    private void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
+    public void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
     {
-      foreach (var observer in _observers)
+      foreach (var observer in _observers.ToArray())
+      {
         observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = type });
-    }
+      }
 
-    private void ClearSubscriptions(int? index = null)
-    {
-      if (index == null)
-      {
-        foreach (var subscriptions in _subscriptions)
-          foreach (var subscription in subscriptions)
-            subscription.Dispose();
-        _subscriptions.Clear();
-      }
-      else
-      {
-        foreach(var subscription in _subscriptions[index.Value])
-          subscription.Dispose();
-        _subscriptions[index.Value].Clear();
-        _subscriptions.RemoveAt(index.Value);
-      }
+      if (ReactiveParent != null)
+        ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
     }
 
     public int Add(object value)
