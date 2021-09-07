@@ -3,7 +3,6 @@ using BlueJay.UI.Component.Language;
 using BlueJay.UI.Component.Reactivity;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 
 namespace BlueJay.UI.Component
 {
@@ -25,7 +24,7 @@ namespace BlueJay.UI.Component
     /// <summary>
     /// The events that were found on the node creating this
     /// </summary>
-    public List<ElementEvent> Events { get; private set; }
+    internal List<ElementEvent> Events { get; private set; }
 
     /// <summary>
     /// The identifier that exists on the scope
@@ -36,7 +35,7 @@ namespace BlueJay.UI.Component
     /// Initialization method is menat to set all the basic properties on this component
     /// </summary>
     /// <param name="parent">The parent component we are processing</param>
-    public void Initialize(UIComponent parent, List<ElementEvent> events)
+    internal void Initialize(UIComponent parent, List<ElementEvent> events)
     {
       Parent = parent;
       Events = events;

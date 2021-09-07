@@ -9,7 +9,10 @@ namespace BlueJay.UI.Component.Reactivity
   /// <typeparam name="T">The type of property this is</typeparam>
   public class ReactiveProperty<T> : IReactiveProperty
   {
-    private readonly List<IObserver<ReactiveUpdateEvent>> _observers;
+    /// <summary>
+    /// The observers that are watching changes on this style
+    /// </summary>
+    private readonly List<IObserver<ReactiveEvent>> _observers;
 
     /// <summary>
     /// The internal value that was set for this property
@@ -53,6 +56,7 @@ namespace BlueJay.UI.Component.Reactivity
       }
     }
 
+    /// <inheritdoc />
     public IReactiveParentProperty ReactiveParent { get; set; }
 
     /// <summary>
@@ -62,7 +66,7 @@ namespace BlueJay.UI.Component.Reactivity
     public ReactiveProperty(T value)
     {
       _value = value;
-      _observers = new List<IObserver<ReactiveUpdateEvent>>();
+      _observers = new List<IObserver<ReactiveEvent>>();
       BindValue();
     }
 
@@ -71,7 +75,7 @@ namespace BlueJay.UI.Component.Reactivity
     /// </summary>
     /// <param name="observer">The observer we are wanting to send details to</param>
     /// <returns>The disposable object that is meant to remove the observer on dispose</returns>
-    public IDisposable Subscribe(IObserver<ReactiveUpdateEvent> observer)
+    public IDisposable Subscribe(IObserver<ReactiveEvent> observer)
     {
       if (!_observers.Contains(observer))
       {
@@ -80,40 +84,41 @@ namespace BlueJay.UI.Component.Reactivity
         var propObserver = observer as ReactivePropertyObserver;
         if (propObserver != null)
         {
-          observer.OnNext(new ReactiveUpdateEvent() { Path = propObserver.Path, Data = Utils.GetObject(this, propObserver.Path), Type = ReactiveUpdateEvent.EventType.Update });
+          observer.OnNext(new ReactiveEvent() { Path = propObserver.Path, Data = Utils.GetObject(this, propObserver.Path), Type = ReactiveEvent.EventType.Update });
         }
         else
         {
-          observer.OnNext(new ReactiveUpdateEvent() { Data = _value, Type = ReactiveUpdateEvent.EventType.Update });
+          observer.OnNext(new ReactiveEvent() { Data = _value, Type = ReactiveEvent.EventType.Update });
         }
       }
       return new ReactivePropertyUnsubscriber(_observers, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, string path = null)
+    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, string path = null)
     {
       return Subscribe(new ReactivePropertyObserver(nextAction, path));
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type, string path = null)
+    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, ReactiveEvent.EventType type, string path = null)
     {
       return Subscribe(new ReactivePropertyTypeObserver(nextAction, type, path));
     }
 
-    /// <summary>
-    /// Helper method is meant to notify all the observers of this subscription
-    /// </summary>
-    public void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
+    /// <inheritdoc />
+    public void Next(object value, string path = "", ReactiveEvent.EventType type = ReactiveEvent.EventType.Update)
     {
       foreach (var observer in _observers.ToArray())
-        observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = type });
+        observer.OnNext(new ReactiveEvent() { Path = path, Data = value, Type = type });
 
       if (ReactiveParent != null)
         ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
     }
 
+    /// <summary>
+    /// Bind value to setup the parent properly
+    /// </summary>
     private void BindValue()
     {
       if (_value != null)

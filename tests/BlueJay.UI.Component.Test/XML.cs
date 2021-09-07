@@ -119,11 +119,12 @@ namespace BlueJay.UI.Component.Test
     public void StyleProp()
     {
       var component = Provider.ParseXML("<Container Style=\"Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200\">Hello World</Container>", new Component());
+      var scope = component.GenerateScope();
       Assert.NotNull(component.Props.FirstOrDefault(x => x.Name == PropNames.Style));
 
       var test = new Color(200, 200, 200);
 
-      var style = (Style)component.Props.First(x => x.Name == PropNames.Style).DataGetter(null);
+      var style = (Style)component.Props.First(x => x.Name == PropNames.Style).DataGetter(scope);
       Assert.Equal(Position.Absolute, style.Position);
       Assert.Equal(1f, style.WidthPercentage);
       Assert.Equal(4, style.Height);

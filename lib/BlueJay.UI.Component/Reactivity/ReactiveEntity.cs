@@ -8,23 +8,49 @@ using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BlueJay.UI.Component.Reactivity
 {
+  /// <summary>
+  /// The reactive entity
+  /// </summary>
   public class ReactiveEntity : Entity
   {
+    /// <summary>
+    /// The event queue to trigger UI update events
+    /// </summary>
     private readonly EventQueue _eventQueue;
+
+    /// <summary>
+    /// The graphics device to get the screen width
+    /// </summary>
     private readonly GraphicsDevice _graphics;
 
+    /// <summary>
+    /// The reactive scope bound to this entity
+    /// </summary>
     private ReactiveScope _scope;
+
+    /// <summary>
+    /// The current subscriptions for this entity
+    /// </summary>
     private List<IDisposable> _subscriptions;
 
+    /// <summary>
+    /// This list of subscriptions
+    /// </summary>
     public List<IDisposable> Subscriptions => _subscriptions;
+
+    /// <summary>
+    /// The data that should be bound to this entity
+    /// </summary>
     public object Data { get; set; }
+
+    /// <summary>
+    /// The reactive scope that is meant to process properties
+    /// </summary>
     public ReactiveScope Scope
     {
       get => _scope;
@@ -35,8 +61,18 @@ namespace BlueJay.UI.Component.Reactivity
         ProcessProperties();
       }
     }
-    public ElementNode Node { get; set; }
 
+    /// <summary>
+    /// The element node being processed
+    /// </summary>
+    internal ElementNode Node { get; set; }
+
+    /// <summary>
+    /// Constructor to inject data into the entitiy
+    /// </summary>
+    /// <param name="layerCollection">The current layer collection</param>
+    /// <param name="eventQueue">The event queue to trigger UI update events</param>
+    /// <param name="graphics">The graphics device to get the screen width</param>
     public ReactiveEntity(LayerCollection layerCollection, EventQueue eventQueue, GraphicsDevice graphics)
       : base(layerCollection, eventQueue)
     {
@@ -45,7 +81,10 @@ namespace BlueJay.UI.Component.Reactivity
       _subscriptions = new List<IDisposable>();
     }
 
-    public void ProcessProperties()
+    /// <summary>
+    /// Process properties for the element nodes
+    /// </summary>
+    private void ProcessProperties()
     {
       foreach (var prop in Node.Props)
       {
@@ -70,6 +109,10 @@ namespace BlueJay.UI.Component.Reactivity
       }
     }
 
+    /// <summary>
+    /// Process a text property to update the text addon when something updates
+    /// </summary>
+    /// <param name="prop">The prop being processed</param>
     private void ProcessText(ElementProp prop)
     {
       if (prop.ScopePaths.Count > 0)
@@ -91,6 +134,10 @@ namespace BlueJay.UI.Component.Reactivity
       Update(t);
     }
 
+    /// <summary>
+    /// Process a style property to update the style when something updates
+    /// </summary>
+    /// <param name="prop">The prop being processed</param>
     private void ProcessStyle(ElementProp prop)
     {
       if (prop.ScopePaths.Count > 0)
@@ -112,6 +159,10 @@ namespace BlueJay.UI.Component.Reactivity
       Update(s);
     }
 
+    /// <summary>
+    /// Process a hover style property to update the style when something updates
+    /// </summary>
+    /// <param name="prop">The prop being processed</param>
     private void ProcessHoverStyle(ElementProp prop)
     {
       if (prop.ScopePaths.Count > 0)
@@ -137,6 +188,10 @@ namespace BlueJay.UI.Component.Reactivity
       Update(s);
     }
 
+    /// <summary>
+    /// Process a if property to update the if when something updates
+    /// </summary>
+    /// <param name="prop">The prop being processed</param>
     private void ProcessIf(ElementProp prop)
     {
       if (prop.ScopePaths.Count > 0)
@@ -154,6 +209,10 @@ namespace BlueJay.UI.Component.Reactivity
       SetActive(this, (bool)prop.DataGetter(Scope));
     }
 
+    /// <summary>
+    /// Process a bound props to bind them for two way and one way bindings
+    /// </summary>
+    /// <param name="prop">The prop being processed</param>
     private void ProcessBoundProps(ElementProp prop)
     {
       if (prop.ScopePaths?.Count > 0)
@@ -178,6 +237,11 @@ namespace BlueJay.UI.Component.Reactivity
       }
     }
 
+    /// <summary>
+    /// Recursive solution to activate a root entity
+    /// </summary>
+    /// <param name="entity">The entity we need to set active or not</param>
+    /// <param name="active">The active boolean that needs to be set</param>
     private void SetActive(IEntity entity, bool active)
     {
       entity.Active = active;
@@ -187,6 +251,9 @@ namespace BlueJay.UI.Component.Reactivity
         SetActive(la.Children[i], active);
     }
 
+    /// <summary>
+    /// Clear subscriptions so we can clear up subscriptions if this entity is removed
+    /// </summary>
     private void ClearSubscriptions()
     {
       foreach (var subscription in _subscriptions)
@@ -194,6 +261,7 @@ namespace BlueJay.UI.Component.Reactivity
       _subscriptions.Clear();
     }
 
+    /// <inheritdoc />
     public override void Dispose()
     {
       ClearSubscriptions();

@@ -83,7 +83,7 @@ namespace BlueJay.UI.Component.Test
       var collection = new ReactiveCollection<int>();
 
       var i = 0;
-      using var dispose = collection.Subscribe(x => i += (int)x.Data, ReactiveUpdateEvent.EventType.Add);
+      using var dispose = collection.Subscribe(x => i += (int)x.Data, ReactiveEvent.EventType.Add);
 
       collection.Add(1);
       collection.Add(2);

@@ -1,21 +1,43 @@
 ﻿using Antlr4.Runtime.Misc;
-using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language.Antlr;
 using BlueJay.UI.Component.Reactivity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace BlueJay.UI.Component.Language
 {
-  public class XMLParserVisitor : XMLParserBaseVisitor<object>
+  /// <summary>
+  /// The xml parser is meant to be sudo-xml for parsing components
+  /// </summary>
+  internal class XMLParserVisitor : XMLParserBaseVisitor<object>
   {
+    /// <summary>
+    /// The UI Component that should be used for parsing data
+    /// </summary>
     private readonly UIComponent _intance;
+
+    /// <summary>
+    /// The current components that could be used in the xml
+    /// </summary>
     private readonly List<Type> _components;
+
+    /// <summary>
+    /// The service provider to create the expression from
+    /// </summary>
     private readonly IServiceProvider _serviceProvider;
+
+    /// <summary>
+    /// The current element root
+    /// </summary>
     private ElementNode _root;
 
+    /// <summary>
+    /// Constructor to set up some defaults for the xml parser
+    /// </summary>
+    /// <param name="serviceProvider">The service provider to create the expression from</param>
+    /// <param name="instance">The UI Component that should be used for parsing data</param>
+    /// <param name="components">The current components that could be used in the xml</param>
     public XMLParserVisitor(IServiceProvider serviceProvider, UIComponent instance, List<Type> components)
     {
       _serviceProvider = serviceProvider;
@@ -24,9 +46,17 @@ namespace BlueJay.UI.Component.Language
       _components = components ?? new List<Type>();
     }
 
+    /// <summary>
+    /// The element root that was created by the xml parser
+    /// </summary>
     public ElementNode Root => _root;
 
     #region Element Node Processors
+    /// <summary>
+    /// Visitor for elements
+    /// </summary>
+    /// <param name="context">The elements context</param>
+    /// <returns>Will return the node being created by this element</returns>
     public override object VisitElement([NotNull] XMLParser.ElementContext context)
     {
       if (context.exception != null)
@@ -120,6 +150,11 @@ namespace BlueJay.UI.Component.Language
       return node;
     }
 
+    /// <summary>
+    /// Visitor for the char data
+    /// </summary>
+    /// <param name="context">The char data context</param>
+    /// <returns>Returns a text element node</returns>
     public override object VisitChardata([NotNull] XMLParser.ChardataContext context)
     {
       var expressions = new List<Func<ReactiveScope, string>>();
@@ -149,6 +184,11 @@ namespace BlueJay.UI.Component.Language
       return node;
     }
 
+    /// <summary>
+    /// Visitor for slot elements
+    /// </summary>
+    /// <param name="context">The slot context</param>
+    /// <returns>Will return the slot</returns>
     public override object VisitSlotElement([NotNull] XMLParser.SlotElementContext context)
     {
       if (_root != null)
@@ -161,6 +201,11 @@ namespace BlueJay.UI.Component.Language
     }
     #endregion
 
+    /// <summary>
+    /// Visitor for basic attributes
+    /// </summary>
+    /// <param name="context">The baic attribute context</param>
+    /// <returns>Will return the element prop</returns>
     public override object VisitBasicAttribute([NotNull] XMLParser.BasicAttributeContext context)
     {
       var name = context.GetChild(0).GetText();
@@ -168,12 +213,17 @@ namespace BlueJay.UI.Component.Language
 
       if (name == PropNames.Style || name == PropNames.HoverStyle)
       { // Parse the style attribute since it is a special property and we want to parse the data
-        var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2), name);
+        var result = _serviceProvider.ParseStyle(text.Substring(1, text.Length - 2));
         return new ElementProp() { Name = name, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
       }
       return new ElementProp() { Name = name, DataGetter = x => text.Substring(1, text.Length - 2) };
     }
 
+    /// <summary>
+    /// Visitor binded attribute
+    /// </summary>
+    /// <param name="context">The binded attribute context</param>
+    /// <returns>Will return a binded element prop</returns>
     public override object VisitBindAttribute([NotNull] XMLParser.BindAttributeContext context)
     {
       var name = context.GetChild(1).GetText();
@@ -182,6 +232,11 @@ namespace BlueJay.UI.Component.Language
       return new ElementProp() { Name = name, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
     }
 
+    /// <summary>
+    /// Visitor for event attributes
+    /// </summary>
+    /// <param name="context">The event context</param>
+    /// <returns>Will return an event attribute</returns>
     public override object VisitEventAttribute([NotNull] XMLParser.EventAttributeContext context)
     {
       var name = context.GetChild(1).GetText();
@@ -190,6 +245,11 @@ namespace BlueJay.UI.Component.Language
       return new ElementEvent() { Name = name, Callback = result.Callback, IsGlobal = context.ChildCount == 6 };
     }
 
+    /// <summary>
+    /// Visitor for the if attribute
+    /// </summary>
+    /// <param name="context">The if context</param>
+    /// <returns>Will return an if prop</returns>
     public override object VisitIfAttribute([NotNull] XMLParser.IfAttributeContext context)
     {
       var expression = context.GetChild(context.ChildCount - 1).GetText();
@@ -197,18 +257,33 @@ namespace BlueJay.UI.Component.Language
       return new ElementProp() { Name = PropNames.If, DataGetter = result.Callback, ScopePaths = result.ScopePaths };
     }
 
+    /// <summary>
+    /// Visitor for the for attribute
+    /// </summary>
+    /// <param name="context">the for context</param>
+    /// <returns>Will return the for prop</returns>
     public override object VisitForAttribute([NotNull] XMLParser.ForAttributeContext context)
     {
       var expression = context.GetChild(context.ChildCount - 1).GetText();
       return _serviceProvider.ParseFor(expression.Substring(1, expression.Length - 2), _intance);
     }
 
+    /// <summary>
+    /// Visitor for the ref attribute
+    /// </summary>
+    /// <param name="context">The ref context</param>
+    /// <returns>Will return the ref prop</returns>
     public override object VisitRefAttribute([NotNull] XMLParser.RefAttributeContext context)
     {
       var propName = context.GetChild(context.ChildCount - 1).GetText();
       return new ElementRef() { PropName = propName.Substring(1, propName.Length - 2) };
     }
 
+    /// <summary>
+    /// Helper method is meant to merge to style props
+    /// </summary>
+    /// <param name="prop">The prop to merge into</param>
+    /// <param name="existingProp">The existing prop</param>
     private void MergeStyles(ElementProp prop, ElementProp existingProp)
     {
       var oldGetter = existingProp.DataGetter;

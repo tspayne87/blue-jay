@@ -6,18 +6,17 @@ using BlueJay.Events;
 using BlueJay.Events.Keyboard;
 using BlueJay.Events.Mouse;
 using BlueJay.UI.Addons;
-using BlueJay.UI.Component.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
 using BlueJay.UI.Component.Language.Antlr;
 using BlueJay.UI.Component.Reactivity;
 using BlueJay.UI.Factories;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BlueJay.UI.Component
 {
@@ -35,6 +34,14 @@ namespace BlueJay.UI.Component
       return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, new ReactiveScope());
     }
 
+    /// <summary>
+    /// This is used internally to do tests on the xml generator for element nodes
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to process the component with</param>
+    /// <param name="xml">The sudo-xml we want to process</param>
+    /// <param name="instance">The instance of the root object</param>
+    /// <param name="components">The components that can be used in this document</param>
+    /// <returns>Will return an element node</returns>
     public static ElementNode ParseXML(this IServiceProvider serviceProvider, string xml, UIComponent instance, List<Type> components = null)
     {
       var stream = new AntlrInputStream(xml.Trim());
@@ -49,6 +56,13 @@ namespace BlueJay.UI.Component
       return visitor.Root;
     }
 
+    /// <summary>
+    /// Internal method is meant to generate a lambda function based on the expression
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to process the component with</param>
+    /// <param name="expression">The expression to build out the lambda function</param>
+    /// <param name="instance">The root instance for this expression</param>
+    /// <returns>Will return a lambda expression</returns>
     internal static ExpressionResult ParseExpression(this IServiceProvider serviceProvider, string expression, UIComponent instance)
     {
       var stream = new AntlrInputStream(expression);
@@ -62,7 +76,13 @@ namespace BlueJay.UI.Component
       return visitor.Visit(expr) as ExpressionResult;
     }
 
-    internal static ExpressionResult ParseStyle(this IServiceProvider serviceProvider, string expression, string name)
+    /// <summary>
+    /// Internal method is meant to handle the style expression
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to process the component with</param>
+    /// <param name="expression">The style expression that needs to be processed</param>
+    /// <returns>Will return the style lambda function</returns>
+    internal static ExpressionResult ParseStyle(this IServiceProvider serviceProvider, string expression)
     {
       var stream = new AntlrInputStream(expression);
       ITokenSource lexer = new StyleLexer(stream);
@@ -71,10 +91,17 @@ namespace BlueJay.UI.Component
 
       var expr = parser.expr();
 
-      var visitor = new StyleVisitor(serviceProvider, name);
+      var visitor = new StyleVisitor(serviceProvider.GetRequiredService<ContentManager>());
       return visitor.Visit(expr) as ExpressionResult;
     }
 
+    /// <summary>
+    /// Internal method is meant to handle the for processor
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to process the component with</param>
+    /// <param name="expression">The for expression</param>
+    /// <param name="instance">The current instance expression</param>
+    /// <returns>Will return the for expression</returns>
     internal static ElementFor ParseFor(this IServiceProvider serviceProvider, string expression, UIComponent instance)
     {
       var stream = new AntlrInputStream(expression);
@@ -88,12 +115,25 @@ namespace BlueJay.UI.Component
       return visitor.Visit(expr) as ElementFor;
     }
 
+    /// <summary>
+    /// Internal method is meant to parse a UI Component
+    /// </summary>
+    /// <typeparam name="T">The UI Component being generated</typeparam>
+    /// <param name="serviceProvider">The service provider we need to process the component with</param>
+    /// <returns>The root node of the UI component</returns>
     internal static ElementNode ParseUIComponet<T>(this IServiceProvider serviceProvider)
       where T : UIComponent
     {
       return ParseUIComponet(serviceProvider, typeof(T), out var instance);
     }
 
+    /// <summary>
+    /// Internal method is meant to parse a UI Component
+    /// </summary>
+    /// <param name="serviceProvider">The service provider we need to process the component with</param>
+    /// <param name="type">The UI Component type being generated</param>
+    /// <param name="instance">The current instance expression</param>
+    /// <returns>The root node of the UI component</returns>
     internal static ElementNode ParseUIComponet(this IServiceProvider serviceProvider, Type type, out UIComponent instance)
     {
       instance = ActivatorUtilities.CreateInstance(serviceProvider, type) as UIComponent;
@@ -103,6 +143,16 @@ namespace BlueJay.UI.Component
       return ParseXML(serviceProvider, view.XML, instance, components?.Components);
     }
 
+    /// <summary>
+    /// Internal method is meant to convert the element node into an UI entity that will be rendered on the screen
+    /// </summary>
+    /// <param name="provider">The service provider we need to process the component with</param>
+    /// <param name="eventQueue">The event queue so we can trigger UI updates when reactive elements change</param>
+    /// <param name="graphics">The graphics device so we can get the width and height of the current screen</param>
+    /// <param name="node">The current node we are working on</param>
+    /// <param name="parent">The current parent element for the node being created so we can keep the same structure</param>
+    /// <param name="scope">The current reactive scope for calling the lambda functions</param>
+    /// <returns>Will return the generated reactive entity</returns>
     internal static ReactiveEntity ProcessElementNode(IServiceProvider provider, EventQueue eventQueue, GraphicsDevice graphics, ElementNode node, ReactiveEntity parent, ReactiveScope scope)
     {
       if (!scope.ContainsKey(node.Instance.Identifier))
@@ -128,7 +178,7 @@ namespace BlueJay.UI.Component
                 {
                   madeChange = true;
 
-                  var newScope = scope.NewScope();
+                  var newScope = new ReactiveScope() { Parent = scope };
                   newScope[node.For.ScopeName] = item;
                   if (entities.Count > i)
                   {
@@ -225,6 +275,13 @@ namespace BlueJay.UI.Component
       return entity;
     }
 
+    /// <summary>
+    /// Internal processor to add the event listeners to an entity for when events are triggered
+    /// </summary>
+    /// <param name="provider">The service provider we need to process the component with</param>
+    /// <param name="evt">The event property we need to parse</param>
+    /// <param name="entity">The current entity we need to watch on</param>
+    /// <param name="scope">The current scope</param>
     internal static void ProcessEvent(IServiceProvider provider, ElementEvent evt, IEntity entity, ReactiveScope scope)
     {
       switch (evt.Name)
@@ -253,6 +310,14 @@ namespace BlueJay.UI.Component
       }
     }
 
+    /// <summary>
+    /// Internal method is meant to call the callback lambda in the event prop
+    /// </summary>
+    /// <typeparam name="T">The type of object that is being processed</typeparam>
+    /// <param name="evt">The event prop we need to call the callback from</param>
+    /// <param name="scope">The current scope of the event</param>
+    /// <param name="obj">The object we are parsing</param>
+    /// <returns>Will return the result which will determine if propegation needs to continue</returns>
     internal static bool InvokeEvent<T>(ElementEvent evt, ReactiveScope scope, T obj)
     {
       scope[PropNames.Event] = obj;
@@ -261,6 +326,11 @@ namespace BlueJay.UI.Component
       return result;
     }
 
+    /// <summary>
+    /// Internal recursive method is meant to remove entities from the system
+    /// </summary>
+    /// <param name="layers">The layer collection to remove the entity from</param>
+    /// <param name="entity">The current entity needing to be removed</param>
     internal static void RemoveEntity(LayerCollection layers, IEntity entity)
     {
       // Remove the entity

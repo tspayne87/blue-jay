@@ -1,13 +1,19 @@
 ﻿using BlueJay.Events.Keyboard;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BlueJay.UI.Component
 {
+  /// <summary>
+  /// Extension methods to add method so the <see cref="KeyboardEvent" />
+  /// </summary>
   public static class KeyboardEventExtensions
   {
+    /// <summary>
+    /// Helper method will try and get a character out of the keyboard event and give the correct character based on the keys
+    /// </summary>
+    /// <param name="evt">The keyboard event we need to process</param>
+    /// <param name="character">The character we want to return</param>
+    /// <returns>Will return true if a character was generated otherwise false</returns>
     public static bool TryGetCharacter(this KeyboardEvent evt, out char character)
     {
       switch (evt.Key)

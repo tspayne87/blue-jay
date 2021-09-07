@@ -2,6 +2,9 @@
 
 namespace BlueJay.UI.Component
 {
+  /// <summary>
+  /// Set of methods that are meant to add in items to the service collection
+  /// </summary>
   public static class ServiceCollectionExtensions
   {
     /// <summary>

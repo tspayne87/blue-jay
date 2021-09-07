@@ -5,12 +5,26 @@ using System.Linq;
 
 namespace BlueJay.UI.Component.Reactivity
 {
+  /// <summary>
+  /// Reactive collection
+  /// </summary>
+  /// <typeparam name="T">The type that is meant for the reactive collection</typeparam>
   public class ReactiveCollection<T> : IReactiveProperty, IList<T>, IList
   {
-    private List<IObserver<ReactiveUpdateEvent>> _observers;
+    /// <summary>
+    /// The observers that are watching changes on this style
+    /// </summary>
+    private List<IObserver<ReactiveEvent>> _observers;
+
+    /// <summary>
+    /// The internal list
+    /// </summary>
     private readonly List<T> _list;
 
+    /// <inheritdoc />
     public int Count => _list.Count;
+
+    /// <inheritdoc />
     public bool IsReadOnly => false;
 
     /// <summary>
@@ -58,14 +72,19 @@ namespace BlueJay.UI.Component.Reactivity
       }
     }
 
+    /// <inheritdoc />
     public bool IsFixedSize => ((IList)_list).IsFixedSize;
 
+    /// <inheritdoc />
     public bool IsSynchronized => ((IList)_list).IsSynchronized;
 
+    /// <inheritdoc />
     public object SyncRoot => ((IList)_list).SyncRoot;
 
+    /// <inheritdoc />
     public IReactiveParentProperty ReactiveParent { get; set; }
 
+    /// <inheritdoc />
     object IList.this[int index]
     {
       get => _list[index];
@@ -106,7 +125,7 @@ namespace BlueJay.UI.Component.Reactivity
     public ReactiveCollection(IEnumerable<T> list)
     {
       _list = new List<T>(list);
-      _observers = new List<IObserver<ReactiveUpdateEvent>>();
+      _observers = new List<IObserver<ReactiveEvent>>();
       for (var i = 0; i < _list.Count; ++i)
         BindValue(_list[i], i);
     }
@@ -132,7 +151,7 @@ namespace BlueJay.UI.Component.Reactivity
       for (var i = index; i < _list.Count; ++i)
       {
         BindValue(_list[i], i);
-        Next(_list[index], $"[{index}]", _list.Count - 1 == i ? ReactiveUpdateEvent.EventType.Add : ReactiveUpdateEvent.EventType.Update);
+        Next(_list[index], $"[{index}]", _list.Count - 1 == i ? ReactiveEvent.EventType.Add : ReactiveEvent.EventType.Update);
       }
       Next(_list);
     }
@@ -147,7 +166,7 @@ namespace BlueJay.UI.Component.Reactivity
 
       for (var i = index; i < _list.Count; ++i)
         BindValue(_list[i], i);
-      Next(item, type: ReactiveUpdateEvent.EventType.Remove);
+      Next(item, type: ReactiveEvent.EventType.Remove);
     }
 
     /// <inheritdoc cref="IList" />
@@ -155,7 +174,7 @@ namespace BlueJay.UI.Component.Reactivity
     {
       _list.Add(item);
       BindValue(item, _list.Count - 1);
-      Next(item, type: ReactiveUpdateEvent.EventType.Add);
+      Next(item, type: ReactiveEvent.EventType.Add);
     }
 
     /// <inheritdoc cref="IList" />
@@ -165,7 +184,7 @@ namespace BlueJay.UI.Component.Reactivity
       _list.Clear();
 
       foreach (var item in removed)
-        Next(item, type: ReactiveUpdateEvent.EventType.Remove);
+        Next(item, type: ReactiveEvent.EventType.Remove);
     }
 
     /// <inheritdoc cref="IList" />
@@ -194,7 +213,7 @@ namespace BlueJay.UI.Component.Reactivity
 
       for (var i = index; i < _list.Count; ++i)
         BindValue(_list[index], index);
-      Next(item, type: ReactiveUpdateEvent.EventType.Remove);
+      Next(item, type: ReactiveEvent.EventType.Remove);
       return true;
     }
 
@@ -210,12 +229,8 @@ namespace BlueJay.UI.Component.Reactivity
       return _list.GetEnumerator();
     }
 
-    /// <summary>
-    /// Subscription method is meant to attach a subscription to the observable so we can dispose of it if needed
-    /// </summary>
-    /// <param name="observer">The observer we are wanting to send details to</param>
-    /// <returns>The disposable object that is meant to remove the observer on dispose</returns>
-    public IDisposable Subscribe(IObserver<ReactiveUpdateEvent> observer)
+    /// <inheritdoc />
+    public IDisposable Subscribe(IObserver<ReactiveEvent> observer)
     {
       if (!_observers.Contains(observer))
       {
@@ -223,33 +238,82 @@ namespace BlueJay.UI.Component.Reactivity
         var propObserver = observer as ReactivePropertyObserver;
         if (propObserver != null)
         {
-          observer.OnNext(new ReactiveUpdateEvent() { Path = propObserver.Path, Data = Utils.GetObject(this, propObserver.Path), Type = ReactiveUpdateEvent.EventType.Update });
+          observer.OnNext(new ReactiveEvent() { Path = propObserver.Path, Data = Utils.GetObject(this, propObserver.Path), Type = ReactiveEvent.EventType.Update });
         }
         else
         {
-          observer.OnNext(new ReactiveUpdateEvent() { Data = _list, Type = ReactiveUpdateEvent.EventType.Update });
+          observer.OnNext(new ReactiveEvent() { Data = _list, Type = ReactiveEvent.EventType.Update });
         }
       }
       return new ReactivePropertyUnsubscriber(_observers, observer);
     }
 
-    /// <summary>
-    /// Helper subscrption to make it easier for items to add a next action button since most of the UI elements just care about when the object is updated so
-    /// they can react to those elements in real time
-    /// </summary>
-    /// <param name="nextAction">The action that will be called when the item is updated</param>
-    /// <returns>Will return a disposable that should be destored if the item is removed</returns>
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, string path = null)
+    /// <inheritdoc />
+    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, string path = null)
     {
       return Subscribe(new ReactivePropertyObserver(nextAction, path));
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveUpdateEvent> nextAction, ReactiveUpdateEvent.EventType type, string path = null)
+    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, ReactiveEvent.EventType type, string path = null)
     {
       return Subscribe(new ReactivePropertyTypeObserver(nextAction, type, path));
     }
 
+    /// <inheritdoc />
+    public void Next(object value, string path = "", ReactiveEvent.EventType type = ReactiveEvent.EventType.Update)
+    {
+      foreach (var observer in _observers.ToArray())
+      {
+        observer.OnNext(new ReactiveEvent() { Path = path, Data = value, Type = type });
+      }
+
+      if (ReactiveParent != null)
+        ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
+    }
+
+    /// <inheritdoc />
+    public int Add(object value)
+    {
+      Add((T)value);
+      return _list.Count - 1;
+    }
+
+    /// <inheritdoc />
+    public bool Contains(object value)
+    {
+      return Contains((T)value);
+    }
+
+    /// <inheritdoc />
+    public int IndexOf(object value)
+    {
+      return IndexOf((T)value);
+    }
+
+    /// <inheritdoc />
+    public void Insert(int index, object value)
+    {
+      Insert(index, (T)value);
+    }
+
+    /// <inheritdoc />
+    public void Remove(object value)
+    {
+      Remove((T)value);
+    }
+
+    /// <inheritdoc />
+    public void CopyTo(Array array, int index)
+    {
+      CopyTo(array.Cast<T>().ToArray(), index);
+    }
+
+    /// <summary>
+    /// Binded value to attach the parent and setup the tree structure
+    /// </summary>
+    /// <param name="value">The value we need to bind too</param>
+    /// <param name="index">The current index of the binded value</param>
     private void BindValue(T value, int index)
     {
       if (value != null)
@@ -280,48 +344,6 @@ namespace BlueJay.UI.Component.Reactivity
           }
         }
       }
-    }
-
-    public void Next(object value, string path = "", ReactiveUpdateEvent.EventType type = ReactiveUpdateEvent.EventType.Update)
-    {
-      foreach (var observer in _observers.ToArray())
-      {
-        observer.OnNext(new ReactiveUpdateEvent() { Path = path, Data = value, Type = type });
-      }
-
-      if (ReactiveParent != null)
-        ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
-    }
-
-    public int Add(object value)
-    {
-      Add((T)value);
-      return _list.Count - 1;
-    }
-
-    public bool Contains(object value)
-    {
-      return Contains((T)value);
-    }
-
-    public int IndexOf(object value)
-    {
-      return IndexOf((T)value);
-    }
-
-    public void Insert(int index, object value)
-    {
-      Insert(index, (T)value);
-    }
-
-    public void Remove(object value)
-    {
-      Remove((T)value);
-    }
-
-    public void CopyTo(Array array, int index)
-    {
-      CopyTo(array.Cast<T>().ToArray(), index);
     }
   }
 }
