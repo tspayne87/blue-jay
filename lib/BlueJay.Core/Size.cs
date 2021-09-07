@@ -38,12 +38,35 @@ namespace BlueJay.Core
     }
 
     /// <summary>
+    /// Constructor to build out a size based on a point
+    /// </summary>
+    /// <param name="point">The point we need to build this size out of</param>
+    public Size(Point point)
+      : this(point.X, point.Y) { }
+
+    /// <summary>
+    /// Constructor to build out a size based on a vector
+    /// </summary>
+    /// <param name="position">The vector we need to build this size out of</param>
+    public Size(Vector2 position)
+      : this((int)position.X, (int)position.Y) { }
+
+    /// <summary>
     /// Converts the size to a point
     /// </summary>
     /// <returns>Will return a point version of this size</returns>
     public Point ToPoint()
     {
       return new Point(Width, Height);
+    }
+
+    /// <summary>
+    /// Converts the size to a vector
+    /// </summary>
+    /// <returns>Will return a vector version of this size</returns>
+    public Vector2 ToVector2()
+    {
+      return new Vector2(Width, Height);
     }
 
     /// <summary>
@@ -97,7 +120,7 @@ namespace BlueJay.Core
     /// <param name="ls">The left hand side of the operator</param>
     /// <param name="rs">The right hand side of the operator</param>
     /// <returns>The multipled size</returns>
-    public static Size operator *(Size ls, Size rs) => new Size(ls.Width * rs.Width, ls.Width * rs.Width);
+    public static Size operator *(Size ls, Size rs) => new Size(ls.Width * rs.Width, ls.Height * rs.Height);
 
     /// <summary>
     /// Operator is meant to determine if two sizes are equal
@@ -125,6 +148,18 @@ namespace BlueJay.Core
     {
       if (rs.Width == 0 || rs.Height == 0) throw new DivideByZeroException();
       return new Size(ls.Width / rs.Width, ls.Height / rs.Height);
+    }
+
+    /// <summary>
+    /// Operator is meant to modulus two sizes together
+    /// </summary>
+    /// <param name="ls">The left hand side of the operator</param>
+    /// <param name="rs">The right hand side of the operator</param>
+    /// <returns>The modulus size</returns>
+    public static Size operator %(Size ls, Size rs)
+    {
+      if (rs.Width == 0 || rs.Height == 0) throw new DivideByZeroException();
+      return new Size(ls.Width % rs.Width, ls.Height % rs.Height);
     }
 
     /// <summary>

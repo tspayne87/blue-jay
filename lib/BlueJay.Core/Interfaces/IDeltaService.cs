@@ -9,5 +9,10 @@
     /// The current delta for each frame
     /// </summary>
     int Delta { get; }
+
+    /// <summary>
+    /// The current delta in seconds for each frame
+    /// </summary>
+    double DeltaSeconds { get; }
   }
 }
