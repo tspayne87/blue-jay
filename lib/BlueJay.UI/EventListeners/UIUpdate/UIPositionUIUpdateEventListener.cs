@@ -62,28 +62,30 @@ namespace BlueJay.UI.EventListeners.UIUpdate
 
       var fWidth = (cWidth * span) + ((span - 1) * pGap.X);
 
-      // Calculate grid position
-      var index = pla?.Children.FindIndex(x => x == entity) ?? -1;
-      var maxHeight = 0;
-      var y = 0;
-      for (var i = 0; i <= index; ++i)
+      if (sa.CurrentStyle.Position != Position.Absolute)
       {
-        var sba = pla?.Children[i].GetAddon<StyleAddon>();
-
-        if (sba != null)
+        // Calculate grid position
+        var index = pla?.Children.FindIndex(x => x == entity) ?? -1;
+        var maxHeight = 0;
+        var y = 0;
+        for (var i = 0; i <= index; ++i)
         {
-          if (y != sba.Value.GridPosition.Y)
+          var sba = pla?.Children[i].GetAddon<StyleAddon>();
+
+          if (sba != null)
           {
-            sa.CalculatedBounds.Y += maxHeight + pGap.Y;
-            maxHeight = 0;
-            y = sba.Value.GridPosition.Y;
+            if (y != sba.Value.GridPosition.Y)
+            {
+              sa.CalculatedBounds.Y += maxHeight + pGap.Y;
+              maxHeight = 0;
+              y = sba.Value.GridPosition.Y;
+            }
+
+            maxHeight = Math.Max(maxHeight, sba.Value.CalculatedBounds.Height);
           }
-
-          maxHeight = Math.Max(maxHeight, sba.Value.CalculatedBounds.Height);
         }
+        sa.CalculatedBounds.X += (cWidth * sa.GridPosition.X) + (sa.GridPosition.X * pGap.X);
       }
-
-      sa.CalculatedBounds.X += (cWidth * sa.GridPosition.X) + (sa.GridPosition.X * pGap.X);
 
       if (sa.CurrentStyle.TopOffset != null) sa.CalculatedBounds.Y = sa.CurrentStyle.TopOffset.Value;
       else

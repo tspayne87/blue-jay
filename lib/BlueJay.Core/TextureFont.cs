@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -52,7 +54,7 @@ namespace BlueJay.Core
     /// <param name="rows">The rows that exist in the texture</param>
     /// <param name="cols">The columns that exist in the texture</param>
     /// <param name="alphabet">The alphabet that exists in the texture</param>
-    public TextureFont(Texture2D texture, int rows, int cols, string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()/.,’;\\][=-?><“:|}{+_`")
+    public TextureFont(Texture2D texture, int rows, int cols, string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()/.,';\\][=-?><\":|}{+_`")
     {
       _texture = texture;
       _rows = rows;
@@ -83,6 +85,53 @@ namespace BlueJay.Core
       var lines = str.Split('\n');
       var longestString = lines.Select(x => x.Length).Max();
       return new Vector2(longestString * (Width * size), lines.Count() * (Height * size));
+    }
+
+    /// <summary>
+    /// Method is meant to calculate a string based on the width of the space
+    /// </summary>
+    /// <param name="str">The string we want to fit</param>
+    /// <param name="width">The width we want to fit into</param>
+    /// <param name="size">The size of the font</param>
+    /// <returns>Will return a string that fits into the width of its space</returns>
+    public string FitString(string str, int width, int size)
+    {
+      var lines = new List<string>();
+      var result = string.Empty;
+      var matches = new Regex(@"([^\s]+)(\s*)").Matches(str);
+      foreach (Match match in matches)
+      {
+        if (MeasureString(result + match.Groups[1].Value, size).X > width)
+        {
+          if (!string.IsNullOrEmpty(result))
+            lines.Add(result);
+          result = match.Groups[1].Value;
+        }
+        else
+        {
+          result += match.Groups[1].Value;
+        }
+
+        if (!string.IsNullOrEmpty(match.Groups[2].Value))
+        {
+          for (var i = 0; i < match.Groups[2].Value.Length; ++i)
+          {
+            if (MeasureString(result + match.Groups[2].Value[i], size).X > width)
+            {
+              if (!string.IsNullOrEmpty(result))
+                lines.Add(result);
+              result = match.Groups[2].Value[i].ToString();
+            }
+            else
+            {
+              result += match.Groups[2].Value[i];
+            }
+          }
+        }
+      }
+      if (result.Length > 0)
+        lines.Add(result);
+      return string.Join("\n", lines);
     }
   }
 }

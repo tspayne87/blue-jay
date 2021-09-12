@@ -1,4 +1,5 @@
 ﻿using BlueJay.Common.Addons;
+using BlueJay.Component.System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
@@ -70,89 +71,65 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <param name="evt">The event that triggered the change to the UI</param>
     private void ProcessEntity(IEntity entity)
     {
-      var txt = entity.GetAddon<TextAddon>();
-      var sa = entity.GetAddon<StyleAddon>();
-
-      if (!string.IsNullOrWhiteSpace(txt.Text) && sa.CalculatedBounds.Height == 0 && sa.CalculatedBounds.Width > 0)
+      if (entity.MatchKey(AddonHelper.Identifier<TextAddon, StyleAddon>()))
       {
-        var ta = entity.GetAddon<TextureAddon>();
+        var txt = entity.GetAddon<TextAddon>();
+        var sa = entity.GetAddon<StyleAddon>();
 
-        if (ta.Texture != null)
+        if (sa.CalculatedBounds.Height == 0 && sa.CalculatedBounds.Width > 0)
         {
-          ta.Texture.Dispose();
-          ta.Texture = null;
-        }
+          var ta = entity.GetAddon<TextureAddon>();
 
-        var spaceBounds = MeasureString(" ", sa.Style);
-        var words = txt.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        var lines = new List<string>();
-        var result = string.Empty;
-        for (var i = 0; i < words.Length; ++i)
-        {
-          var bounds = MeasureString(result + words[i], sa.Style);
-          var width = (i - 1 == words.Length) ? bounds.X : bounds.X + spaceBounds.X;
-          if (width > sa.CalculatedBounds.Width)
+          if (ta.Texture != null)
           {
-            if (!string.IsNullOrEmpty(result))
-              lines.Add(result);
-            result = $"{words[i]} ";
+            ta.Texture.Dispose();
+            ta.Texture = null;
           }
-          else
+
+          if (!string.IsNullOrEmpty(txt.Text))
           {
-            result += $"{words[i]} ";
+            var result = entity.FitString(txt.Text.Trim(), sa.CalculatedBounds.Width, _fonts);
+            var finalBounds = entity.MeasureString(result, _fonts);
+            var pos = Vector2.Zero;
+
+            switch (entity.GetStyle(x => x.TextAlign) ?? TextAlign.Center)
+            {
+              case TextAlign.Center:
+                pos.X = (sa.CalculatedBounds.Width - finalBounds.X) / 2;
+                break;
+              case TextAlign.Right:
+                pos.X = sa.CalculatedBounds.Width - finalBounds.X;
+                break;
+            }
+
+            // Calculate the text height based on the bounds of the generate text
+            if (sa.CalculatedBounds.Height == 0)
+            {
+              sa.CalculatedBounds.Height = (int)Math.Ceiling(finalBounds.Y) + ((sa.CurrentStyle.Padding ?? 0) * 2);
+            }
+
+            if (sa.CalculatedBounds.Width != 0 && sa.CalculatedBounds.Height != 0)
+            {
+              // Generate texture and add it to the texture addon so it can be rendered to the screen
+              var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
+              _graphics.SetRenderTarget(target);
+              _graphics.Clear(Color.Transparent);
+              _batch.Begin();
+              if (entity.TryGetStyle(x => x.Font, out var font))
+                _batch.DrawString(_fonts.SpriteFonts[font], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black);
+              else if (entity.TryGetStyle(x => x.TextureFont, out var textureFont))
+                _batch.DrawString(_fonts.TextureFonts[textureFont], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black, entity.GetStyle(x => x.TextureFontSize) ?? 1);
+              _batch.End();
+              _graphics.SetRenderTarget(null);
+
+              ta.Texture = target;
+            }
+
+            entity.Update(sa);
           }
+          entity.Update(ta);
         }
-        if (result.Length > 0)
-          lines.Add(result);
-
-        result = string.Join("\n", lines.Select(x => x.Trim()));
-        var finalBounds = MeasureString(result, sa.Style);
-        var pos = Vector2.Zero;
-        if (sa.CurrentStyle.TextAlign != null)
-        {
-          switch (sa.CurrentStyle.TextAlign.Value)
-          {
-            case TextAlign.Center:
-              pos.X = (sa.CalculatedBounds.Width - finalBounds.X) / 2;
-              break;
-            case TextAlign.Left:
-              pos.X = sa.CalculatedBounds.Width - finalBounds.X;
-              break;
-          }
-        }
-
-        // Calculate the text height based on the bounds of the generate text
-        if (sa.CalculatedBounds.Height == 0)
-        {
-          sa.CalculatedBounds.Height = (int)Math.Ceiling(finalBounds.Y) + ((sa.CurrentStyle.Padding ?? 0) * 2);
-        }
-
-        // Generate texture and add it to the texture addon so it can be rendered to the screen
-        var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
-        _graphics.SetRenderTarget(target);
-        _graphics.Clear(Color.Transparent);
-        _batch.Begin();
-        if (!string.IsNullOrEmpty(sa.Style.Font) && _fonts.SpriteFonts.ContainsKey(sa.Style.Font))
-          _batch.DrawString(_fonts.SpriteFonts[sa.Style.Font], result, pos, sa.CurrentStyle.TextColor ?? Color.Black);
-        else if (!string.IsNullOrEmpty(sa.Style.TextureFont) && _fonts.TextureFonts.ContainsKey(sa.Style.TextureFont))
-          _batch.DrawString(_fonts.TextureFonts[sa.Style.TextureFont], result, pos, sa.CurrentStyle.TextColor ?? Color.Black, sa.Style.TextureFontSize ?? 1);
-        _batch.End();
-        _graphics.SetRenderTarget(null);
-
-        ta.Texture = target;
-
-        entity.Update(sa);
-        entity.Update(ta);
       }
-    }
-
-    private Vector2 MeasureString(string str, Style style)
-    {
-      if (!string.IsNullOrEmpty(style.Font) && _fonts.SpriteFonts.ContainsKey(style.Font))
-        return _fonts.SpriteFonts[style.Font].MeasureString(str);
-      if (!string.IsNullOrEmpty(style.TextureFont) && _fonts.TextureFonts.ContainsKey(style.TextureFont))
-        return _fonts.TextureFonts[style.TextureFont].MeasureString(str, style.TextureFontSize ?? 1);
-      return Vector2.Zero;
     }
   }
 }

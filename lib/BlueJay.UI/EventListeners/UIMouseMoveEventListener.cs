@@ -58,18 +58,21 @@ namespace BlueJay.UI.EventListeners
       for (var i = entities.Count - 1; i >= 0; --i)
       {
         var entity = entities[i];
-        var sa = entity.GetAddon<StyleAddon>();
-        if (hoverEntity == null && Contains(entity, evt.Data.Position))
+        if (entity.Active)
         {
-          hoverEntity = entity;
-        }
+          var sa = entity.GetAddon<StyleAddon>();
+          if (hoverEntity == null && Contains(entity, evt.Data.Position))
+          {
+            hoverEntity = entity;
+          }
 
-        if (hoverEntity == null || (!IsParent(hoverEntity.GetAddon<LineageAddon>(), entity) && entity != hoverEntity))
-        {
-          if (sa.Hovering)
-            _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
-          sa.Hovering = false;
-          entity.Update(sa);
+          if (hoverEntity == null || (!IsParent(hoverEntity.GetAddon<LineageAddon>(), entity) && entity != hoverEntity))
+          {
+            if (sa.Hovering)
+              _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
+            sa.Hovering = false;
+            entity.Update(sa);
+          }
         }
       }
 
@@ -84,6 +87,7 @@ namespace BlueJay.UI.EventListeners
         {
           if (!sa.Hovering)
             _eventQueue.DispatchEvent(new StyleUpdateEvent(hoverEntity));
+
           sa.Hovering = true;
           hoverEntity.Update(sa);
 

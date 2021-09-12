@@ -1,5 +1,8 @@
-﻿using BlueJay.UI.Components;
+﻿using BlueJay.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace BlueJay.UI
 {
@@ -13,7 +16,7 @@ namespace BlueJay.UI
     public static IServiceCollection AddUI(this IServiceCollection serviceCollection)
     {
       return serviceCollection
-        .AddScoped<UIComponentCollection>();
+        .AddSingleton<UIService>();
     }
   }
 }

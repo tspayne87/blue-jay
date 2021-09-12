@@ -21,5 +21,20 @@ namespace BlueJay.Events.Keyboard
     /// If the num lock is on
     /// </summary>
     public bool NumLock { get; set; }
+
+    /// <summary>
+    /// If the shift is pressed at the moment
+    /// </summary>
+    public bool Shift { get; set; }
+
+    /// <summary>
+    /// If ths ctrl is pressed at the moment
+    /// </summary>
+    public bool Ctrl { get; set; }
+
+    /// <summary>
+    /// If the alt is pressed at the moment
+    /// </summary>
+    public bool Alt { get; set; }
   }
 }

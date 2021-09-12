@@ -1,5 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
+using BlueJay.Events.Keyboard;
 using BlueJay.Events.Mouse;
 using BlueJay.Events.Touch;
 using BlueJay.Systems;
@@ -55,7 +56,7 @@ namespace BlueJay.UI
       provider.AddEventListener<UIHeightUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIPositionUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIBoundsTriggerUIUpdateEventListener, UIUpdateEvent>();
-
+      
       provider.AddEventListener<ViewportChangeEventListener, ViewportChangeEvent>();
 
       provider.AddEventListener<UIStyleUpdateEventListener, StyleUpdateEvent>();
@@ -75,6 +76,22 @@ namespace BlueJay.UI
       // Add the event listener
       provider.AddEventListener<UIMouseMoveEventListener, MouseMoveEvent>();
       provider.AddEventListener<UIMouseDownEventListener, MouseDownEvent>();
+      provider.AddEventListener<UIMouseUpEventListener, MouseUpEvent>();
+      return provider;
+    }
+
+    /// <summary>
+    /// Method is meant to add in keyboard support for UI elements
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <returns>Will return the entity that was created and added to the collection</returns>
+    public static IServiceProvider AddKeyboardSupport(this IServiceProvider provider)
+    {
+      // Add the keyboard system if it has not been added
+      provider.AddSystem<KeyboardSystem>();
+
+      // Add the event listener
+      provider.AddEventListener<UIKeyboardUpEventListener, KeyboardUpEvent>();
       return provider;
     }
 

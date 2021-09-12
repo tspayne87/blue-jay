@@ -71,6 +71,8 @@ namespace BlueJay.Common.Systems
       {
         _layers[entity.Layer].Entities.Remove(entity);
       }
+
+      entity.Update(pa);
     }
 
     /// <inheritdoc />

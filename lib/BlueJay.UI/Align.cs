@@ -31,4 +31,12 @@
   {
     Top, Center, Bottom
   }
+
+  /// <summary>
+  /// Position of the UI element
+  /// </summary>
+  public enum Position
+  {
+    Relative, Absolute
+  }
 }

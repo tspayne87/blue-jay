@@ -54,6 +54,8 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         for (var i = 0; i <= index; ++i)
         {
           var sba = pla?.Children[i].GetAddon<StyleAddon>();
+          if (sba.Value.CurrentStyle.Position == Position.Absolute) continue;
+
           pos.X += Math.Min(sba.Value.CurrentStyle.ColumnOffset, psa.Value.CurrentStyle.GridColumns);
           if (pos.X >= psa.Value.CurrentStyle.GridColumns)
           {

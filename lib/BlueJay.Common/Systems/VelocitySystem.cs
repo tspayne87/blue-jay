@@ -23,6 +23,7 @@ namespace BlueJay.Common.Systems
       var va = entity.GetAddon<VelocityAddon>();
 
       pa.Position += va.Velocity;
+      entity.Update(pa);
     }
   }
 }

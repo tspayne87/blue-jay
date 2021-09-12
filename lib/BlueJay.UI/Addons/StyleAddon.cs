@@ -6,14 +6,52 @@ namespace BlueJay.UI.Addons
   public struct StyleAddon : IAddon
   {
     /// <summary>
+    /// The internal hover style that should be used for hovering
+    /// </summary>
+    private Style _hoverStyle;
+
+    /// <summary>
+    /// The internal style that should be used by the UI element
+    /// </summary>
+    private Style _style;
+
+    /// <summary>
     /// The basic nine patch style for the UI element
     /// </summary>
-    public Style Style { get; set; }
+    public Style Style
+    {
+      get => _style;
+      set
+      {
+        var style = _hoverStyle;
+        while (style?.Parent != null)
+        {
+          if (style.Parent == _style)
+          {
+            style.Parent = value;
+            break;
+          }
+        }
+        _style = value;
+      }
+    }
 
     /// <summary>
     /// The style that should be used for hovering
     /// </summary>
-    public Style HoverStyle { get; set; }
+    public Style HoverStyle
+    {
+      get => _hoverStyle;
+      set
+      {
+        _hoverStyle = value;
+
+        var style = _hoverStyle;
+        while (style?.Parent != null)
+          style = style.Parent;
+        style.Parent = Style;
+      }
+    }
 
     /// <summary>
     /// The current grid position this item should be in
@@ -23,7 +61,7 @@ namespace BlueJay.UI.Addons
     /// <summary>
     /// The current style that we should be using
     /// </summary>
-    public Style CurrentStyle => Hovering && HoverStyle != null ? HoverStyle : Style;
+    public Style CurrentStyle => Hovering && _hoverStyle != null ? HoverStyle : Style;
 
     /// <summary>
     /// If this style needs to change based on hovering status
@@ -45,7 +83,7 @@ namespace BlueJay.UI.Addons
     /// </summary>
     /// <param name="style">The style that should process the UI element bounds</param>
     public StyleAddon(Style style)
-      : this(style, null) { }
+      : this(style, default) { }
 
     /// <summary>
     /// Constructor to give a default to the style component
@@ -57,10 +95,10 @@ namespace BlueJay.UI.Addons
       Hovering = false;
       CalculatedBounds = Rectangle.Empty;
       GridPosition = Point.Zero;
-      Style = style;
-      HoverStyle = hoverStyle;
-      if (HoverStyle != null)
-        HoverStyle.Parent = Style;
+      _style = style;
+      _hoverStyle = hoverStyle;
+      if (_hoverStyle != null)
+        _hoverStyle.Parent = _style;
       CalculatedBounds = Rectangle.Empty;
       StyleUpdates = 0;
     }

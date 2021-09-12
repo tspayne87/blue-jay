@@ -44,24 +44,27 @@ namespace BlueJay.Systems
       var state = Keyboard.GetState();
 
       var items = _pressed.ToArray();
+      var shift = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift);
+      var ctrl = state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl);
+      var alt = state.IsKeyDown(Keys.LeftAlt) || state.IsKeyDown(Keys.RightAlt);
       for(var i = 0; i < items.Length; ++i)
       {
         var pair = items[i];
         var keyState = state[pair.Key];
         if (keyState == KeyState.Down && !pair.Value)
         {
-          _queue.DispatchEvent(new KeyboardDownEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
-          _queue.DispatchEvent(new KeyboardPressEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
+          _queue.DispatchEvent(new KeyboardDownEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock, Shift = shift, Ctrl = ctrl, Alt = alt });
+          _queue.DispatchEvent(new KeyboardPressEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock, Shift = shift, Ctrl = ctrl, Alt = alt });
           _pressed[pair.Key] = true;
         }
         else if (keyState == KeyState.Up && pair.Value)
         {
-          _queue.DispatchEvent(new KeyboardUpEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
+          _queue.DispatchEvent(new KeyboardUpEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock, Shift = shift, Ctrl = ctrl, Alt = alt });
           _pressed[pair.Key] = false;
         }
         else if (keyState == KeyState.Down && pair.Value)
         {
-          _queue.DispatchEvent(new KeyboardPressEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock });
+          _queue.DispatchEvent(new KeyboardPressEvent() { Key = pair.Key, CapsLock = state.CapsLock, NumLock = state.NumLock, Shift = shift, Ctrl = ctrl, Alt = alt });
         }
       }
     }

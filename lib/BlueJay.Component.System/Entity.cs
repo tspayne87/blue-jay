@@ -160,5 +160,10 @@ namespace BlueJay.Component.System
       return default(T);
     }
     #endregion
+
+    public virtual void Dispose()
+    {
+
+    }
   }
 }

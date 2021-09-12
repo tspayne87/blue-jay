@@ -49,15 +49,19 @@ namespace BlueJay.UI.EventListeners
     {
       // Iterate over all entities so we can find the entity we need to fire the click event on
       var entities = _layers[UIStatic.LayerName].Entities;
+      IEntity foundEntity = null;
       for (var i = entities.Count - 1; i >= 0; --i)
       {
         var entity = entities[i];
-        if (Contains(entity, evt.Data.Position))
+        if (entity.Active && Contains(entity, evt.Data.Position))
         {
-          _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position }, entity);
+          foundEntity = entity;
           break;
         }
       }
+
+      if (foundEntity != null)
+        _eventQueue.DispatchEvent(evt.Data, foundEntity);
     }
 
     /// <summary>

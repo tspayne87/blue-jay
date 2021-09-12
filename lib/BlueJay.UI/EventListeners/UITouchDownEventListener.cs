@@ -4,6 +4,7 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Touch;
+using BlueJay.UI.Services;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.UI.EventListeners
@@ -21,14 +22,21 @@ namespace BlueJay.UI.EventListeners
     private readonly EventQueue _eventQueue;
 
     /// <summary>
+    /// The UI Service for keeping track of globals
+    /// </summary>
+    private readonly UIService _service;
+
+    /// <summary>
     /// Constructor to build out the mouse move listener to interact with UI entities
     /// </summary>
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
-    public UITouchDownEventListener(LayerCollection layers, EventQueue eventQueue)
+    /// <param name="service">The UI Service for keeping track of globals</param>
+    public UITouchDownEventListener(LayerCollection layers, EventQueue eventQueue, UIService service)
     {
       _layers = layers;
       _eventQueue = eventQueue;
+      _service = service;
     }
 
     /// <summary>
@@ -49,14 +57,28 @@ namespace BlueJay.UI.EventListeners
     {
       // Iterate over all entities so we can find the entity we need to fire the click event on
       var entities = _layers[UIStatic.LayerName].Entities;
+      IEntity foundEntity = null;
       for (var i = entities.Count - 1; i >= 0; --i)
       {
         var entity = entities[i];
-        if (Contains(entity, evt.Data.Position))
+        if (entity.Active && Contains(entity, evt.Data.Position))
         {
-          _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position.ToPoint() }, entity);
+          foundEntity = entity;
           break;
         }
+      }
+
+      if (_service.FocusedEntity != null)
+      {
+        _eventQueue.DispatchEvent(new BlurEvent(), _service.FocusedEntity);
+        _service.FocusedEntity = null;
+      }
+      if (foundEntity != null)
+      {
+        _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position.ToPoint() }, foundEntity);
+        if (_service.FocusedEntity != foundEntity)
+          _eventQueue.DispatchEvent(new FocusEvent() { Position = evt.Data.Position.ToPoint() }, foundEntity);
+        _service.FocusedEntity = foundEntity;
       }
     }
 

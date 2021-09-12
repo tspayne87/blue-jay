@@ -1,4 +1,4 @@
-﻿using BlueJay.Content.App;
+﻿using BlueJay.Shared;
 using System;
 
 namespace BlueJay.App

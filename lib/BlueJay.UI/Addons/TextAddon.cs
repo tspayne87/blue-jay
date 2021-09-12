@@ -13,12 +13,18 @@ namespace BlueJay.UI.Addons
     public string Text { get; set; }
 
     /// <summary>
+    /// The text that will be used to render to the screen
+    /// </summary>
+    public string RenderText { get; set; }
+
+    /// <summary>
     /// Constructor to build out the text addon
     /// </summary>
     /// <param name="text">The default text</param>
     public TextAddon(string text)
     {
       Text = text;
+      RenderText = string.Empty;
     }
   }
 }
