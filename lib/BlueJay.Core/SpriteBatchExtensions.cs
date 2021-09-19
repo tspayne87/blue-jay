@@ -140,11 +140,8 @@ namespace BlueJay.Core
       var heightLength = (int)Math.Ceiling(innerHeight / (float)ninePatch.Break.Y);
       var widthLength = (int)Math.Ceiling(innerWidth / (float)ninePatch.Break.X);
 
-      // Draw four corners
-      spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint(), ninePatch.Break), ninePatch.TopLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-      spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, 0), ninePatch.Break), ninePatch.TopRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-      spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 1f);
-      spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+      var heightOffset = innerHeight % ninePatch.Break.Y;
+      var widthOffset = innerWidth % ninePatch.Break.X;
 
       // Draw middle of rectangle
       for (var y = 0; y < heightLength; ++y)
@@ -154,20 +151,65 @@ namespace BlueJay.Core
         // Fill in middle
         for (var x = 0; x < widthLength; ++x)
         {
-          spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(ninePatch.Break.X + (x * ninePatch.Break.X), yPos), ninePatch.Break), ninePatch.Middle, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+          var dest = new Rectangle(position.ToPoint() + new Point(ninePatch.Break.X + (x * ninePatch.Break.X), yPos), ninePatch.Break);
+          var source = ninePatch.Middle;
+          if (widthOffset > 0 && x == widthLength - 1)
+          {
+            dest.Width = widthOffset;
+            source.Width = widthOffset;
+          }
+
+          if (heightOffset > 0 && y == heightLength - 1)
+          {
+            dest.Height = heightOffset;
+            source.Height = heightOffset;
+          }
+
+          spriteBatch.Draw(ninePatch.Texture, dest, source, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
         }
 
         // Draw left and right lines
-        spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, yPos), ninePatch.Break), ninePatch.MiddleLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-        spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, yPos), ninePatch.Break), ninePatch.MiddleRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+        var leftDest = new Rectangle(position.ToPoint() + new Point(0, yPos), ninePatch.Break);
+        var leftSource = ninePatch.MiddleLeft;
+        if (heightOffset > 0 && y == heightLength - 1)
+        {
+          leftDest.Height = heightOffset;
+          leftSource.Height = heightOffset;
+        }
+        spriteBatch.Draw(ninePatch.Texture, leftDest, leftSource, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+
+        var rightDest = new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, yPos), ninePatch.Break);
+        var rightSource = ninePatch.MiddleRight;
+        if (heightOffset > 0 && y == heightLength - 1)
+        {
+          rightDest.Height = heightOffset;
+          rightSource.Height = heightOffset;
+        }
+        spriteBatch.Draw(ninePatch.Texture, rightDest, rightSource, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
       }
 
       // Draw top and bottom lines
       for (var i = 0; i < widthLength; ++i)
       {
         var xPos = ninePatch.Break.X + (i * ninePatch.Break.X);
-        spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(xPos, 0), ninePatch.Break), ninePatch.Top, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-        spriteBatch.Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(xPos, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.Bottom, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+
+        var topDest = new Rectangle(position.ToPoint() + new Point(xPos, 0), ninePatch.Break);
+        var topSource = ninePatch.Top;
+        if (widthOffset > 0 && i == widthLength - 1)
+        {
+          topDest.Width = widthOffset;
+          topSource.Width = widthOffset;
+        }
+        spriteBatch.Draw(ninePatch.Texture, topDest, topSource, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+
+        var bottomDest = new Rectangle(position.ToPoint() + new Point(xPos, height - ninePatch.Break.Y), ninePatch.Break);
+        var bottomSource = ninePatch.Bottom;
+        if (widthOffset > 0 && i == widthLength - 1)
+        {
+          bottomDest.Width = widthOffset;
+          bottomSource.Width = widthOffset;
+        }
+        spriteBatch.Draw(ninePatch.Texture, bottomDest, bottomSource, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
       }
 
       // Draw four corners
