@@ -97,7 +97,7 @@ namespace BlueJay.Shared.Components
         new DropdownItem() { Name = "Item 5", Id = 5 }
       });
       DropdownMenuStyle = new ReactiveStyle();
-      DropdownMenuStyle.NinePatch = new NinePatch(content.Load<Texture2D>("Sample_NinePatch"));
+      DropdownMenuStyle.NinePatch = new NinePatch(content.Load<Texture2D>("Dropdown_Background_Ninepatch"));
       DropdownMenuStyle.Padding = 13;
 
       DropdownHoverItemStyle = new ReactiveStyle();
