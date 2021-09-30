@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: https://www.monogame.net/wp-content/themes/monogame/images/monogamelogo.svg
+heroImage: ./BlueJay_Logo_10x.png
 tagline: Documentation for using the BlueJay Framework
 actionText: Getting Started →
 actionLink: /getting-started/
