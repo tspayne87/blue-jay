@@ -61,7 +61,10 @@ namespace BlueJay.UI.EventListeners
       }
 
       if (foundEntity != null)
+      {
         _eventQueue.DispatchEvent(evt.Data, foundEntity);
+        evt.StopPropagation();
+      }
     }
 
     /// <summary>
