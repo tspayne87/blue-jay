@@ -47,6 +47,7 @@ namespace BlueJay.UI.EventListeners
       if (_service.FocusedEntity != null)
       {
         _eventQueue.DispatchEvent(evt.Data, _service.FocusedEntity);
+        evt.StopPropagation();
       }
     }
   }

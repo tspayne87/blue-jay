@@ -75,6 +75,8 @@ namespace BlueJay.UI.EventListeners
       }
       if (foundEntity != null)
       {
+        _eventQueue.DispatchEvent(evt.Data, foundEntity);
+        evt.StopPropagation();
         _eventQueue.DispatchEvent(new SelectEvent() { Position = evt.Data.Position.ToPoint() }, foundEntity);
         if (_service.FocusedEntity != foundEntity)
           _eventQueue.DispatchEvent(new FocusEvent() { Position = evt.Data.Position.ToPoint() }, foundEntity);
