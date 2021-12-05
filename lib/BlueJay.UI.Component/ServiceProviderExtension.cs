@@ -31,7 +31,10 @@ namespace BlueJay.UI.Component
     public static IEntity AddUIComponent<T>(this IServiceProvider provider)
       where T : UIComponent
     {
-      return ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(), null, new ReactiveScope());
+      var entity = ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(out var instance), null, new ReactiveScope());
+      var collection = provider.GetRequiredService<UIComponentCollection>();
+      collection.Add(instance);
+      return entity;
     }
 
     /// <summary>
@@ -121,10 +124,10 @@ namespace BlueJay.UI.Component
     /// <typeparam name="T">The UI Component being generated</typeparam>
     /// <param name="serviceProvider">The service provider we need to process the component with</param>
     /// <returns>The root node of the UI component</returns>
-    internal static ElementNode ParseUIComponet<T>(this IServiceProvider serviceProvider)
+    internal static ElementNode ParseUIComponet<T>(this IServiceProvider serviceProvider, out UIComponent instance)
       where T : UIComponent
     {
-      return ParseUIComponet(serviceProvider, typeof(T), out var instance);
+      return ParseUIComponet(serviceProvider, typeof(T), out instance);
     }
 
     /// <summary>
