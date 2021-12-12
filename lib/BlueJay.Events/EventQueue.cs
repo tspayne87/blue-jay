@@ -58,10 +58,21 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    /// <param name="target">The target this callback should be attached to</param>
-    public void AddEventListener<T>(Func<T, bool> callback, object target = null)
+    public void AddEventListener<T>(Func<T, bool> callback)
     {
-      AddEventListener(new CallbackListener<T>(callback, target));
+      AddEventListener(new CallbackListener<T>(callback, null, false));
+    }
+
+    /// <summary>
+    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
+    /// with events that get dispatched
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <param name="target">The target this callback should be attached to</param>
+    public void AddEventListener<T>(Func<T, bool> callback, object target)
+    {
+      AddEventListener(new CallbackListener<T>(callback, target, true));
     }
 
     /// <summary>
