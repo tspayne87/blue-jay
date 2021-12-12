@@ -12,7 +12,7 @@ namespace BlueJay.Events
     /// <summary>
     /// The callback that should be processed when this is triggered
     /// </summary>
-    private readonly Func<T, bool> _callback;
+    private readonly Func<T, object, bool> _callback;
 
     /// <summary>
     /// If we should process the target instead of implicitly processing it with null
@@ -26,7 +26,7 @@ namespace BlueJay.Events
     /// <param name="callback">The callback that should be called on processing the event</param>
     /// <param name="processTarget">The target event that this event should trigger on</param>
     /// <param name="shouldProcessTarget">If we should process the target instead of implicitly processing it with null</param>
-    public CallbackListener(Func<T, bool> callback, object processTarget, bool shouldProcessTarget)
+    public CallbackListener(Func<T, object, bool> callback, object processTarget, bool shouldProcessTarget)
     {
       _callback = callback;
       _shouldProcessTarget = shouldProcessTarget;
@@ -44,7 +44,7 @@ namespace BlueJay.Events
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<T> evt)
     {
-      if (!_callback(evt.Data))
+      if (!_callback(evt.Data, evt.Target))
       {
         evt.StopPropagation();
       }
