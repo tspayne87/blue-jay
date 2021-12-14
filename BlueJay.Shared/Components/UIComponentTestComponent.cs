@@ -18,7 +18,8 @@ namespace BlueJay.Shared.Components
 <Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <TextInput Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 5"" />
+  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 3; ColumnOffset: 3"" />
+  <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
   <Container :if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
@@ -60,6 +61,11 @@ namespace BlueJay.Shared.Components
     public readonly ReactiveProperty<int> Slider;
 
     /// <summary>
+    /// The text input value that is currently being set by the input component
+    /// </summary>
+    public readonly ReactiveProperty<string> TextInput;
+
+    /// <summary>
     /// The model value for the dropdown
     /// </summary>
     public readonly ReactiveProperty<DropdownItem> Dropdown;
@@ -88,6 +94,7 @@ namespace BlueJay.Shared.Components
       Switch = new ReactiveProperty<bool>(false);
       Slider = new ReactiveProperty<int>(0);
       Dropdown = new ReactiveProperty<DropdownItem>(null);
+      TextInput = new ReactiveProperty<string>("");
       DropdownItems = new ReactiveCollection<DropdownItem>(new List<DropdownItem>()
       {
         new DropdownItem() { Name = "Item 1", Id = 1 },
