@@ -14,7 +14,7 @@ namespace BlueJay.UI.Component.Interactivity
   /// </summary>
   [View(@"
 <Container Style=""TextAlign: Left"" @Focus=""OnFocus()"" @Blur=""OnBlur()"" @KeyboardUp=""OnKeyboardUp($event)"">
-  {{Model}}
+  <Container :Style=""ContainerStyle"" @Focus=""OnFocus()"" @Blur=""OnBlur()"" @KeyboardUp=""OnKeyboardUp($event)"">{{Model}}</Container>
   <Container :if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60"" :Style=""CursorStyle"" />
 </Container>
     ")]
@@ -43,6 +43,11 @@ namespace BlueJay.UI.Component.Interactivity
     public readonly ReactiveStyle CursorStyle;
 
     /// <summary>
+    /// The container style
+    /// </summary>
+    public readonly ReactiveStyle ContainerStyle;
+
+    /// <summary>
     /// If the cursor should be shown
     /// </summary>
     public readonly ReactiveProperty<bool> ShowCursor;
@@ -56,6 +61,7 @@ namespace BlueJay.UI.Component.Interactivity
       Model = new ReactiveProperty<string>("");
       ShowCursor = new ReactiveProperty<bool>(false);
       CursorStyle = new ReactiveStyle();
+      ContainerStyle = new ReactiveStyle();
       CursorStyle.Height = 0;
       CursorStyle.TopOffset = 0;
       CursorStyle.LeftOffset = 0;
@@ -110,6 +116,7 @@ namespace BlueJay.UI.Component.Interactivity
     public override void Mounted()
     {
       CursorStyle.Height = (int)Root.MeasureString(" ", _fonts).Y;
+      UpdateContainerStyle();
     }
 
     /// <summary>
@@ -151,6 +158,15 @@ namespace BlueJay.UI.Component.Interactivity
       CursorStyle.LeftOffset = (int)xOffset.X;
 
       _position = newPosition;
+      UpdateContainerStyle();
+    }
+
+    /// <summary>
+    /// Helper method is meant to update the container style
+    /// </summary>
+    private void UpdateContainerStyle()
+    {
+      ContainerStyle.Height = string.IsNullOrWhiteSpace(Model.Value) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
     }
   }
 }
