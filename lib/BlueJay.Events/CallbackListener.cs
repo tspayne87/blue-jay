@@ -33,6 +33,7 @@ namespace BlueJay.Events
       ProcessTarget = processTarget;
     }
 
+    /// <inheritdoc />
     public override bool ShouldProcess(IEvent evt)
     {
       return !_shouldProcessTarget || ProcessTarget == evt.Target;

@@ -45,11 +45,13 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="handler">The handler when the event is fired</param>
-    public void AddEventListener<T>(IEventListener<T> handler)
+    public IDisposable AddEventListener<T>(IEventListener<T> handler)
     {
       var name = typeof(T).Name;
       if (!_handlers.ContainsKey(name)) _handlers[name] = new List<IEventListener>();
       _handlers[name].Add(handler);
+
+      return new Unsubscriber(_handlers, handler, name);
     }
 
     /// <summary>
@@ -58,9 +60,9 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public void AddEventListener<T>(Func<T, bool> callback)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback)
     {
-      AddEventListener(new CallbackListener<T>((x, t) => callback(x), null, false));
+      return AddEventListener (new CallbackListener<T>((x, t) => callback(x), null, false));
     }
 
     /// <summary>
@@ -69,21 +71,9 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public void AddEventListener<T>(Func<T, object, bool> callback)
+    public IDisposable AddEventListener<T>(Func<T, object, bool> callback)
     {
-      AddEventListener(new CallbackListener<T>(callback, null, false));
-    }
-
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    /// <param name="target">The target this callback should be attached to</param>
-    public void AddEventListener<T>(Func<T, bool> callback, object target)
-    {
-      AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true));
+      return AddEventListener(new CallbackListener<T>(callback, null, false));
     }
 
     /// <summary>
@@ -93,9 +83,21 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    public void AddEventListener<T>(Func<T, object, bool> callback, object target)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback, object target)
     {
-      AddEventListener(new CallbackListener<T>(callback, target, true));
+      return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true));
+    }
+
+    /// <summary>
+    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
+    /// with events that get dispatched
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <param name="target">The target this callback should be attached to</param>
+    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target)
+    {
+      return AddEventListener(new CallbackListener<T>(callback, target, true));
     }
 
     /// <summary>
@@ -152,6 +154,49 @@ namespace BlueJay.Events
       while (_next.Count > 0)
       {
         _current.Enqueue(_next.Dequeue());
+      }
+    }
+
+    /// <summary>
+    /// The disposable class that is meant remove a handle from all the handlers
+    /// </summary>
+    private class Unsubscriber : IDisposable
+    {
+      /// <summary>
+      /// The handlers that exist in the system
+      /// </summary>
+      private readonly Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
+
+      /// <summary>
+      /// The current handler we will need to remove when the time comes
+      /// </summary>
+      private readonly IEventListener _handler;
+
+      /// <summary>
+      /// The current handler key we are working with
+      /// </summary>
+      private readonly string _key;
+
+      /// <summary>
+      /// Constructor meant to inject various pieces to find out where to remove certain things
+      /// </summary>
+      /// <param name="handlers"></param>
+      /// <param name="handler"></param>
+      /// <param name="key"></param>
+      internal Unsubscriber(Dictionary<string, List<IEventListener>> handlers, IEventListener handler, string key)
+      {
+        _handlers = handlers;
+        _handler = handler;
+        _key = key;
+      }
+
+      /// <summary>
+      /// Dispose of the handler so that we can free up resources and not need to have to worry about his being created
+      /// </summary>
+      public void Dispose()
+      {
+        if (_handlers.ContainsKey(_key) && _handlers[_key].Contains(_handler))
+          _handlers[_key].Remove(_handler);
       }
     }
   }
