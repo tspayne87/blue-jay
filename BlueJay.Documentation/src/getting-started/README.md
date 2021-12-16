@@ -60,8 +60,8 @@ to allow for the *Singleton* objects to be manipulated on a global scale in the 
       var fontTexture = _contentManager.Load<Texture2D>("Bitmap-Font");
       serviceProvider.AddTextureFont("Default", new TextureFont(fontTexture, 3, 24));
 
-      // Add Views for the system
-      serviceProvider.AddView<ExampleView>();
+      // Set the view to load when starting the game
+      serviceProvider.SetStartView<ExampleView>();
     }
   }
 ```
