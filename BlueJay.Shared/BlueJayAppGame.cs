@@ -40,9 +40,7 @@ namespace BlueJay.Shared
       serviceProvider.AddTextureFont("Default", new TextureFont(fontTexture, 3, 24));
 
       // Add Views
-      serviceProvider.AddView<TitleView>();
-      serviceProvider.AddView<BreakOutView>();
-      serviceProvider.AddView<UIComponentView>();
+      serviceProvider.SetStartView<TitleView>();
     }
   }
 }

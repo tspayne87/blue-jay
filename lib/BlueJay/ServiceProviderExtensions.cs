@@ -95,17 +95,12 @@ namespace BlueJay
     /// </summary>
     /// <typeparam name="T">The current object we are adding to the view collection</typeparam>
     /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
-    /// <param name="parameters">The constructor parameters that do not exists in D</param>
     /// <returns>Will return the system that was created and added to the collection</returns>
-    public static T AddView<T>(this IServiceProvider provider, params object[] parameters)
+    public static T SetStartView<T>(this IServiceProvider provider)
       where T : IView
     {
-      var item = ActivatorUtilities.CreateInstance<T>(provider, parameters);
-      item.Initialize(provider.GetRequiredService<IServiceProvider>());
-
-      provider.GetRequiredService<IViewCollection>()
-        .Add(item);
-      return item;
+      return provider.GetRequiredService<IViewCollection>()
+        .SetCurrent<T>();
     }
 
     /// <summary>
@@ -139,11 +134,11 @@ namespace BlueJay
     /// <typeparam name="K">The event we are wanting to add the queue to</typeparam>
     /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
     /// <param name="parameters">The constructor parameters that do not exists in D</param>
-    public static void AddEventListener<T, K>(this IServiceProvider provider, params object[] parameters)
+    public static IDisposable AddEventListener<T, K>(this IServiceProvider provider, params object[] parameters)
       where T : IEventListener<K>
     {
       var eventQueue = provider.GetRequiredService<EventQueue>();
-      eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<T>(provider, parameters));
+      return eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<T>(provider, parameters));
     }
 
     /// <summary>
@@ -153,10 +148,10 @@ namespace BlueJay
     /// <typeparam name="K">The event we are wanting to add the queue to</typeparam>
     /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
     /// <param name="parameters">The constructor parameters that do not exists in D</param>
-    public static void AddEventListener<T>(this IServiceProvider provider, Func<T, bool> callback, object target = null)
+    public static IDisposable AddEventListener<T>(this IServiceProvider provider, Func<T, bool> callback, object target = null)
     {
       var eventQueue = provider.GetRequiredService<EventQueue>();
-      eventQueue.AddEventListener(callback, target);
+      return eventQueue.AddEventListener(callback, target);
     }
   }
 }
