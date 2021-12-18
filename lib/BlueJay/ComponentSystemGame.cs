@@ -111,5 +111,32 @@ namespace BlueJay
 
       base.Draw(gameTime);
     }
+
+    /// <inheritdoc />
+    protected override void OnActivated(object sender, EventArgs args)
+    {
+      _serviceProvider?.GetRequiredService<IViewCollection>()
+        .Current?.Activate();
+
+      base.OnActivated(sender, args);
+    }
+
+    /// <inheritdoc />
+    protected override void OnDeactivated(object sender, EventArgs args)
+    {
+      _serviceProvider.GetRequiredService<IViewCollection>()
+        .Current?.Deactivate();
+
+      base.OnDeactivated(sender, args);
+    }
+
+    /// <inheritdoc />
+    protected override void OnExiting(object sender, EventArgs args)
+    {
+      _serviceProvider.GetRequiredService<IViewCollection>()
+        .Current?.Exit();
+
+      base.OnExiting(sender, args);
+    }
   }
 }
