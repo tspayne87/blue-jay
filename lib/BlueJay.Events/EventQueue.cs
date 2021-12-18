@@ -141,6 +141,21 @@ namespace BlueJay.Events
     public void Exit()
     {
       ProcessEvent(new Event<ExitEvent>(new ExitEvent()));
+      Tick(true);
+      Update();
+    }
+
+    /// <summary>
+    /// Helper method to push whatever is in the defered queue into the current queue
+    /// </summary>
+    public void Tick(bool excludeUpdate = false)
+    {
+      if (!excludeUpdate)
+        DispatchEvent(new UpdateEvent());
+      while (_next.Count > 0)
+      {
+        _current.Enqueue(_next.Dequeue());
+      }
     }
 
     /// <summary>
@@ -165,18 +180,6 @@ namespace BlueJay.Events
             }
           }
         }
-      }
-    }
-
-    /// <summary>
-    /// Helper method to push whatever is in the defered queue into the current queue
-    /// </summary>
-    public void Tick()
-    {
-      DispatchEvent(new UpdateEvent());
-      while (_next.Count > 0)
-      {
-        _current.Enqueue(_next.Dequeue());
       }
     }
 
