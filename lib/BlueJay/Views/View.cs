@@ -61,6 +61,30 @@ namespace BlueJay.Views
     }
 
     /// <summary>
+    /// Handle the activate event for the event queue
+    /// </summary>
+    public void Activate()
+    {
+      ServiceProvider.GetRequiredService<IEventProcessor>().Activate();
+    }
+
+    /// <summary>
+    /// Handle the deactivate event for the event queue
+    /// </summary>
+    public void Deactivate()
+    {
+      ServiceProvider.GetRequiredService<IEventProcessor>().Deactivate();
+    }
+
+    /// <summary>
+    /// Handle the exit event for the event queue
+    /// </summary>
+    public void Exit()
+    {
+      ServiceProvider.GetRequiredService<IEventProcessor>().Exit();
+    }
+
+    /// <summary>
     /// The enter method is meant to trigger when this view is set as the current
     /// </summary>
     public virtual void Enter() { }

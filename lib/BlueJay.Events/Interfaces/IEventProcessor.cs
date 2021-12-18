@@ -14,5 +14,20 @@
     /// The process method that will handle the draw event
     /// </summary>
     void Draw();
+
+    /// <summary>
+    /// Handle the activate event for the event queue
+    /// </summary>
+    void Activate();
+
+    /// <summary>
+    /// Handle the deactivate event for the event queue
+    /// </summary>
+    void Deactivate();
+
+    /// <summary>
+    /// Handle the exit event for the event queue
+    /// </summary>
+    void Exit();
   }
 }

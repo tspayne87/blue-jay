@@ -33,6 +33,21 @@ namespace BlueJay.Interfaces
     /// The update method is meant to update data to the screen
     /// </summary>
     void Update();
+
+    /// <summary>
+    /// Handle the activate event for the event queue
+    /// </summary>
+    void Activate();
+
+    /// <summary>
+    /// Handle the deactivate event for the event queue
+    /// </summary>
+    void Deactivate();
+
+    /// <summary>
+    /// Handle the exit event for the event queue
+    /// </summary>
+    void Exit();
   }
 
   /// <summary>

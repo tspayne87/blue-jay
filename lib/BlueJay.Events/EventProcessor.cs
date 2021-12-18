@@ -38,5 +38,29 @@ namespace BlueJay.Events
     {
       _queue.Draw();
     }
+
+    /// <summary>
+    /// Handle the activate event for the event queue
+    /// </summary>
+    public void Activate()
+    {
+      _queue.Activate();
+    }
+
+    /// <summary>
+    /// Handle the deactivate event for the event queue
+    /// </summary>
+    public void Deactivate()
+    {
+      _queue.Deactivate();
+    }
+
+    /// <summary>
+    /// Handle the exit event for the event queue
+    /// </summary>
+    public void Exit()
+    {
+      _queue.Exit();
+    }
   }
 }

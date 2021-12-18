@@ -107,23 +107,7 @@ namespace BlueJay.Events
     {
       while (_current.Count > 0)
       {
-        var item = _current.Dequeue();
-        if (_handlers.ContainsKey(item.Name))
-        {
-          for (var i = 0; i < _handlers[item.Name].Count; ++i)
-          {
-            if (_handlers[item.Name][i].ShouldProcess(item))
-            {
-              _handlers[item.Name][i].Process(item);
-
-              // Break out of the look so we do not process any more handlers since stop propagation was called
-              if (item.IsComplete)
-              {
-                break;
-              }
-            }
-          }
-        }
+        ProcessEvent(_current.Dequeue());
       }
     }
 
@@ -132,7 +116,40 @@ namespace BlueJay.Events
     /// </summary>
     public void Draw()
     {
-      var evt = new Event<DrawEvent>(new DrawEvent());
+      ProcessEvent(new Event<DrawEvent>(new DrawEvent()));
+    }
+
+    /// <summary>
+    /// Handle the activate event for the event queue
+    /// </summary>
+    public void Activate()
+    {
+      ProcessEvent(new Event<ActivateEvent>(new ActivateEvent()));
+    }
+
+    /// <summary>
+    /// Handle the deactivate event for the event queue
+    /// </summary>
+    public void Deactivate()
+    {
+      ProcessEvent(new Event<DeactivateEvent>(new DeactivateEvent()));
+    }
+
+    /// <summary>
+    /// Handle the exit event for the event queue
+    /// </summary>
+    public void Exit()
+    {
+      ProcessEvent(new Event<ExitEvent>(new ExitEvent()));
+    }
+
+    /// <summary>
+    /// Process and event and pass that details to the handlers
+    /// </summary>
+    /// <typeparam name="T">The type of event we need to process</typeparam>
+    /// <param name="evt">The event we need to process</param>
+    private void ProcessEvent(IEvent evt)
+    {
       if (_handlers.ContainsKey(evt.Name))
       {
         for (var i = 0; i < _handlers[evt.Name].Count; ++i)
@@ -140,6 +157,12 @@ namespace BlueJay.Events
           if (_handlers[evt.Name][i].ShouldProcess(evt))
           {
             _handlers[evt.Name][i].Process(evt);
+
+            // Break out of the look so we do not process any more handlers since stop propagation was called
+            if (evt.IsComplete)
+            {
+              break;
+            }
           }
         }
       }
