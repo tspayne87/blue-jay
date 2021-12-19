@@ -1,6 +1,8 @@
 ﻿using BlueJay.Component.System.Interfaces;
+using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
 using BlueJay.UI.Component.Reactivity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,6 +13,8 @@ namespace BlueJay.UI.Component
   /// </summary>
   public abstract class UIComponent
   {
+    private List<IDisposable> _subscriptions;
+
     /// <summary>
     /// The root entity that was created for this UI component
     /// </summary>
@@ -32,13 +36,15 @@ namespace BlueJay.UI.Component
     internal string Identifier { get; set; }
 
     /// <summary>
-    /// Initialization method is menat to set all the basic properties on this component
+    /// Initialization method is meant to set all the basic properties on this component
     /// </summary>
     /// <param name="parent">The parent component we are processing</param>
     internal void Initialize(UIComponent parent, List<ElementEvent> events)
     {
       Parent = parent;
       Events = events;
+
+      ClearSubscriptions();
     }
 
     /// <summary>
@@ -61,6 +67,40 @@ namespace BlueJay.UI.Component
         return (bool)evt.Callback(new ReactiveScope(new Dictionary<string, object>() { { "event", data } }));
       }
       return true;
+    }
+
+    /// <summary>
+    /// Helper method is meant to process watch expressions on a reactive entity
+    /// </summary>
+    internal void ProcessWatch()
+    {
+      var items = GetType().GetMethods()
+        .Select(x => new { Method = x, WatchProp = x.GetCustomAttributes(typeof(WatchAttribute), false).FirstOrDefault() as WatchAttribute })
+        .Where(x => x.WatchProp != null);
+
+      foreach (var item in items)
+      {
+        var field = GetType().GetField(item.WatchProp.Prop);
+        if (field.IsInitOnly && typeof(IReactiveProperty).IsAssignableFrom(field.FieldType))
+        {
+          var reactive = field.GetValue(this) as IReactiveProperty;
+          if (reactive != null)
+          {
+            _subscriptions.Add(reactive.Subscribe(x => item.Method.Invoke(this, new object[] { x.Data })));
+          }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Clear subscriptions so we can clear up subscriptions if this entity is removed
+    /// </summary>
+    private void ClearSubscriptions()
+    {
+      if (_subscriptions == null) _subscriptions = new List<IDisposable>();
+      foreach (var subscription in _subscriptions)
+        subscription.Dispose();
+      _subscriptions.Clear();
     }
   }
 }

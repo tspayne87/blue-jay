@@ -18,8 +18,9 @@ namespace BlueJay.Shared.Components
 <Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 3; ColumnOffset: 3"" />
+  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" />
   <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
+  <Button @Select=""ClearTextInput()"">Clear</Button>
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
   <Container :if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
@@ -153,6 +154,12 @@ namespace BlueJay.Shared.Components
     {
       if (DropdownItems.Count > 0)
         DropdownItems.RemoveAt(_rand.Next(0, DropdownItems.Count));
+      return true;
+    }
+
+    public bool ClearTextInput()
+    {
+      TextInput.Value = "";
       return true;
     }
 
