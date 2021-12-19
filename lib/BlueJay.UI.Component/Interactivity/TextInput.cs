@@ -6,6 +6,7 @@ using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace BlueJay.UI.Component.Interactivity
 {
@@ -24,6 +25,11 @@ namespace BlueJay.UI.Component.Interactivity
     /// The collection of fonts that are used to calculate the minimum height
     /// </summary>
     private readonly FontCollection _fonts;
+
+    /// <summary>
+    /// The list of subscripts we will need to dispose of after this input is unmounted
+    /// </summary>
+    private readonly List<IDisposable> _subscriptions;
 
     /// <summary>
     /// The current position of the cursor in the string
@@ -68,6 +74,7 @@ namespace BlueJay.UI.Component.Interactivity
 
       _fonts = fonts;
       _position = 0;
+      _subscriptions = new List<IDisposable>();
     }
 
     /// <summary>
@@ -116,7 +123,6 @@ namespace BlueJay.UI.Component.Interactivity
     public override void Mounted()
     {
       CursorStyle.Height = (int)Root.MeasureString(" ", _fonts).Y;
-      UpdateContainerStyle();
     }
 
     /// <summary>
@@ -141,6 +147,16 @@ namespace BlueJay.UI.Component.Interactivity
     }
 
     /// <summary>
+    /// Helper method is meant to watch on the model reactive property and make changes to it when things are updated
+    /// </summary>
+    /// <param name="model">The new model being added</param>
+    [Watch(nameof(Model))]
+    public void OnModelUpdate(string model)
+    {
+      ContainerStyle.Height = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
+    }
+
+    /// <summary>
     /// Helper method is meant to calculate the new position of the cursor in the string itself
     /// </summary>
     /// <param name="newPosition">The new position we need to process for</param>
@@ -158,15 +174,6 @@ namespace BlueJay.UI.Component.Interactivity
       CursorStyle.LeftOffset = (int)xOffset.X;
 
       _position = newPosition;
-      UpdateContainerStyle();
-    }
-
-    /// <summary>
-    /// Helper method is meant to update the container style
-    /// </summary>
-    private void UpdateContainerStyle()
-    {
-      ContainerStyle.Height = string.IsNullOrWhiteSpace(Model.Value) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
     }
   }
 }

@@ -274,7 +274,10 @@ namespace BlueJay.UI.Component
         ProcessElementNode(provider, eventQueue, graphics, child, entity, scope);
 
       if (isRoot)
+      {
         node.Instance.Mounted();
+        node.Instance.ProcessWatch();
+      }
       return entity;
     }
 
