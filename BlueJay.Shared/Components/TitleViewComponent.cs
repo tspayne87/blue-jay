@@ -18,7 +18,7 @@ namespace BlueJay.Shared.Components
   <Button Style=""ColumnOffset: 1"" @Select=""OnTetrisClick()"">{{TetrisTitle}}</Button>
   <Button Style=""ColumnSpan: 3"" @Select=""OnUIComponentClick()"">{{UIComponentTitle}}</Button>
 </Container>
-    ")]
+  ")]
   [Component(typeof(Button))]
   public class TitleViewComponent : UIComponent
   {

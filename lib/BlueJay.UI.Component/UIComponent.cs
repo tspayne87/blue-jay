@@ -62,9 +62,10 @@ namespace BlueJay.UI.Component
     public bool Emit<T>(string eventName, T data)
     {
       var evt = Events.FirstOrDefault(x => x.Name == eventName);
-      if (evt != null)
+      var reactiveRoot = Root as ReactiveEntity;
+      if (reactiveRoot != null && evt != null)
       {
-        return (bool)evt.Callback(new ReactiveScope(new Dictionary<string, object>() { { "event", data } }));
+        return ElementHelper.InvokeEvent(evt, reactiveRoot.Scope, data);
       }
       return true;
     }

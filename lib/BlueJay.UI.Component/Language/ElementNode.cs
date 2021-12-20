@@ -150,6 +150,11 @@ namespace BlueJay.UI.Component.Language
     /// If this event should be put in the global scope
     /// </summary>
     public bool IsGlobal { get; set; }
+
+    /// <summary>
+    /// What type of modifier you want to use for this event process
+    /// </summary>
+    public string Modifier { get; set; }
   }
 
   /// <summary>

@@ -6,7 +6,6 @@ using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 
 namespace BlueJay.UI.Component.Interactivity
 {
@@ -14,8 +13,8 @@ namespace BlueJay.UI.Component.Interactivity
   /// Text input to give inputs for string input
   /// </summary>
   [View(@"
-<Container Style=""TextAlign: Left"" @Focus=""OnFocus()"" @Blur=""OnBlur()"" @KeyboardUp=""OnKeyboardUp($event)"">
-  <Container :Style=""ContainerStyle"" @Focus=""OnFocus()"" @Blur=""OnBlur()"" @KeyboardUp=""OnKeyboardUp($event)"">{{Model}}</Container>
+<Container Style=""TextAlign: Left"" @Focus=""OnFocus($event)"" @Blur=""OnBlur($event)"" @KeyboardUp=""OnKeyboardUp($event)"">
+  <Container :Style=""ContainerStyle"" @Focus=""OnFocus($event)"" @Blur=""OnBlur($event)"" @KeyboardUp=""OnKeyboardUp($event)"">{{Model}}</Container>
   <Container :if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60"" :Style=""CursorStyle"" />
 </Container>
     ")]
@@ -25,11 +24,6 @@ namespace BlueJay.UI.Component.Interactivity
     /// The collection of fonts that are used to calculate the minimum height
     /// </summary>
     private readonly FontCollection _fonts;
-
-    /// <summary>
-    /// The list of subscripts we will need to dispose of after this input is unmounted
-    /// </summary>
-    private readonly List<IDisposable> _subscriptions;
 
     /// <summary>
     /// The current position of the cursor in the string
@@ -74,7 +68,6 @@ namespace BlueJay.UI.Component.Interactivity
 
       _fonts = fonts;
       _position = 0;
-      _subscriptions = new List<IDisposable>();
     }
 
     /// <summary>
@@ -84,18 +77,15 @@ namespace BlueJay.UI.Component.Interactivity
     /// <returns>Will return true to continue propegation</returns>
     public bool OnKeyboardUp(KeyboardUpEvent evt)
     {
+      Emit("KeyboardUp", evt);
       switch (evt.Key)
       {
         case Keys.Back:
-          if (Model.Value.Length > 0)
+          if (Model.Value.Length > 0 && _position > 0)
           {
-            Model.Value = Model.Value.Splice(_position - 1, 1);
-            UpdatePosition(_position - 1);
+            UpdatePosition(Math.Max(_position - 1, 0));
+            Model.Value = Model.Value.Splice(_position, 1);
           }
-          break;
-        case Keys.Enter:
-          Model.Value = Model.Value.Splice(_position, 0, '\n');
-          UpdatePosition(_position + 1);
           break;
         case Keys.Left:
           UpdatePosition(Math.Max(_position - 1, 0));
@@ -129,8 +119,9 @@ namespace BlueJay.UI.Component.Interactivity
     /// When the input is focused need to show the cursor
     /// </summary>
     /// <returns>Will return true to continue propegation</returns>
-    public bool OnFocus()
+    public bool OnFocus(FocusEvent evt)
     {
+      Emit("Focus", evt);
       UpdatePosition(Model.Value.Length);
       ShowCursor.Value = true;
       return true;
@@ -140,8 +131,9 @@ namespace BlueJay.UI.Component.Interactivity
     /// When the input is not been unfocused
     /// </summary>
     /// <returns>Will return true to continue propegation</returns>
-    public bool OnBlur()
+    public bool OnBlur(BlurEvent evt)
     {
+      Emit("Blur", evt);
       ShowCursor.Value = false;
       return true;
     }
@@ -154,6 +146,11 @@ namespace BlueJay.UI.Component.Interactivity
     public void OnModelUpdate(string model)
     {
       ContainerStyle.Height = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
+
+      if (Model.Value.Length < _position)
+      {
+        UpdatePosition(Model.Value.Length);
+      }
     }
 
     /// <summary>

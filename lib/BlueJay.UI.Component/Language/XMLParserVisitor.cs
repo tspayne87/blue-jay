@@ -242,7 +242,12 @@ namespace BlueJay.UI.Component.Language
       var name = context.GetChild(1).GetText();
       var expression = context.GetChild(context.ChildCount - 1).GetText();
       var result = _serviceProvider.ParseExpression(expression.Substring(1, expression.Length - 2), _intance);
-      return new ElementEvent() { Name = name, Callback = result.Callback, IsGlobal = context.ChildCount == 6 };
+      if (context.ChildCount == 6)
+      {
+        var modifier = context.GetChild(3).GetText();
+        return new ElementEvent() { Name = name, Callback = result.Callback, IsGlobal = modifier.Equals("Global"), Modifier = modifier };
+      }
+      return new ElementEvent() { Name = name, Callback = result.Callback };
     }
 
     /// <summary>
