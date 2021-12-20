@@ -27,7 +27,7 @@ basicAttribute      : NAME EQUALS STRING
                     ;
 bindAttribute       : COLON NAME EQUALS STRING
                     ;
-eventAttribute      : AT NAME (DOT GLOBAL)? EQUALS STRING
+eventAttribute      : AT NAME (DOT (GLOBAL | NAME))? EQUALS STRING
                     ;
 content             : chardata
                     | slotElement

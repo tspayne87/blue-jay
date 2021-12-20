@@ -18,7 +18,7 @@ namespace BlueJay.Shared.Components
 <Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" />
+  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
   <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 

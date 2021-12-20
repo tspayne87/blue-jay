@@ -14,9 +14,11 @@ using BlueJay.UI.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using static BlueJay.Events.Mouse.MouseEvent;
 
 namespace BlueJay.UI.Component
 {
@@ -293,43 +295,27 @@ namespace BlueJay.UI.Component
       switch (evt.Name)
       {
         case "Select":
-          provider.AddEventListener<SelectEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<SelectEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
         case "Blur":
-          provider.AddEventListener<BlurEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<BlurEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
         case "Focus":
-          provider.AddEventListener<FocusEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<FocusEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
         case "KeyboardUp":
-          provider.AddEventListener<KeyboardUpEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<KeyboardUpEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
         case "MouseDown":
-          provider.AddEventListener<MouseDownEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<MouseDownEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
         case "MouseMove":
-          provider.AddEventListener<MouseMoveEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<MouseMoveEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
         case "MouseUp":
-          provider.AddEventListener<MouseUpEvent>(x => InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
+          provider.AddEventListener<MouseUpEvent>(x => ElementHelper.InvokeEvent(evt, scope, x), evt.IsGlobal ? null : entity);
           break;
       }
-    }
-
-    /// <summary>
-    /// Internal method is meant to call the callback lambda in the event prop
-    /// </summary>
-    /// <typeparam name="T">The type of object that is being processed</typeparam>
-    /// <param name="evt">The event prop we need to call the callback from</param>
-    /// <param name="scope">The current scope of the event</param>
-    /// <param name="obj">The object we are parsing</param>
-    /// <returns>Will return the result which will determine if propegation needs to continue</returns>
-    internal static bool InvokeEvent<T>(ElementEvent evt, ReactiveScope scope, T obj)
-    {
-      scope[PropNames.Event] = obj;
-      var result = (bool)evt.Callback(scope);
-      scope.Remove(PropNames.Event);
-      return result;
     }
 
     /// <summary>
