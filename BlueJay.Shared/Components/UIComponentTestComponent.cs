@@ -168,6 +168,12 @@ namespace BlueJay.Shared.Components
       return item?.ToString() ?? string.Empty;
     }
 
+    [Watch(nameof(Dropdown))]
+    public void OnDropdownChange(DropdownItem item)
+    {
+      TextInput.Value = item?.Name ?? string.Empty;
+    }
+
     /// <summary>
     /// A dropdown item for the dropdown input
     /// </summary>

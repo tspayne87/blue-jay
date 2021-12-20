@@ -13,7 +13,7 @@ namespace BlueJay.UI.Component
   /// </summary>
   public abstract class UIComponent
   {
-    private List<IDisposable> _subscriptions;
+    private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
     /// <summary>
     /// The root entity that was created for this UI component
@@ -98,7 +98,6 @@ namespace BlueJay.UI.Component
     /// </summary>
     private void ClearSubscriptions()
     {
-      if (_subscriptions == null) _subscriptions = new List<IDisposable>();
       foreach (var subscription in _subscriptions)
         subscription.Dispose();
       _subscriptions.Clear();
