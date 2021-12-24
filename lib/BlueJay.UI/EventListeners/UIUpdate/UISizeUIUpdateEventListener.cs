@@ -51,19 +51,29 @@ namespace BlueJay.UI.EventListeners.UIUpdate
 
       if (sa.CalculatedBounds.Width == 0)
       {
+        /// Load addons
         var la = entity.GetAddon<LineageAddon>();
         var psa = la.Parent?.GetAddon<StyleAddon>();
 
+        /// Get the parents grid columns
         var pGridColumn = psa?.CurrentStyle.GridColumns ?? 1;
+
+        /// Get the parents grid column gap
         var pGap = psa?.CurrentStyle.ColumnGap ?? Point.Zero;
+
+        /// Get the amount of columns this element should span
         var span = Math.Min(sa.CurrentStyle.ColumnSpan, pGridColumn);
 
+        /// Calculate the parents width/height
         var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
         var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
-        var cWidth = (pWidth / pGridColumn) - ((pGridColumn - 1) * pGap.X);
-        var fWidth = (cWidth * span) + ((span - 1) * pGap.X);
 
-        sa.CalculatedBounds.X = (pWidth - (cWidth * pGridColumn)) / pGridColumn;
+        /// Take the parent width and grid columns to determine the width we should start with
+        /// Next we want to get the gaps between the spaces so we have even grid columns between each other
+        var cWidth = (pWidth - ((pGridColumn - 1) * pGap.X)) / pGridColumn;
+
+        /// Calculate the field width based on the span of the column and the width of each column
+        var fWidth = (cWidth * span) + ((span - 1) * pGap.X);
 
         // Process Height Properties
         if (sa.CurrentStyle.Height != null) sa.CalculatedBounds.Height = sa.CurrentStyle.Height.Value;

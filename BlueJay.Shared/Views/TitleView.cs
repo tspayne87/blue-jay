@@ -5,6 +5,7 @@ using BlueJay.UI;
 using BlueJay.Shared.Components;
 using BlueJay.Common.Systems;
 using BlueJay.UI.Component;
+using BlueJay.UI.Systems;
 
 namespace BlueJay.Shared.Views
 {
@@ -29,6 +30,7 @@ namespace BlueJay.Shared.Views
 
       serviceProvider.AddSystem<RenderingSystem>();
       serviceProvider.AddSystem<FPSSystem>("Default");
+      serviceProvider.AddSystem<DebugBoundingBoxSystem>();
 
       serviceProvider.AddUIComponent<TitleViewComponent>();
     }

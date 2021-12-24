@@ -54,6 +54,7 @@ namespace BlueJay.UI
       provider.AddEventListener<UISizeUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UITextUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIHeightUIUpdateEventListener, UIUpdateEvent>();
+      provider.AddEventListener<UITemplateUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIPositionUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIBoundsTriggerUIUpdateEventListener, UIUpdateEvent>();
       

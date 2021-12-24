@@ -69,14 +69,14 @@ namespace BlueJay.UI.Systems
         _batchExtensions.DrawRectangle(1, ba.Bounds.Height, pa.Position, Color.LightGray);
         _batchExtensions.DrawRectangle(1, ba.Bounds.Height, pa.Position + new Vector2(ba.Bounds.Width, 0), Color.LightGray);
 
-        //if (_fonts.TextureFonts.Count > 0)
-        //{
-        //  _batch.DrawString(_fonts.TextureFonts.FirstOrDefault().Value, entity.Id.ToString(), pa.Position, Color.Black);
-        //}
-        //else if (_fonts.SpriteFonts.Count > 0)
-        //{
-        //  _batch.DrawString(_fonts.SpriteFonts.FirstOrDefault().Value, entity.Id.ToString(), pa.Position, Color.Black);
-        //}
+        if (_fonts.TextureFonts.Count > 0)
+        {
+          _batch.DrawString(_fonts.TextureFonts.FirstOrDefault().Value, entity.Id.ToString(), pa.Position, Color.Black);
+        }
+        else if (_fonts.SpriteFonts.Count > 0)
+        {
+          _batch.DrawString(_fonts.SpriteFonts.FirstOrDefault().Value, entity.Id.ToString(), pa.Position, Color.Black);
+        }
       }
     }
 
