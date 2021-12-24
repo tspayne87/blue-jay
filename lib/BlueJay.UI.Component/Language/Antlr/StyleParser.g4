@@ -26,6 +26,7 @@ styleItem                   : WIDTH COLON integer
                             | FONT COLON word
                             | TEXTUREFONT COLON word
                             | TEXTUREFONTSIZE COLON integer
+                            | HEIGHTTEMPLATE COLON heightTemplate
                             ;
 decimal                     : DECIMAL
                             | INTEGER
@@ -60,4 +61,6 @@ textBaseline                : TOP
                             ;
 position                    : RELATIVE
                             | ABSOLUTE
+                            ;
+heightTemplate              : HEIGHTTEMPLATE
                             ;

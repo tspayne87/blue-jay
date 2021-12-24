@@ -30,6 +30,7 @@ COLUMNOFFSET                : 'ColumnOffset' ;
 FONT                        : 'Font' ;
 TEXTUREFONT                 : 'TextureFont' ;
 TEXTUREFONTSIZE             : 'TextureFontSize' ;
+HEIGHTTEMPLATE              : 'HeightTemplate' ;
 
 // --- Enumerations ---
 RIGHT                       : 'Right' ;
@@ -39,6 +40,7 @@ TOP                         : 'Top' ;
 BOTTOM                      : 'Bottom' ;
 RELATIVE                    : 'Relative' ;
 ABSOLUTE                    : 'Absolute' ;
+STRETCH                     : 'Stretch' ;
 
 // --- Final Word to deal with strings ---
 WORD                         : (NameChar | Underscore)+ ;

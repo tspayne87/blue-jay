@@ -39,4 +39,12 @@
   {
     Relative, Absolute
   }
+
+  /// <summary>
+  /// How the height should be templated out
+  /// </summary>
+  public enum HeightTemplate
+  {
+    Stretch
+  }
 }

@@ -210,6 +210,13 @@ namespace BlueJay.UI.Component.Language
         return new StyleExpression(position);
       return null;
     }
+
+    public override object VisitHeightTemplate([NotNull] StyleParser.HeightTemplateContext context)
+    {
+      if (Enum.TryParse<HeightTemplate>(context.GetText(), out var heightTemplate))
+        return new StyleExpression(heightTemplate);
+      return null;
+    }
     #endregion
 
     /// <summary>

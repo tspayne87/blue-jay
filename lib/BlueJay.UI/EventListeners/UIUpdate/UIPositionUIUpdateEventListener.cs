@@ -5,8 +5,6 @@ using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BlueJay.UI.EventListeners.UIUpdate
 {
@@ -45,51 +43,78 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <param name="evt">The event that triggered the change to the UI</param>
     private void ProcessEntity(IEntity entity, UIUpdateEvent evt)
     {
+      /// Load addons needed to process different style and linage
       var la = entity.GetAddon<LineageAddon>();
       var sa = entity.GetAddon<StyleAddon>();
       var psa = la.Parent?.GetAddon<StyleAddon>();
       var pla = la.Parent?.GetAddon<LineageAddon>();
 
+      /// The parent grid column style
       var pGridColumn = psa?.CurrentStyle.GridColumns ?? 1;
+
+      /// The parent column gap style
       var pGap = psa?.CurrentStyle.ColumnGap ?? Point.Zero;
+
+      /// The column offset for this item
       var offset = Math.Min(sa.CurrentStyle.ColumnOffset, pGridColumn);
+
+      /// The current span of this
       var span = Math.Min(sa.CurrentStyle.ColumnSpan, pGridColumn);
 
+      /// The width of the current box this item is bound to
       var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+
+      /// The height of the current box this item is bound to
       var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
 
-      var cWidth = (pWidth / pGridColumn) - ((pGridColumn - 1) * pGap.X);
+      /// The current width of each box based on each column in the parents grid
+      var cWidth = (pWidth - ((pGridColumn - 1) * pGap.X)) / pGridColumn;
 
+      /// The full width of this element based on the width of each box in the grid and the gaps that it should span
       var fWidth = (cWidth * span) + ((span - 1) * pGap.X);
 
-      if (sa.CurrentStyle.Position != Position.Absolute)
+      if (sa.CurrentStyle.Position != Position.Absolute && sa.CurrentStyle.TopOffset == null)
       {
-        // Calculate grid position
+        /// Calculate grid position of the element we are working with so we know where to put the element
         var index = pla?.Children.FindIndex(x => x == entity) ?? -1;
+
+        /// The maxium height that exists for each element in the grid row
         var maxHeight = 0;
+
+        /// The current y position of each element
         var y = 0;
         for (var i = 0; i <= index; ++i)
         {
+          /// Get the siblings style component to get details about it
           var sba = pla?.Children[i].GetAddon<StyleAddon>();
 
           if (sba != null)
           {
             if (y != sba.Value.GridPosition.Y)
-            {
+            { /// If we are jumping into a new row on the grid we want to calculate the next y position based on the highest column in this row
               sa.CalculatedBounds.Y += maxHeight + pGap.Y;
+
+              /// Reset the maxium height
               maxHeight = 0;
+
+              /// Set the new y position
               y = sba.Value.GridPosition.Y;
             }
 
+            /// Set the max height so we know where to go for the next y position
             maxHeight = Math.Max(maxHeight, sba.Value.CalculatedBounds.Height);
           }
         }
+
+        /// Determine the x coordinate based on its pre-calculated grid position <see cref="UIGridCalculationUIUpdateEventListener" />
         sa.CalculatedBounds.X += (cWidth * sa.GridPosition.X) + (sa.GridPosition.X * pGap.X);
       }
 
+      /// If a top offset is used we want to ignore all other calculates since this is where the item should be in the
+      /// parents scope
       if (sa.CurrentStyle.TopOffset != null) sa.CalculatedBounds.Y = sa.CurrentStyle.TopOffset.Value;
       else
-      {
+      { /// We want to do extra processing if we need to process the y position of this element to the center of its bounds height
         switch (sa.CurrentStyle.VerticalAlign)
         {
           case VerticalAlign.Center:
@@ -101,10 +126,11 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         }
       }
 
-      // Process Left Offset Properties
+      /// If a left offset is used we want to ignore all other calculates since this is where the item should be in the
+      /// parents scope
       if (sa.CurrentStyle.LeftOffset != null) sa.CalculatedBounds.X = sa.CurrentStyle.LeftOffset.Value;
       else
-      {
+      {/// We want to do extra processing if we need to process the x position of this element to the center of its bounds width
         switch (sa.CurrentStyle.HorizontalAlign)
         {
           case HorizontalAlign.Center:

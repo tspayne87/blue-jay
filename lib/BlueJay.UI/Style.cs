@@ -28,6 +28,7 @@ namespace BlueJay.UI
     private string _font = null;
     private string _textureFont = null;
     private int? _textureFontSize = null;
+    private HeightTemplate? _heightTemplate = null;
 
     private Style _parent;
 
@@ -66,6 +67,7 @@ namespace BlueJay.UI
     public Color? BackgroundColor { get => _backgroundColor ?? Parent?.BackgroundColor; set => _backgroundColor = value; }
     public TextAlign? TextAlign { get => _textAlign ?? Parent?.TextAlign; set => _textAlign = value; }
     public TextBaseline? TextBaseline { get => _textBaseline ?? Parent?.TextBaseline; set => _textBaseline = value; }
+    public HeightTemplate? HeightTemplate { get => _heightTemplate ?? Parent?.HeightTemplate; set => _heightTemplate = value; }
 
     public int GridColumns { get => _gridColumns ?? Parent?.GridColumns ?? 1; set => _gridColumns = value; }
     public Point ColumnGap { get => _columnGap ?? Parent?.ColumnGap ?? Point.Zero; set => _columnGap = value; }
@@ -107,6 +109,7 @@ namespace BlueJay.UI
       if (merge._font != null) Font = merge._font;
       if (merge._textureFont != null) TextureFont = merge._textureFont;
       if (merge._textureFontSize != null) TextureFontSize = merge._textureFontSize;
+      if (merge._heightTemplate != null) HeightTemplate = merge._heightTemplate;
     }
   }
 }

@@ -139,6 +139,11 @@ namespace BlueJay.UI.Component.Reactivity
     public int? TextureFontSize { get => _style.TextureFontSize; set { _style.TextureFontSize = value; Next(_style); } }
 
     /// <summary>
+    /// How the height should be templated out
+    /// </summary>
+    public HeightTemplate? HeightTemplate { get => _style.HeightTemplate; set { _style.HeightTemplate = value; Next(_style); } }
+
+    /// <summary>
     /// Constructor to build out defaults for the readonly items
     /// </summary>
     public ReactiveStyle()
