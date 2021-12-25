@@ -11,8 +11,12 @@ namespace BlueJay.Shared.Components
   /// The basic title view
   /// </summary>
   [View(@"
-<Container Style=""WidthPercentage: 0.66; HeightPercentage: 0.75; VerticalAlign: Center; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; TextureFont: Default"">
-  <Container Style=""ColumnSpan: 3; Padding: 15; TextureFontSize: 2; HeightTemplate: Stretch; TextBaseline: Center"">BlueJay Component System</Container>
+<Container Style=""WidthPercentage: 0.66; HeightPercentage: 0.75; Padding: 20; VerticalAlign: Center; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; TextureFont: Default"">
+  <Container Style=""ColumnSpan: 3; TextureFontSize: 2; HeightTemplate: Stretch; TextBaseline: Center"">
+    <Container Style=""HeightPercentage: 1; Padding: 15; NinePatch: Sample_NinePatch"">
+      BlueJay Component System
+    </Container>
+  </Container>
 
   <Button @Select=""OnBreakoutClick()"">{{BreakoutTitle}}</Button>
   <Button Style=""ColumnOffset: 1"" @Select=""OnTetrisClick()"">{{TetrisTitle}}</Button>
