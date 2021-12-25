@@ -11,7 +11,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
   /// <summary>
   /// Event listener that will calculate the width for each UI entity
   /// </summary>
-  public class UISizeUIUpdateEventListener : EventListener<UIUpdateEvent>
+  public class UICalculateWidthUIUpdateEventListener : EventListener<UIUpdateEvent>
   {
     /// <summary>
     /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
@@ -22,7 +22,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UISizeUIUpdateEventListener(LayerCollection layers)
+    public UICalculateWidthUIUpdateEventListener(LayerCollection layers)
     {
       _layers = layers;
     }
@@ -64,8 +64,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
         /// Get the amount of columns this element should span
         var span = Math.Min(sa.CurrentStyle.ColumnSpan, pGridColumn);
 
-        /// Calculate the parents width/height
-        var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+        /// Calculate the parents width
         var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
 
         /// Take the parent width and grid columns to determine the width we should start with
@@ -74,10 +73,6 @@ namespace BlueJay.UI.EventListeners.UIUpdate
 
         /// Calculate the field width based on the span of the column and the width of each column
         var fWidth = (cWidth * span) + ((span - 1) * pGap.X);
-
-        // Process Height Properties
-        if (sa.CurrentStyle.Height != null) sa.CalculatedBounds.Height = sa.CurrentStyle.Height.Value;
-        else if (sa.CurrentStyle.HeightPercentage != null) sa.CalculatedBounds.Height = (int)Math.Floor(pHeight * sa.CurrentStyle.HeightPercentage.Value);
 
         // Process Width Properties
         if (sa.CurrentStyle.Width != null) sa.CalculatedBounds.Width = sa.CurrentStyle.Width.Value;
