@@ -19,6 +19,7 @@ namespace BlueJay.Shared.Views
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       // Add Processor Systems
+      serviceProvider.AddSystem<ViewportSystem>();
       serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();

@@ -1,6 +1,6 @@
 ﻿using BlueJay.Common.Addons;
-using BlueJay.Component.System.Collections;
-using BlueJay.Events.Keyboard;
+using BlueJay.Component.System.Interfaces;
+using BlueJay.Common.Events.Keyboard;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
@@ -23,7 +23,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// <summary>
     /// The collection of fonts that are used to calculate the minimum height
     /// </summary>
-    private readonly FontCollection _fonts;
+    private readonly IFontCollection _fonts;
 
     /// <summary>
     /// The current position of the cursor in the string
@@ -56,7 +56,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// Constructor is meant to build out the defaults for the text input
     /// </summary>
     /// <param name="fonts">The collection of fonts that are used to calculate the minimum height</param>
-    public TextInput(FontCollection fonts)
+    public TextInput(IFontCollection fonts)
     {
       Model = new ReactiveProperty<string>("");
       ShowCursor = new ReactiveProperty<bool>(false);

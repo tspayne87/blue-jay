@@ -1,13 +1,12 @@
 ﻿using BlueJay.Shared.Games.Breakout.Factories;
-using BlueJay.Component.System.Collections;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using BlueJay.Common.Addons;
+using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -19,12 +18,12 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
     /// </summary>
-    private readonly LayerCollection _layerCollection;
+    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// The event queue we want to dispatch events too
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// The current service provider
@@ -49,7 +48,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="provider">The service provider we will use to add a new ball from</param>
     /// <param name="service">The game service meant to update the UI based on the different items</param>
     /// <param name="contentManager">The content manager ment to load textures and other content types</param>
-    public LostBallEventListener(LayerCollection layerCollection, EventQueue eventQueue, IServiceProvider provider, BreakoutGameService service, ContentManager contentManager)
+    public LostBallEventListener(ILayerCollection layerCollection, IEventQueue eventQueue, IServiceProvider provider, BreakoutGameService service, ContentManager contentManager)
     {
       _layerCollection = layerCollection;
       _eventQueue = eventQueue;
@@ -70,9 +69,6 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
         var ball = _layerCollection[LayerNames.BallLayer].Entities[0];
         _layerCollection[LayerNames.BallLayer].Entities.Remove(ball);
         _service.Balls--;
-
-        var ba = ball.GetAddon<BoundsAddon>();
-        _provider.AddParticles(_contentManager.Load<Texture2D>("Circle"), new Vector2(ba.Bounds.X, ba.Bounds.Y), 5, 3, Color.Red);
 
         if (_service.Balls >= 0)
         {

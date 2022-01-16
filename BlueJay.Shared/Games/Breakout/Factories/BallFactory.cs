@@ -19,7 +19,7 @@ namespace BlueJay.Shared.Games.Breakout.Factories
     /// <returns>The entity that was created</returns>
     public static IEntity AddBall(this IServiceProvider provider, Texture2D texture)
     {
-      var entity = provider.AddEntity<Entity>(LayerNames.BallLayer);
+      var entity = provider.AddEntity(LayerNames.BallLayer);
       entity.Add(new BoundsAddon(0, 0, 9, 9));
       entity.Add(new VelocityAddon(Vector2.Zero));
       entity.Add(new TypeAddon(EntityType.Ball));

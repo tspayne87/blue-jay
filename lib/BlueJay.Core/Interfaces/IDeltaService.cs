@@ -6,7 +6,7 @@
   public interface IDeltaService
   {
     /// <summary>
-    /// The current delta for each frame
+    /// The current delta for each frame in milliseconds
     /// </summary>
     int Delta { get; }
 

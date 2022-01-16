@@ -28,7 +28,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// The game service that is meant to process the different states of the game
@@ -38,7 +38,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <summary>
     /// The global font that should be used
     /// </summary>
-    private readonly FontCollection _font;
+    private readonly IFontCollection _font;
 
     /// <summary>
     /// The graphics that are bound to the screen
@@ -46,7 +46,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     private readonly GraphicsDevice _graphics;
 
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<TypeAddon, BoundsAddon>();
+    public long Key => KeyHelper.Create<TypeAddon, BoundsAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();
@@ -60,7 +60,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="layers">The layers we are working with</param>
     /// <param name="service">The current service that represents the game</param>
     /// <param name="batchExtension">The sprite batch to draw to the screen extensions</param>
-    public BreakoutRenderingSystem(SpriteBatch batch, LayerCollection layers, BreakoutGameService service, FontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension)
+    public BreakoutRenderingSystem(SpriteBatch batch, ILayerCollection layers, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension)
     {
       _batch = batch;
       _layers = layers;

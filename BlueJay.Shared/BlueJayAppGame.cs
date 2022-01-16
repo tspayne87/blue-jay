@@ -6,6 +6,7 @@ using BlueJay.UI.Component;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using BlueJay.Component.System;
 using System;
 
 namespace BlueJay.Shared

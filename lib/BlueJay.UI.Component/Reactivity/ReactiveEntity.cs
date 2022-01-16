@@ -3,6 +3,7 @@ using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
+using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
@@ -21,7 +22,7 @@ namespace BlueJay.UI.Component.Reactivity
     /// <summary>
     /// The event queue to trigger UI update events
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// The graphics device to get the screen width
@@ -73,7 +74,7 @@ namespace BlueJay.UI.Component.Reactivity
     /// <param name="layerCollection">The current layer collection</param>
     /// <param name="eventQueue">The event queue to trigger UI update events</param>
     /// <param name="graphics">The graphics device to get the screen width</param>
-    public ReactiveEntity(LayerCollection layerCollection, EventQueue eventQueue, GraphicsDevice graphics)
+    public ReactiveEntity(ILayerCollection layerCollection, IEventQueue eventQueue, GraphicsDevice graphics)
       : base(layerCollection, eventQueue)
     {
       _eventQueue = eventQueue;

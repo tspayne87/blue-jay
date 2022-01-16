@@ -11,7 +11,7 @@ namespace BlueJay.Common.Systems
   public class VelocitySystem : IUpdateEntitySystem
   {
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<PositionAddon, VelocityAddon>();
+    public long Key => KeyHelper.Create<PositionAddon, VelocityAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

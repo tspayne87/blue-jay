@@ -4,7 +4,10 @@ using System.Text;
 
 namespace BlueJay.Events.Lifecycle
 {
-  public class ExitEvent
+  /// <summary>
+  /// The exit event which is triggered on the active event callback in monogame
+  /// </summary>
+  public sealed class ExitEvent
   {
   }
 }

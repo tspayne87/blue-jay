@@ -1,8 +1,8 @@
 ﻿using BlueJay.Common.Addons;
-using BlueJay.Component.System.Collections;
+using BlueJay.Common.Events.Touch;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Touch;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -14,13 +14,13 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
     /// </summary>
-    private readonly LayerCollection _layerCollection;
+    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// Constructor to inject the scoped items into the listener to handle different process
     /// </summary>
     /// <param name="layerCollection">The layer colllection we are working with</param>
-    public TouchMoveEventListener(LayerCollection layerCollection)
+    public TouchMoveEventListener(ILayerCollection layerCollection)
     {
       _layerCollection = layerCollection;
     }

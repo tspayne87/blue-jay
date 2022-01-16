@@ -1,6 +1,6 @@
 using BlueJay.Events.Interfaces;
 using BlueJay.Interfaces;
-using BlueJay.Systems;
+using BlueJay.Common.Systems;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -32,8 +32,6 @@ namespace BlueJay.Views
 
       _scope = serviceProvider.CreateScope();
 
-      // Add a basic system that will be used by most games
-      ServiceProvider.AddSystem<ViewportSystem>();
       ConfigureProvider(ServiceProvider);
     }
 

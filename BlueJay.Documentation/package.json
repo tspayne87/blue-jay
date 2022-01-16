@@ -1,23 +1,18 @@
 {
-  "name": "blue-jay-documentation",
-  "version": "0.0.1",
-  "description": "Documentation for using the BlueJay Framework",
+  "name": "bluejay.documentation",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
-  "authors": {
-    "name": "Terry Payne",
-    "email": "tspayne87@gmail.com"
-  },
-  "repository": "/BlueJay Documentation",
   "scripts": {
-    "dev": "vuepress dev src",
-    "build": "vuepress build src",
-    "deploy:firebase": "firebase deploy",
-    "deploy": "npm run build && npm run deploy:firebase"
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs",
+    "deploy:firebase": "firebase deploy --only hosting:bluejay-ae0bf",
+    "deploy": "npm run docs:build && npm run deploy:firebase"
   },
-  "license": "MIT",
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@vuepress/plugin-active-header-links": "^1.8.2",
-    "@vuepress/plugin-search": "^1.8.2",
-    "vuepress": "^1.8.2"
+    "vitepress": "^0.21.4"
   }
 }

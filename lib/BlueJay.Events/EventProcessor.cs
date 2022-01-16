@@ -5,18 +5,18 @@ namespace BlueJay.Events
   /// <summary>
   /// The event processor to hide the internals so we can process the event queue
   /// </summary>
-  public class EventProcessor : IEventProcessor
+  internal class EventProcessor : IEventProcessor
   {
     /// <summary>
     /// The current queue processor we should be using
     /// </summary>
-    private readonly EventQueue _queue;
+    private readonly IEventQueue _queue;
 
     /// <summary>
     /// Constructor to add in the event queue processor that should be used with the event processor
     /// </summary>
     /// <param name="queue">The queue processor</param>
-    public EventProcessor(EventQueue queue)
+    public EventProcessor(IEventQueue queue)
     {
       _queue = queue;
     }

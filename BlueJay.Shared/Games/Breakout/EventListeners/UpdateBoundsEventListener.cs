@@ -19,18 +19,18 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// The current event queue that is being processed
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UpdateBoundsEventListener(LayerCollection layers, EventQueue eventQueue)
+    public UpdateBoundsEventListener(ILayerCollection layers, IEventQueue eventQueue)
     {
       _layers = layers;
       _eventQueue = eventQueue;

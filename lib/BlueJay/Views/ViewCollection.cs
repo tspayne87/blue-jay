@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BlueJay.Interfaces;
@@ -10,7 +9,7 @@ namespace BlueJay.Views
   /// <summary>
   /// The collection of views we are working with
   /// </summary>
-  public class ViewCollection : IViewCollection
+  internal class ViewCollection : IViewCollection
   {
     /// <summary>
     /// The view provider we will use to find the collection and build out the object with

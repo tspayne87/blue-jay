@@ -95,7 +95,7 @@ namespace BlueJay.UI.Addons
       Hovering = false;
       CalculatedBounds = Rectangle.Empty;
       GridPosition = Point.Zero;
-      _style = style;
+      _style = style ?? new Style();
       _hoverStyle = hoverStyle;
       if (_hoverStyle != null)
         _hoverStyle.Parent = _style;

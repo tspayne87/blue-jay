@@ -1,9 +1,8 @@
 ﻿using BlueJay.Common.Addons;
-using BlueJay.Component.System.Collections;
+using BlueJay.Common.Events.Mouse;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Mouse;
 using BlueJay.UI.Services;
 using Microsoft.Xna.Framework;
 
@@ -14,12 +13,12 @@ namespace BlueJay.UI.EventListeners
     /// <summary>
     /// The layer collection to grab the UI elements from the screen
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// The event queue that will trigger style update events to rerender the UI entity
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// The UI Service for keeping track of globals
@@ -32,7 +31,7 @@ namespace BlueJay.UI.EventListeners
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
     /// <param name="service">The UI Service for keeping track of globals</param>
-    public UIMouseUpEventListener(LayerCollection layers, EventQueue eventQueue, UIService service)
+    public UIMouseUpEventListener(ILayerCollection layers, IEventQueue eventQueue, UIService service)
     {
       _layers = layers;
       _eventQueue = eventQueue;

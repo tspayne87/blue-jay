@@ -3,9 +3,9 @@ using BlueJay.Shared.Games.Breakout.EventListeners;
 using BlueJay.Shared.Games.Breakout.Factories;
 using BlueJay.Shared.Games.Breakout.Systems;
 using BlueJay.Events;
-using BlueJay.Events.Keyboard;
-using BlueJay.Events.Touch;
-using BlueJay.Systems;
+using BlueJay.Common.Events.Keyboard;
+using BlueJay.Common.Events.Touch;
+using BlueJay.Common.Systems;
 using BlueJay.UI;
 using BlueJay.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,8 @@ using Microsoft.Xna.Framework;
 using System;
 using BlueJay.UI.Component;
 using BlueJay.Shared.Components;
-using BlueJay.Common.Systems;
+using BlueJay.Events.Interfaces;
+using BlueJay.Common.Events;
 
 namespace BlueJay.Shared.Views
 {
@@ -31,6 +32,7 @@ namespace BlueJay.Shared.Views
     {
       // Processing systems
       serviceProvider.AddSystem<KeyboardSystem>();
+      serviceProvider.AddSystem<ViewportSystem>();
       serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUITouchSupport();
@@ -42,7 +44,6 @@ namespace BlueJay.Shared.Views
       // Rendering systems
       serviceProvider.AddSystem<BreakoutRenderingSystem>();
       serviceProvider.AddSystem<RenderingSystem>();
-      serviceProvider.AddSystem<ParticleSystem>();
 
       // Add event listeners that could happen in the system
       serviceProvider.AddEventListener<KeyboardPressEventListener, KeyboardPressEvent>();
@@ -71,7 +72,7 @@ namespace BlueJay.Shared.Views
       service.Initialize(ServiceProvider.GetRequiredService<UIComponentCollection>());
 
       // Queue for the round to start over
-      var queue = ServiceProvider.GetRequiredService<EventQueue>();
+      var queue = ServiceProvider.GetRequiredService<IEventQueue>();
       queue.DispatchEvent(new NextRoundEvent());
     }
   }

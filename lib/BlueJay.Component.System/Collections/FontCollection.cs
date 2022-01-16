@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -7,16 +8,12 @@ namespace BlueJay.Component.System.Collections
   /// <summary>
   /// The collections of fonts that can be used in the system
   /// </summary>
-  public class FontCollection
+  internal class FontCollection : IFontCollection
   {
-    /// <summary>
-    /// The global list of sprite fonts
-    /// </summary>
+    /// <inheritdoc />
     public Dictionary<string, SpriteFont> SpriteFonts { get; set; }
 
-    /// <summary>
-    /// The global list of texture fonts
-    /// </summary>
+    /// <inheritdoc />
     public Dictionary<string, TextureFont> TextureFonts { get; set; }
 
     /// <summary>

@@ -3,7 +3,7 @@
   /// <summary>
   /// Delete addon event
   /// </summary>
-  public class RemoveAddonEvent : AddonEvent
+  sealed class RemoveAddonEvent : AddonEvent
   {
 
   }

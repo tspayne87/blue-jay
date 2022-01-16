@@ -1,14 +1,16 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
-using BlueJay.Events.Keyboard;
-using BlueJay.Events.Mouse;
-using BlueJay.Events.Touch;
-using BlueJay.Systems;
+using BlueJay.Common.Events.Keyboard;
+using BlueJay.Common.Events.Mouse;
+using BlueJay.Common.Events.Touch;
+using BlueJay.Common.Systems;
 using BlueJay.UI.Addons;
 using BlueJay.UI.EventListeners;
 using BlueJay.UI.EventListeners.UIUpdate;
 using BlueJay.UI.Systems;
 using System;
+using BlueJay.Common.Events;
 
 namespace BlueJay.UI
 {
@@ -18,25 +20,45 @@ namespace BlueJay.UI
     /// Method is meant to add a ui entity to the entity collection and use DI to build out the object so that
     /// services and other DI components can be injected properly into the class
     /// </summary>
-    /// <typeparam name="T">The current object we are adding to the entity collection</typeparam>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
-    /// <param name="parameters">The constructor parameters that do not exists in DI</param>
     /// <returns>Will return the entity that was created and added to the collection</returns>
-    public static T AddUIEntity<T>(this IServiceProvider provider, IEntity parent = null, params object[] parameters)
-      where T : IEntity
+    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity parent = null)
     {
-      var item = provider.AddEntity<T>(UIStatic.LayerName, 15, parameters);
+      var entity = provider.AddEntity(UIStatic.LayerName, 15);
 
       // Add this item as a child to the parent
       if (parent != null)
       {
         var la = parent.GetAddon<LineageAddon>();
-        la.Children.Add(item);
+        la.Children.Add(entity);
         parent.Update(la);
       }
 
-      item.Add(new LineageAddon(parent));
-      return item;
+      entity.Add(new LineageAddon(parent));
+      return entity;
+    }
+
+    /// <summary>
+    /// Method is meant to add a ui entity to the entity collection and use DI to build out the object so that
+    /// services and other DI components can be injected properly into the class
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="entity">The current created entity we need to add</param>
+    /// <returns></returns>
+    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity entity, IEntity parent = null)
+    {
+      provider.AddEntity(entity, UIStatic.LayerName, 15);
+
+      // Add this item as a child to the parent
+      if (parent != null)
+      {
+        var la = parent.GetAddon<LineageAddon>();
+        la.Children.Add(entity);
+        parent.Update(la);
+      }
+
+      entity.Add(new LineageAddon(parent));
+      return entity;
     }
 
     /// <summary>

@@ -1,5 +1,7 @@
 ﻿using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace BlueJay.Component.System
 {
@@ -9,7 +11,7 @@ namespace BlueJay.Component.System
   internal class Layer : ILayer
   {
     /// <inheritdoc />
-    public EntityCollection Entities { get; private set; }
+    public IEntityCollection Entities { get; private set; }
 
     /// <inheritdoc />
     public string Id { get; private set; }
@@ -22,11 +24,11 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <param name="id">The id for the layer</param>
     /// <param name="weight">The current weight of the layer</param>
-    public Layer(string id, int weight)
+    public Layer(string id, int weight, IServiceProvider provider)
     {
       Id = id;
       Weight = weight;
-      Entities = new EntityCollection();
+      Entities = ActivatorUtilities.CreateInstance<EntityCollection>(provider);
     }
   }
 }

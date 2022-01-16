@@ -10,7 +10,7 @@ namespace BlueJay.Component.System.Interfaces
     /// <summary>
     /// The collection of entities that exist on the layer
     /// </summary>
-    EntityCollection Entities { get; }
+    IEntityCollection Entities { get; }
 
     /// <summary>
     /// The current id of the layer
