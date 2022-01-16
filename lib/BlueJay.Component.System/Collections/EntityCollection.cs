@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Component.System.Collections
 {
-  public class EntityCollection
+  internal class EntityCollection : IEntityCollection
   {
     /// <summary>
     /// The current entity count this is mainly used as a way to store ids for the entities
@@ -22,16 +20,10 @@ namespace BlueJay.Component.System.Collections
     /// </summary>
     private Dictionary<long, List<IEntity>> _entityQueryCache = new Dictionary<long, List<IEntity>>();
 
-    /// <summary>
-    /// The current count of this collection
-    /// </summary>
+    /// <inheritdoc />
     public int Count => _collection.Count;
 
-    /// <summary>
-    /// Gets a set of entities by the key
-    /// </summary>
-    /// <param name="key">The key we want to find entities on</param>
-    /// <returns>Will return a list of entities matching the key given</returns>
+    /// <inheritdoc />
     public List<IEntity> GetByKey(long key)
     {
       if (!_entityQueryCache.ContainsKey(key))
@@ -47,10 +39,7 @@ namespace BlueJay.Component.System.Collections
       return _entityQueryCache[key];
     }
 
-    /// <summary>
-    /// Add an entity to the collection
-    /// </summary>
-    /// <param name="item">The entity we are adding to the collection</param>
+    /// <inheritdoc />
     public void Add(IEntity item)
     {
       item.Id = ++_entityCount;
@@ -58,29 +47,20 @@ namespace BlueJay.Component.System.Collections
       UpdateCache(item, CacheInsertType.Add);
     }
 
-    /// <summary>
-    /// Remove an entity from the collection
-    /// </summary>
-    /// <param name="item">The entity we are trying to remove</param>
-    /// <returns>Will return a boolean determining if the entity was removed from the collection</returns>
+    /// <inheritdoc />
     public bool Remove(IEntity item)
     {
       UpdateCache(item, CacheInsertType.Remove);
       return _collection.Remove(item);
     }
 
-    /// <summary>
-    /// Updates the internal cache when an entity changes
-    /// </summary>
-    /// <param name="item">The entity that has changed</param>
+    /// <inheritdoc />
     public void UpdateAddonTree(IEntity item)
     {
       UpdateCache(item, CacheInsertType.Upsert);
     }
 
-    /// <summary>
-    /// Clear the collection competely
-    /// </summary>
+    /// <inheritdoc />
     public void Clear()
     {
       var items = _collection.ToArray();
@@ -90,20 +70,13 @@ namespace BlueJay.Component.System.Collections
       }
     }
 
-    /// <summary>
-    /// Method is meant generate an array from this entity so that we can remove entities without worring about indexes
-    /// </summary>
-    /// <returns>Will return the generate array</returns>
+    /// <inheritdoc />
     public IEntity[] ToArray()
     {
       return _collection.ToArray();
     }
 
-    /// <summary>
-    /// Operator to get an entity based on the index in the collection
-    /// </summary>
-    /// <param name="i">The index of the entity we are trying to find</param>
-    /// <returns>Will return the entity found at the index given</returns>
+    /// <inheritdoc />
     public IEntity this[int i] => _collection[i];
 
     /// <summary>

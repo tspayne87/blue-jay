@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using BlueJay.Component.System;
 using BlueJay.Common.Addons;
+using BlueJay.Events.Interfaces;
 
 namespace BlueJay.Shared.Games.Breakout.Systems
 {
@@ -25,12 +26,12 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
     /// </summary>
-    private readonly LayerCollection _layerCollection;
+    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// The event queue we want to dispatch events too
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// The game service that is meant to process the different states of the game
@@ -38,7 +39,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     private readonly BreakoutGameService _service;
 
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<BoundsAddon, VelocityAddon, BallActiveAddon>();
+    public long Key => KeyHelper.Create<BoundsAddon, VelocityAddon, BallActiveAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>() { LayerNames.BallLayer };
@@ -50,7 +51,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="eventQueue">The event queue we want to dispatch events too</param>
     /// <param name="service">The current service that keeps track of the game</param>
-    public BallSystem(LayerCollection layerCollection, GraphicsDevice graphics, EventQueue eventQueue, BreakoutGameService service)
+    public BallSystem(ILayerCollection layerCollection, GraphicsDevice graphics, IEventQueue eventQueue, BreakoutGameService service)
     {
       _layerCollection = layerCollection;
       _graphics = graphics;

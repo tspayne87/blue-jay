@@ -28,10 +28,10 @@ namespace BlueJay.UI.Systems
     /// <summary>
     /// The font collection need to render stuff to the screen
     /// </summary>
-    private readonly FontCollection _fonts;
+    private readonly IFontCollection _fonts;
 
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<PositionAddon, BoundsAddon>();
+    public long Key => KeyHelper.Create<PositionAddon, BoundsAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();
@@ -43,7 +43,7 @@ namespace BlueJay.UI.Systems
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="batchExtension">Extensions to the sprite batch to draw to the screen basic objects</param>
     /// <param name="fonts">The font collection need to render stuff to the screen</param>
-    public DebugBoundingBoxSystem(SpriteBatch batch, SpriteBatchExtension batchExtension, FontCollection fonts)
+    public DebugBoundingBoxSystem(SpriteBatch batch, SpriteBatchExtension batchExtension, IFontCollection fonts)
     {
       _batch = batch;
       _batchExtensions = batchExtension;
@@ -62,7 +62,7 @@ namespace BlueJay.UI.Systems
       var pa = entity.GetAddon<PositionAddon>();
       var ba = entity.GetAddon<BoundsAddon>();
 
-      if (!entity.MatchKey(AddonHelper.Identifier<TextAddon>()))
+      if (!entity.MatchKey(KeyHelper.Create<TextAddon>()))
       {
         _batchExtensions.DrawRectangle(ba.Bounds.Width, 1, pa.Position, Color.LightGray);
         _batchExtensions.DrawRectangle(ba.Bounds.Width, 1, pa.Position + new Vector2(0, ba.Bounds.Height), Color.LightGray);

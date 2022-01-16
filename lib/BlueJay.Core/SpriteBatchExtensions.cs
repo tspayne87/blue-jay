@@ -18,21 +18,8 @@ namespace BlueJay.Core
     /// <param name="text">The text that should be printed out</param>
     /// <param name="position">The position of the text</param>
     /// <param name="color">The color of the text</param>
-    public static void DrawString(this SpriteBatch spriteBatch, TextureFont font, string text, Vector2 position, Color color)
-    {
-      DrawString(spriteBatch, font, text, position, color, 1.0f);
-    }
-
-    /// <summary>
-    /// Method is meant to draw a string to a place on the screen
-    /// </summary>
-    /// <param name="spriteBatch">The sprite batch to render the string on</param>
-    /// <param name="font">The texture font that is meant to render the text with</param>
-    /// <param name="text">The text that should be printed out</param>
-    /// <param name="position">The position of the text</param>
-    /// <param name="color">The color of the text</param>
     /// <param name="scale">The scale of the font being used</param>
-    public static void DrawString(this SpriteBatch spriteBatch, TextureFont font, string text, Vector2 position, Color color, float scale)
+    public static void DrawString(this SpriteBatch spriteBatch, TextureFont font, string text, Vector2 position, Color color, float scale = 1.0f)
     {
       var pos = position;
       for (var i = 0; i < text.Length; ++i)

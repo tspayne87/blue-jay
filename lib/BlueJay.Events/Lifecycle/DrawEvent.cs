@@ -3,7 +3,7 @@
   /// <summary>
   /// The draw event data object
   /// </summary>
-  public class DrawEvent
+  public sealed class DrawEvent
   {
   }
 }

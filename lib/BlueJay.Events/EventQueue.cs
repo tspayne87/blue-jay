@@ -8,7 +8,7 @@ namespace BlueJay.Events
   /// <summary>
   /// The event queue is meant to handle the current queue and reset to handle the next defered queue
   /// </summary>
-  public class EventQueue
+  internal class EventQueue : IEventQueue
   {
     /// <summary>
     /// The current queue we are working with on any particular frame

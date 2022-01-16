@@ -19,7 +19,7 @@ namespace BlueJay.Shared.Games.Breakout.Factories
     /// <returns>The entity that was created</returns>
     public static IEntity AddBlock(this IServiceProvider provider, int index)
     {
-      var entity = provider.AddEntity<Entity>(LayerNames.BlockLayer);
+      var entity = provider.AddEntity(LayerNames.BlockLayer);
       entity.Add(new BoundsAddon(Rectangle.Empty));
       entity.Add(new TypeAddon(EntityType.Block));
       entity.Add(new BlockIndexAddon(index));

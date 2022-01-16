@@ -1,4 +1,5 @@
-﻿using BlueJay.Events;
+﻿using BlueJay.Common.Events;
+using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
@@ -8,13 +9,13 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The current event queue that is being processed
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public ViewportChangeEventListener(EventQueue eventQueue)
+    public ViewportChangeEventListener(IEventQueue eventQueue)
     {
       _eventQueue = eventQueue;
     }

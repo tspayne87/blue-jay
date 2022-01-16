@@ -15,10 +15,10 @@ namespace BlueJay.Component.System
     internal static TComponent ByIdentifier<TComponent>(this IEnumerable<IAddon> list)
       where TComponent : IAddon
     {
-      var identifier = AddonHelper.Identifier<TComponent>();
+      var identifier = KeyHelper.Create<TComponent>();
       foreach(var item in list)
       {
-        if (AddonHelper.Identifier(item.GetType()) == identifier)
+        if (KeyHelper.Create(item.GetType()) == identifier)
           return (TComponent)item;
       }
       return default(TComponent);

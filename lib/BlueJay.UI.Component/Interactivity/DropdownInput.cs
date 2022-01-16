@@ -1,4 +1,5 @@
 ﻿using BlueJay.Component.System.Collections;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
 
@@ -20,7 +21,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// <summary>
     /// The font collection
     /// </summary>
-    private readonly FontCollection _fonts;
+    private readonly IFontCollection _fonts;
 
     /// <summary>
     /// The model that pushes out what selected item from the dropdown
@@ -73,7 +74,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// The constructor to build out all the basic configurations for the component
     /// </summary>
     /// <param name="fonts">The item props that the user can select from</param>
-    public DropdownInput(FontCollection fonts)
+    public DropdownInput(IFontCollection fonts)
     {
       Model = new ReactiveProperty<object>(null);
       Placeholder = new ReactiveProperty<string>("Select Item...");

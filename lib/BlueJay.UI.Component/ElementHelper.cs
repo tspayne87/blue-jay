@@ -1,12 +1,12 @@
-﻿using BlueJay.Events.Keyboard;
-using BlueJay.Events.Mouse;
+﻿using BlueJay.Common.Events.Keyboard;
+using BlueJay.Common.Events.Mouse;
 using BlueJay.UI.Component.Language;
 using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static BlueJay.Events.Mouse.MouseEvent;
+using static BlueJay.Common.Events.Mouse.MouseEvent;
 
 namespace BlueJay.UI.Component
 {

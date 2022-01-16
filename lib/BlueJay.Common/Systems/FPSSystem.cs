@@ -25,7 +25,7 @@ namespace BlueJay.Common.Systems
     /// <summary>
     /// The collection of global fonts
     /// </summary>
-    private readonly FontCollection _fonts;
+    private readonly IFontCollection _fonts;
 
     /// <summary>
     /// The current font key
@@ -64,7 +64,7 @@ namespace BlueJay.Common.Systems
     /// <param name="deltaService">The current delta that gets updated every frame</param>
     /// <param name="fontKey">The key for creating the font key</param>
     /// <param name="fonts">The fonts collection that we should look up sprite fonts</param>
-    public FPSSystem(SpriteBatch batch, IDeltaService deltaService, FontCollection fonts, string fontKey)
+    public FPSSystem(SpriteBatch batch, IDeltaService deltaService, IFontCollection fonts, string fontKey)
     {
       _batch = batch;
       _deltaService = deltaService;

@@ -9,6 +9,7 @@ using BlueJay.Events;
 using BlueJay.Interfaces;
 using BlueJay.Views;
 using BlueJay.Component.System.Collections;
+using BlueJay.Component.System;
 
 namespace BlueJay
 {
@@ -71,14 +72,10 @@ namespace BlueJay
       _serviceCollection.AddSingleton(Window);
       _serviceCollection.AddSingleton(GraphicsDevice);
       _serviceCollection.AddSingleton<IViewCollection, ViewCollection>();
-      _serviceCollection.AddSingleton<FontCollection>();
       _serviceCollection.AddSingleton<SpriteBatch>();
       _serviceCollection.AddSingleton<SpriteBatchExtension>();
-
-      // Scopped collections that will be used in each view when processing
-      _serviceCollection.AddScoped<IEventProcessor, EventProcessor>();
-      _serviceCollection.AddScoped<EventQueue>();
-      _serviceCollection.AddScoped<LayerCollection>();
+      _serviceCollection.AddBlueJayEvents();
+      _serviceCollection.AddBlueJay();
 
       ConfigureServices(_serviceCollection);
 

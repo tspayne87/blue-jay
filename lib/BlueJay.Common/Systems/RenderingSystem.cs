@@ -18,7 +18,7 @@ namespace BlueJay.Common.Systems
     private readonly SpriteBatch _batch;
 
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<PositionAddon, TextureAddon>();
+    public long Key => KeyHelper.Create<PositionAddon, TextureAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

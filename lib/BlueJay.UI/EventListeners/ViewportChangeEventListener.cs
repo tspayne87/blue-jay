@@ -1,4 +1,5 @@
-﻿using BlueJay.Events;
+﻿using BlueJay.Common.Events;
+using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 
 namespace BlueJay.UI.EventListeners
@@ -11,13 +12,13 @@ namespace BlueJay.UI.EventListeners
     /// <summary>
     /// The current event queue that is being processed
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="eventQueue">The event queue to trigger the UI update event</param>
-    public ViewportChangeEventListener(EventQueue eventQueue)
+    public ViewportChangeEventListener(IEventQueue eventQueue)
     {
       _eventQueue = eventQueue;
     }

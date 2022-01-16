@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BlueJay.Component.System.Collections;
-using BlueJay.Events;
 using BlueJay.Component.System.Events;
+using BlueJay.Events.Interfaces;
 
 namespace BlueJay.Component.System
 {
@@ -16,12 +15,12 @@ namespace BlueJay.Component.System
     /// <summary>
     /// The current entity collection 
     /// </summary>
-    private readonly LayerCollection _layerCollection;
+    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// The event queue
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// The list of addons that are bound to this entity
@@ -47,7 +46,7 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <param name="layerCollection">The current layer collection</param>
     /// <param name="eventQueue">The event queue</param>
-    public Entity(LayerCollection layerCollection, EventQueue eventQueue)
+    public Entity(ILayerCollection layerCollection, IEventQueue eventQueue)
     {
       _layerCollection = layerCollection;
       _eventQueue = eventQueue;
@@ -62,11 +61,11 @@ namespace BlueJay.Component.System
     public bool Add<T>(T addon)
       where T : struct, IAddon
     {
-      if ((AddonHelper.Identifier<T>() & _addonsId) == 0)
+      if ((KeyHelper.Create<T>() & _addonsId) == 0)
       {
         Array.Resize(ref _addons, _addons.Length + 1);
         _addons[_addons.Length - 1] = addon;
-        _addonsId = AddonHelper.Identifier(_addons.Select(x => x.GetType()).ToArray());
+        _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
         _layerCollection[Layer].Entities.UpdateAddonTree(this);
 
         _eventQueue.DispatchEvent(new AddAddonEvent() { Addon = addon }, this);
@@ -87,7 +86,7 @@ namespace BlueJay.Component.System
           _addons[i - 1] = _addons[i];
         }
         Array.Resize(ref _addons, _addons.Length - 1);
-        _addonsId = AddonHelper.Identifier(_addons.Select(x => x.GetType()).ToArray());
+        _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
         _layerCollection[Layer].Entities.UpdateAddonTree(this);
         _eventQueue.DispatchEvent(new RemoveAddonEvent() { Addon = addon }, this);
         return true;
@@ -136,7 +135,7 @@ namespace BlueJay.Component.System
       var addons = new List<IAddon>();
       foreach (var addon in _addons)
       {
-        var addonKey = AddonHelper.Identifier(addon.GetType());
+        var addonKey = KeyHelper.Create(addon.GetType());
         if ((key & addonKey) == addonKey)
         {
           addons.Add(addon);
@@ -149,10 +148,10 @@ namespace BlueJay.Component.System
     public T GetAddon<T>()
       where T : struct, IAddon
     {
-      var identifier = AddonHelper.Identifier<T>();
+      var identifier = KeyHelper.Create<T>();
       for (var i = 0; i < _addons.Length; ++i)
       {
-        if (AddonHelper.Identifier(_addons[i].GetType()) == identifier)
+        if (KeyHelper.Create(_addons[i].GetType()) == identifier)
         {
           return (T)_addons[i];
         }

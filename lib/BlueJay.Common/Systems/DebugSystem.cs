@@ -22,7 +22,7 @@ namespace BlueJay.Common.Systems
     /// <summary>
     /// The global fonts that will be used to render on the screen
     /// </summary>
-    private readonly FontCollection _fonts;
+    private readonly IFontCollection _fonts;
 
     /// <summary>
     /// The font key to use when rendering the text
@@ -35,7 +35,7 @@ namespace BlueJay.Common.Systems
     private int _y;
 
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<DebugAddon>();
+    public long Key => KeyHelper.Create<DebugAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();
@@ -46,7 +46,7 @@ namespace BlueJay.Common.Systems
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="fonts">The font collection</param>
     /// <param name="fontKey">The font key we need to use</param>
-    public DebugSystem(SpriteBatch batch, FontCollection fonts, string fontKey)
+    public DebugSystem(SpriteBatch batch, IFontCollection fonts, string fontKey)
     {
       _batch = batch;
       _fontKey = fontKey;

@@ -13,7 +13,7 @@ namespace BlueJay.UI.Systems
   public class UIPositionSystem : IUpdateEntitySystem
   {
     /// <inheritdoc />
-    public long Key => AddonHelper.Identifier<LineageAddon, PositionAddon, BoundsAddon>();
+    public long Key => KeyHelper.Create<LineageAddon, PositionAddon, BoundsAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>() { UIStatic.LayerName };

@@ -48,7 +48,7 @@ namespace BlueJay.UI.EventListeners
     /// <param name="evt">The event that triggered this listener</param>
     public override void Process(IEvent<StyleUpdateEvent> evt)
     {
-      if (!evt.Data.Entity.MatchKey(AddonHelper.Identifier<TextAddon>()))
+      if (!evt.Data.Entity.MatchKey(KeyHelper.Create<TextAddon>()))
       {
         var sa = evt.Data.Entity.GetAddon<StyleAddon>();
         var ba = evt.Data.Entity.GetAddon<BoundsAddon>();

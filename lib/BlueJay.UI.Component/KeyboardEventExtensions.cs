@@ -1,4 +1,4 @@
-﻿using BlueJay.Events.Keyboard;
+﻿using BlueJay.Common.Events.Keyboard;
 using Microsoft.Xna.Framework.Input;
 
 namespace BlueJay.UI.Component

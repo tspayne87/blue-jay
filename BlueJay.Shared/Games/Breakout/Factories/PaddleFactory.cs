@@ -16,7 +16,7 @@ namespace BlueJay.Shared.Games.Breakout.Factories
     /// <returns>The entity that was created</returns>
     public static IEntity AddPaddle(this IServiceProvider provider)
     {
-      var entity = provider.AddEntity<Entity>(LayerNames.PaddleLayer);
+      var entity = provider.AddEntity(LayerNames.PaddleLayer);
       entity.Add(new BoundsAddon(50, 250, 0, 20));
       entity.Add(new TypeAddon(EntityType.Paddle));
       return entity;

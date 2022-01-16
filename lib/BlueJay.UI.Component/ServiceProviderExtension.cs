@@ -1,10 +1,10 @@
 ﻿using Antlr4.Runtime;
-using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events;
-using BlueJay.Events.Keyboard;
-using BlueJay.Events.Mouse;
+using BlueJay.Events.Interfaces;
+using BlueJay.Common.Events.Keyboard;
+using BlueJay.Common.Events.Mouse;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
@@ -14,11 +14,9 @@ using BlueJay.UI.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using static BlueJay.Events.Mouse.MouseEvent;
 
 namespace BlueJay.UI.Component
 {
@@ -33,7 +31,7 @@ namespace BlueJay.UI.Component
     public static IEntity AddUIComponent<T>(this IServiceProvider provider)
       where T : UIComponent
     {
-      var entity = ProcessElementNode(provider, provider.GetRequiredService<EventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(out var instance), null, new ReactiveScope());
+      var entity = ProcessElementNode(provider, provider.GetRequiredService<IEventQueue>(), provider.GetRequiredService<GraphicsDevice>(), provider.ParseUIComponet<T>(out var instance), null, new ReactiveScope());
       var collection = provider.GetRequiredService<UIComponentCollection>();
       collection.Add(instance);
       return entity;
@@ -158,7 +156,7 @@ namespace BlueJay.UI.Component
     /// <param name="parent">The current parent element for the node being created so we can keep the same structure</param>
     /// <param name="scope">The current reactive scope for calling the lambda functions</param>
     /// <returns>Will return the generated reactive entity</returns>
-    internal static ReactiveEntity ProcessElementNode(IServiceProvider provider, EventQueue eventQueue, GraphicsDevice graphics, ElementNode node, ReactiveEntity parent, ReactiveScope scope)
+    internal static ReactiveEntity ProcessElementNode(IServiceProvider provider, IEventQueue eventQueue, GraphicsDevice graphics, ElementNode node, ReactiveEntity parent, ReactiveScope scope)
     {
       if (!scope.ContainsKey(node.Instance.Identifier))
       {
@@ -198,7 +196,7 @@ namespace BlueJay.UI.Component
                     entities[i] = updatedNode;
 
                     updatedNode.Update(la);
-                    RemoveEntity(provider.GetRequiredService<LayerCollection>(), oldEntity);
+                    RemoveEntity(provider.GetRequiredService<ILayerCollection>(), oldEntity);
                     continue;
                   }
 
@@ -212,7 +210,7 @@ namespace BlueJay.UI.Component
               for (; i < entities.Count; ++i)
               {
                 madeChange = true;
-                RemoveEntity(provider.GetRequiredService<LayerCollection>(), entities[i]);
+                RemoveEntity(provider.GetRequiredService<ILayerCollection>(), entities[i]);
               }
 
               pla.Children.RemoveRange(start, entities.Count - start);
@@ -232,14 +230,14 @@ namespace BlueJay.UI.Component
       switch (node.Type)
       {
         case ElementType.Container:
-          entity = provider.AddContainer<ReactiveEntity>(new Style(), node.IsGlobal ? null : parent);
+          entity = provider.AddContainer(ActivatorUtilities.CreateInstance<ReactiveEntity>(provider), style: new Style(), parent: node.IsGlobal ? null : parent) as ReactiveEntity;
           foreach(var evt in node.Events)
           {
             ProcessEvent(provider, evt, entity, scope);
           }
           break;
         case ElementType.Text:
-          entity = provider.AddText<ReactiveEntity>(string.Empty, node.IsGlobal ? null : parent);
+          entity = provider.AddText(ActivatorUtilities.CreateInstance<ReactiveEntity>(provider), string.Empty, parent: node.IsGlobal ? null : parent) as ReactiveEntity;
           if (node.Parent != null)
           {
             foreach (var evt in node.Parent.Events)
@@ -323,7 +321,7 @@ namespace BlueJay.UI.Component
     /// </summary>
     /// <param name="layers">The layer collection to remove the entity from</param>
     /// <param name="entity">The current entity needing to be removed</param>
-    internal static void RemoveEntity(LayerCollection layers, IEntity entity)
+    internal static void RemoveEntity(ILayerCollection layers, IEntity entity)
     {
       // Remove the entity
       layers[entity.Layer].Entities.Remove(entity);

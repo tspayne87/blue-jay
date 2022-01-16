@@ -15,13 +15,13 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <summary>
     /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UIHeightUIUpdateEventListener(LayerCollection layers)
+    public UIHeightUIUpdateEventListener(ILayerCollection layers)
     {
       _layers = layers;
     }

@@ -1,6 +1,6 @@
-﻿using BlueJay.Events;
+﻿using BlueJay.Common.Events.Keyboard;
+using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Keyboard;
 using BlueJay.UI.Services;
 
 namespace BlueJay.UI.EventListeners
@@ -10,7 +10,7 @@ namespace BlueJay.UI.EventListeners
     /// <summary>
     /// The event queue that will trigger style update events to rerender the UI entity
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// The UI Service for keeping track of globals
@@ -22,7 +22,7 @@ namespace BlueJay.UI.EventListeners
     /// </summary>
     /// <param name="service">The UI Service for keeping track of globals</param>
     /// <param name="eventQueue">The event queue that will trigger style update events to rerender the UI entity</param>
-    public UIKeyboardUpEventListener(UIService service, EventQueue eventQueue)
+    public UIKeyboardUpEventListener(UIService service, IEventQueue eventQueue)
     {
       _service = service;
       _eventQueue = eventQueue;

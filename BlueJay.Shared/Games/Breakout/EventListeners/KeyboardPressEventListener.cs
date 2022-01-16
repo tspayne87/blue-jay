@@ -1,12 +1,12 @@
 ﻿using BlueJay.Shared.Games.Breakout.Addons;
-using BlueJay.Component.System.Collections;
 using BlueJay.Core;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Keyboard;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using BlueJay.Common.Addons;
+using BlueJay.Component.System.Interfaces;
+using BlueJay.Common.Events.Keyboard;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -18,19 +18,19 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
     /// </summary>
-    private readonly LayerCollection _layerCollection;
+    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// The event queue we want to dispatch events too
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// Constructor to inject the scoped items into the listener to handle different process
     /// </summary>
     /// <param name="layerCollection">The layer colllection we are working with</param>
     /// <param name="eventQueue">The entity queue to dispatch events to the game</param>
-    public KeyboardPressEventListener(LayerCollection layerCollection, EventQueue eventQueue)
+    public KeyboardPressEventListener(ILayerCollection layerCollection, IEventQueue eventQueue)
     {
       _layerCollection = layerCollection;
       _eventQueue = eventQueue;

@@ -1,7 +1,7 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
-using BlueJay.Events.Mouse;
+using BlueJay.Common.Events.Mouse;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
 using System;

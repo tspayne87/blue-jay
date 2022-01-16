@@ -1,9 +1,8 @@
 ﻿using BlueJay.Common.Addons;
-using BlueJay.Component.System.Collections;
+using BlueJay.Common.Events.Mouse;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.Events.Mouse;
 using Microsoft.Xna.Framework;
 
 namespace BlueJay.UI.EventListeners
@@ -13,19 +12,19 @@ namespace BlueJay.UI.EventListeners
     /// <summary>
     /// The layer collection to grab the UI elements from the screen
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// The event queue that will trigger style update events to rerender the UI entity
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// Constructor to build out the mouse move listener to interact with UI entities
     /// </summary>
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
-    public UIMouseDownEventListener(LayerCollection layers, EventQueue eventQueue)
+    public UIMouseDownEventListener(ILayerCollection layers, IEventQueue eventQueue)
     {
       _layers = layers;
       _eventQueue = eventQueue;

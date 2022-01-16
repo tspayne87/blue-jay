@@ -32,7 +32,7 @@ namespace BlueJay.UI
       return default;
     }
 
-    public static string FitString(this IEntity entity, string str, int width, FontCollection fonts)
+    public static string FitString(this IEntity entity, string str, int width, IFontCollection fonts)
     {
       if (entity == null) return string.Empty;
 
@@ -43,7 +43,7 @@ namespace BlueJay.UI
       return str;
     }
 
-    public static Vector2 MeasureString(this IEntity entity, string str, FontCollection fonts)
+    public static Vector2 MeasureString(this IEntity entity, string str, IFontCollection fonts)
     {
       if (entity == null) return Vector2.Zero;
 

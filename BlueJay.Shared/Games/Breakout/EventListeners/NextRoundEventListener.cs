@@ -6,6 +6,7 @@ using BlueJay.Events.Interfaces;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -14,7 +15,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The layer collection that has all the entities in the game at the moment
     /// </summary>
-    private readonly LayerCollection _layerCollection;
+    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// The current service provider
@@ -39,7 +40,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The current event queue that is being processed
     /// </summary>
-    private readonly EventQueue _eventQueue;
+    private readonly IEventQueue _eventQueue;
 
     /// <summary>
     /// Constructor is meant to inject various items to be used in this system
@@ -50,7 +51,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="contentManager">The content manager ment to load textures and other content types</param>
     /// <param name="graphics">The graphics device that is represents the screen</param>
     /// <param name="eventQueue">The event queue that will be used to send out events to the system</param>
-    public NextRoundEventListener(LayerCollection layerCollection, IServiceProvider provider, BreakoutGameService service, ContentManager contentManager, GraphicsDevice graphics, EventQueue eventQueue)
+    public NextRoundEventListener(ILayerCollection layerCollection, IServiceProvider provider, BreakoutGameService service, ContentManager contentManager, GraphicsDevice graphics, IEventQueue eventQueue)
     {
       _layerCollection = layerCollection;
       _provider = provider;

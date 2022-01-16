@@ -3,7 +3,7 @@
   /// <summary>
   /// The update event data object
   /// </summary>
-  public class UpdateEvent
+  public sealed class UpdateEvent
   {
   }
 }

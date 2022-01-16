@@ -3,7 +3,7 @@
   /// <summary>
   /// Add Addon Event
   /// </summary>
-  public class AddAddonEvent : AddonEvent
+  sealed class AddAddonEvent : AddonEvent
   {
 
   }

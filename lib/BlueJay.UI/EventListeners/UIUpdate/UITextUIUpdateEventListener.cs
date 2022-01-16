@@ -24,7 +24,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <summary>
     /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// The sprite batch to draw to the screen
@@ -34,7 +34,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <summary>
     /// The global sprite font that should be used
     /// </summary>
-    private readonly FontCollection _fonts;
+    private readonly IFontCollection _fonts;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
@@ -43,7 +43,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="fonts">The global sprite font that should be used</param>
-    public UITextUIUpdateEventListener(LayerCollection layers, GraphicsDevice graphics, SpriteBatch batch, FontCollection fonts)
+    public UITextUIUpdateEventListener(ILayerCollection layers, GraphicsDevice graphics, SpriteBatch batch, IFontCollection fonts)
     {
       _layers = layers;
       _batch = batch;
@@ -71,7 +71,7 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <param name="evt">The event that triggered the change to the UI</param>
     private void ProcessEntity(IEntity entity)
     {
-      if (entity.MatchKey(AddonHelper.Identifier<TextAddon, StyleAddon>()))
+      if (entity.MatchKey(KeyHelper.Create<TextAddon, StyleAddon>()))
       {
         var txt = entity.GetAddon<TextAddon>();
         var sa = entity.GetAddon<StyleAddon>();

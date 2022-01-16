@@ -16,13 +16,13 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     ///       heights and the second to clean up any missed heights after other calculates may of updated to better heights based on
     ///       content or templating
     /// </summary>
-    private readonly LayerCollection _layers;
+    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UICalculateHeightUIUpdateEventListener(LayerCollection layers)
+    public UICalculateHeightUIUpdateEventListener(ILayerCollection layers)
     {
       _layers = layers;
     }
