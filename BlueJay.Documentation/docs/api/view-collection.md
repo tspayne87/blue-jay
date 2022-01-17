@@ -5,7 +5,7 @@ set as current during implmentation.
 ## Current
 The current view that should be processed by the game
 
-## SetCurrent&lt;T, K&gt
+## SetCurrent&lt;T&gt;
 Will set the current view that should be processing by the system
 
 ```csharp
