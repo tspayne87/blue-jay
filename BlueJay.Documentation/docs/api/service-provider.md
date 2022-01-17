@@ -1,6 +1,6 @@
 # IServiceProvider Extensions Methods
 
-## AddSystem&lt;T, K&gt
+## AddSystem&lt;T&gt;
 Will add a system to be used for processing entities that exist in the system
 
 ```csharp
@@ -10,7 +10,7 @@ Will add a system to be used for processing entities that exist in the system
   public static T AddSystem<T>(params object[] parameters);
 ```
 
-## SetStartView&lt;T, K&gt
+## SetStartView&lt;T&gt;
 Will set the starting view for the game itself and what the player will first see when booting
 up the game itself.
 
