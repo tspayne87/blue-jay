@@ -83,12 +83,12 @@ be called once each frame
 
 ### IDrawSystem
 Will be called before any entities are processed, in a draw system that is mainly reserved for starting a batch sprite batch so
-your not processing one entity at a time. Can only be called once each frame.
+you're not processing one entity at a time. Can only be called once each frame.
 
 ### IDrawEntitySystem
-Will be called for each entity that meets the systems criteria and can be called multiple times in one frame.  This would be where
+Will be called for each entity that meets the systems criteria and can be called multiple times in one frame.  This is where
 drawing each entity to the screen would happen.
 
 ### IDrawEndSystem
-Will be called after all entities are processed, this would be where you could end the sprite batch and send the data along to be
+Will be called after all entities are processed, this is where you could end the sprite batch and send the data along to be
 renderered.  Can only be called once each frame.

@@ -1,7 +1,7 @@
 # Introduction
-BlueJay is a framework that is meant to help with making games faster by building out common ideas on top of the MonoGame
-Framework to get to building out the game faster.  Dependency Injection or DI is used in the project to decouple classes
-from each other to allow for a greater range of customization. To get your MonoGame Environment setup you can see their
+BlueJay is a framework that helps make games faster by building out common ideas on top of the MonoGame
+Framework to create the game faster.  Dependency Injection or DI is used in the project to decouple classes
+from each other and allow for a greater range of customization. To get your MonoGame Environment setup you can see their
 [Getting Started](https://docs.monogame.net/articles/getting_started/0_getting_started.html) guide.
 
 ## Features
@@ -22,7 +22,7 @@ from each other to allow for a greater range of customization. To get your MonoG
 ```
 
 ## Setup
-After creating the MonoGame project in Visual Studios you should have a soltion that looks like the following:
+After creating the MonoGame project in Visual Studio you should have a solution that looks like the following:
 
 ![Solution Example](/Solution_Example.png)
 
@@ -59,9 +59,9 @@ Replace the *Game1.cs* contents with the following:
   }
 ```
 
-The *ComponentSystemGame* is an abstract game class meant to bootstrap all the basic contents of the game class
-and act like a *StartUp* file in a basic mvc app.  It also set up DI internaly and start the event queue for each
-frame of the game.  It breaks up into to main functions *ConfigureServices* and *ConfigureProvider*.  *ConfigureServices*
-allows the developer to configure the *Singleton*, *Scoped*, and *Transient* objects for DI. However, the *ConfigureProvider* is meant
-to configure various global objects before the game bootstraps into starting up.  This would also be the place where you
+The *ComponentSystemGame* is an abstract game class meant to bootstrap all the basic content of the game class
+and act like a *StartUp* file in a basic mvc app.  It also sets up DI internally and starts the event queue for each
+frame of the game.  It breaks up into two main functions *ConfigureServices* and *ConfigureProvider*.  *ConfigureServices*
+allows the developer to configure the *Singleton*, *Scoped*, and *Transient* objects for DI. However, the *ConfigureProvider* is for
+configuring various global objects before the game bootstraps into starting up.  This is also be the place where you
 would setup your starting view.

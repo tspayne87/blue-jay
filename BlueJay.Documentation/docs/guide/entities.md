@@ -1,9 +1,9 @@
 ## Entities
-Entities will store the list of addons that define the entity in the game.  This could entail a player, enemy, sprite, background, or
-foreground, pretty much anything that is handled by the systems and thus by the game.  When an addon needs to be updated the entity
-has exposed Update(IAddon addon) method that will allow for updating an addon in the entity.  If the addon is not known to be on the entity
-or it is Upsert(IAddon addon)  should be used which will try to update the addon and if that fails will add the addon to the entity.  Also,
-Entities cannot store more than one type of an entity in their list.  Example useage is as follows:
+Entities will store the list of addons that define the entity in the game.  This could entail a player, enemy, sprite, background,
+foreground, or pretty much anything that is handled by the systems and thus by the game.  When an addon needs to be updated the entity
+has an exposed Update(IAddon addon) method that will allow for updating an addon in the entity.  If the addon is not known to be on the entity
+or it is Upsert(IAddon addon) should be used.  Upsert(IAddon addon will try to update the addon, and if that fails, will add the addon to the entity.
+Entities cannot store more than one type of an entity in their list.  Example usage is as follows:
 
 ```csharp
   var entity = provider.AddEntity(/* Layer Name */);
@@ -31,8 +31,8 @@ Entities cannot store more than one type of an entity in their list.  Example us
 ```
 
 ## Factories
-Factories are the suggested ways to create entities, adding extension methods onto *IServiceProvider* interface so that entities
-can be created and addons be added to the entity created.  An example of creating a ball entity to a game is as follows:
+Factories are the suggested ways to create entities, adding extension methods onto the *IServiceProvider* interface so that entities
+can be created and addons can be added to the entity created.  An example of creating a ball entity to a game is as follows:
 
 ```csharp
   public static class BallFactory
