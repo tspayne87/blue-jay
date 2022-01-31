@@ -60,6 +60,22 @@ namespace BlueJay.UI.Component
     }
 
     /// <summary>
+    /// Helper method that will generate a function based on the expression given
+    /// </summary>
+    /// <typeparam name="T">The type of object being passed in</typeparam>
+    /// <param name="serviceProvider">The service provider</param>
+    /// <param name="expression">The expression that needs to be converted into a callback function</param>
+    /// <param name="instance">The instance of the object being set</param>
+    /// <returns>Will return the function to be called that will process the expression</returns>
+    public static Func<ReactiveScope, object> GenerateExpression<T>(this IServiceProvider serviceProvider, string expression, T instance)
+      where T : UIComponent
+    {
+      return serviceProvider.ParseExpression(expression, instance)
+        .Callback;
+    }
+
+
+    /// <summary>
     /// Internal method is meant to generate a lambda function based on the expression
     /// </summary>
     /// <param name="serviceProvider">The service provider we need to process the component with</param>
@@ -73,7 +89,7 @@ namespace BlueJay.UI.Component
       ITokenStream tokens = new CommonTokenStream(lexer);
       var parser = new ExpressionParser(tokens);
 
-      var expr = parser.expr();
+      var expr = parser.parse();
 
       var visitor = new ExpressionVisitor(instance);
       return visitor.Visit(expr) as ExpressionResult;

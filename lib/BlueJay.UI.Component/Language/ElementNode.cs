@@ -264,7 +264,7 @@ namespace BlueJay.UI.Component.Language
     /// <summary>
     /// The event prop name
     /// </summary>
-    public const string Event = "event";
+    public const string Event = "evt";
 
     /// <summary>
     /// The identifier prop name

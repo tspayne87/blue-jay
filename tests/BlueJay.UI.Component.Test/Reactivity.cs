@@ -143,7 +143,7 @@ namespace BlueJay.UI.Component.Test
       var collection = new ReactiveCollection<int>() { 1, 2, 3 };
       var scope = new ReactiveScope() { { "Collection", collection } };
 
-    var i = 0;
+      var i = 0;
       scope.Subscribe(x => i += (int)x.Data, "Collection.[2]");
 
       Assert.Equal(3, i);

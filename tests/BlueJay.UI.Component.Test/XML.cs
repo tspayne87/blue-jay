@@ -49,7 +49,7 @@ namespace BlueJay.UI.Component.Test
     [Fact]
     public void BindedLiteralProp()
     {
-      var tree = Provider.ParseXML("<Container :Prop1=\" 'Hello World'\" />", new Component());
+      var tree = Provider.ParseXML("<Container :Prop1=\"'Hello World'\" />", new Component());
       Assert.Empty(tree.Children);
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "Prop1"));
       Assert.Equal("Hello World", tree.Props.First(x => x.Name == "Prop1").DataGetter(null));
@@ -100,19 +100,17 @@ namespace BlueJay.UI.Component.Test
     public void EventProp()
     {
       var instance = new Component();
-      var tree = Provider.ParseXML("<Container @Select=\"OnSelect($event, Integer)\" />", instance);
-      var scope = tree.GenerateScope();
+      var tree = Provider.ParseXML(@"<Container @Select=""OnSelect(evt, Integer)"" />", instance);
       Assert.Empty(tree.Children);
       Assert.NotNull(tree.Events.FirstOrDefault(x => x.Name == "Select"));
       Assert.False(tree.Events.First(x => x.Name == "Select").IsGlobal);
-      Assert.True((bool)tree.Events.Find(x => x.Name == "Select").Callback(scope));
+      Assert.True((bool)tree.Events.Find(x => x.Name == "Select").Callback(tree.GenerateScope()));
 
-      var treeGlobal = Provider.ParseXML("<Container @Select.Global=\"OnSelect($event, Integer)\" />", instance);
-      var newScope = treeGlobal.GenerateScope();
+      var treeGlobal = Provider.ParseXML(@"<Container @Select.Global=""OnSelect(evt, Integer)"" />", instance);
       Assert.Empty(treeGlobal.Children);
       Assert.NotNull(treeGlobal.Events.FirstOrDefault(x => x.Name == "Select"));
       Assert.True(treeGlobal.Events.First(x => x.Name == "Select").IsGlobal);
-      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(newScope));
+      Assert.True((bool)treeGlobal.Events.Find(x => x.Name == "Select").Callback(treeGlobal.GenerateScope()));
     }
 
     [Fact]
@@ -149,9 +147,25 @@ namespace BlueJay.UI.Component.Test
     }
 
     [Fact]
+    public void ScriptExpression()
+    {
+      var instance = new Component();
+      var tree = Provider.ParseXML("<Container>Score: {{Integer + StaticInteger}}</Container>", instance);
+      var scope = tree.GenerateScope();
+
+      Assert.Single(tree.Children);
+      Assert.NotNull(tree.Children[0].Props.FirstOrDefault(x => x.Name == PropNames.Text));
+
+      Assert.Equal("Score: 15", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(scope));
+
+      instance.Integer.Value = 10;
+      Assert.Equal("Score: 20", tree.Children[0].Props.First(x => x.Name == PropNames.Text).DataGetter(scope));
+    }
+
+    [Fact]
     public void ScopeVariable()
     {
-      var tree = Provider.ParseXML("<Container :HelloWorld='AppendWorld($Hello)' />", new Component());
+      var tree = Provider.ParseXML(@"<Container :HelloWorld=""AppendWorld(Hello)"" />", new Component());
 
       Assert.NotNull(tree.Props.FirstOrDefault(x => x.Name == "HelloWorld"));
       Assert.Equal("Hello World", tree.Props.First(x => x.Name == "HelloWorld").DataGetter(new ReactiveScope(new Dictionary<string, object>() { { "Hello", "Hello" } })));
@@ -161,7 +175,7 @@ namespace BlueJay.UI.Component.Test
     public void ForProp()
     {
       var instance = new Component();
-      var tree = Provider.ParseXML("<Container :for='$item in Items' />", instance);
+      var tree = Provider.ParseXML(@"<Container :for=""Item in Items"">{{Item}}</Container>", instance);
       var scope = tree.GenerateScope();
 
       Assert.NotNull(tree.For);
@@ -194,11 +208,15 @@ namespace BlueJay.UI.Component.Test
       public readonly ReactiveProperty<string> Str;
       public readonly ReactiveCollection<string> Items;
 
+      public int StaticInteger;
+
       public Component(int integer = 5, string str = "Test")
       {
         Integer = new ReactiveProperty<int>(integer);
         Str = new ReactiveProperty<string>(str);
         Items = new ReactiveCollection<string>("Hello World");
+
+        StaticInteger = 10;
       }
 
       public bool OnSelect(SelectEvent evt, int integer)

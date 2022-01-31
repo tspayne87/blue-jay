@@ -26,6 +26,11 @@ namespace BlueJay.UI.Component
     public UIComponent Parent { get; private set; }
 
     /// <summary>
+    /// The current reactive scope that will need to be used to access scopes
+    /// </summary>
+    public ReactiveScope Scope { get; set; }
+
+    /// <summary>
     /// The events that were found on the node creating this
     /// </summary>
     internal List<ElementEvent> Events { get; private set; }
@@ -33,7 +38,7 @@ namespace BlueJay.UI.Component
     /// <summary>
     /// The identifier that exists on the scope
     /// </summary>
-    internal string Identifier { get; set; }
+    internal string Identifier { get; private set; } = $"{PropNames.Identifier}_{Utils.GetNextIdentifier()}";
 
     /// <summary>
     /// Initialization method is meant to set all the basic properties on this component
@@ -68,6 +73,18 @@ namespace BlueJay.UI.Component
         return ElementHelper.InvokeEvent(evt, reactiveRoot.Scope, data);
       }
       return true;
+    }
+
+    /// <summary>
+    /// Will generate a scope that could be used for testing
+    /// </summary>
+    /// <returns>Will return a reactive scope for calling callbacks</returns>
+    public ReactiveScope GenerateScope()
+    {
+      var scope = Scope ?? new ReactiveScope();
+      if (!scope.ContainsKey(Identifier))
+        scope[Identifier] = this;
+      return scope;
     }
 
     /// <summary>
