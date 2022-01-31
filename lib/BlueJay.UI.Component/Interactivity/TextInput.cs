@@ -13,8 +13,8 @@ namespace BlueJay.UI.Component.Interactivity
   /// Text input to give inputs for string input
   /// </summary>
   [View(@"
-<Container Style=""TextAlign: Left"" @Focus=""OnFocus($event)"" @Blur=""OnBlur($event)"" @KeyboardUp=""OnKeyboardUp($event)"">
-  <Container :Style=""ContainerStyle"" @Focus=""OnFocus($event)"" @Blur=""OnBlur($event)"" @KeyboardUp=""OnKeyboardUp($event)"">{{Model}}</Container>
+<Container Style=""TextAlign: Left"" @Focus=""OnFocus(evt)"" @Blur=""OnBlur(evt)"" @KeyboardUp=""OnKeyboardUp(evt)"">
+  <Container :Style=""ContainerStyle"" @Focus=""OnFocus(evt)"" @Blur=""OnBlur(evt)"" @KeyboardUp=""OnKeyboardUp(evt)"">{{Model}}</Container>
   <Container :if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60"" :Style=""CursorStyle"" />
 </Container>
     ")]

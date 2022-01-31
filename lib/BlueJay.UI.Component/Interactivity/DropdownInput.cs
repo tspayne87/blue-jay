@@ -12,7 +12,7 @@ namespace BlueJay.UI.Component.Interactivity
 <Container @Select=""OpenMenu()"">
   {{GetField(Model)}}
   <Container :if=""ShowMenu"" Style=""Position: Absolute"" :Style=""MenuStyle"" :HoverStyle=""MenuHoverStyle"">
-    <Container :for=""$item in Items"" @Select=""OnSelect($item)"" Style=""Padding: 5"" :Style=""ItemStyle"" :HoverStyle=""ItemHoverStyle"">{{GetField($item)}}</Container>
+    <Container :for=""item in Items"" @Select=""OnSelect(item)"" Style=""Padding: 5"" :Style=""ItemStyle"" :HoverStyle=""ItemHoverStyle"">{{GetField(item)}}</Container>
   </Container>
 </Container>
     ")]

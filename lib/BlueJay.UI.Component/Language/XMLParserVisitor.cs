@@ -42,7 +42,6 @@ namespace BlueJay.UI.Component.Language
     {
       _serviceProvider = serviceProvider;
       _intance = instance;
-      _intance.Identifier = $"{PropNames.Identifier}_{instance.GetType().Name}_{Utils.GetNextIdentifier()}";
       _components = components ?? new List<Type>();
     }
 
