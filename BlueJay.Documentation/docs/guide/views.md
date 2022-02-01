@@ -1,6 +1,6 @@
 # Introduction
-Views are meant to switch between different screens of the game for example the *Title Screen* and *Game Screen*, they
-are not meant for overlays on the screen that should be accomplished inside the view itself.  The view is mainly a place
+Views are intended to switch between different screens of the game, for example the *Title Screen* and *Game Screen*.  Views
+are not meant for overlays on the screen, that should be accomplished inside the view itself.  The view is mainly a place
 to store all the enities that will be used for the scene being rendered at the moment.  It can also be used as a way to handle
 screen transitions.  Also, when a view is created a new DI scope is generated and all the *Scoped* objects will get a different
 version generated at this time for them.  A basic example of using a view is as follows:
