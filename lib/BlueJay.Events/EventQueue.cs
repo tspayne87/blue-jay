@@ -1,4 +1,5 @@
-﻿using BlueJay.Events.Interfaces;
+﻿using BlueJay.Core.Interfaces;
+using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,11 @@ namespace BlueJay.Events
   /// </summary>
   internal class EventQueue : IEventQueue
   {
+    /// <summary>
+    /// The delta service that will handle the countdown
+    /// </summary>
+    private readonly IDeltaService _delta;
+
     /// <summary>
     /// The current queue we are working with on any particular frame
     /// </summary>
@@ -26,17 +32,39 @@ namespace BlueJay.Events
     private Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
 
     /// <summary>
+    /// Constructor meant to inject various services for use inside the class
+    /// </summary>
+    /// <param name="delta">The delta service that will handle the countdown</param>
+    public EventQueue(IDeltaService delta)
+    {
+      _delta = delta;
+    }
+
+    /// <summary>
     /// Helper method is meant to dispatch events, this will defer them to the next frame for the event queue and will not be processed
     /// in the same frame it is triggered
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="evt">The event that is being triggered</param>
+    /// <param name="target">The target we want to filter this event too</param>
     public void DispatchEvent<T>(T evt, object target = null)
+    {
+      DispatchDelayedEvent(evt, 0, target);
+    }
+
+    /// <summary>
+    /// Helper method meant to dispatch events, this will defer them based on the timeout given
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="evt">The event that is being triggered</param>
+    /// <param name="timeout">The timeout this event should take before triggering in milliseconds</param>
+    /// <param name="target">The target we want to filter this event too</param>
+    public void DispatchDelayedEvent<T>(T evt, int timeout, object target = null)
     {
       var name = typeof(T).Name;
       if (_handlers.ContainsKey(name) && _handlers[name].Count > 0)
       {
-        _next.Enqueue(new Event<T>(evt, target));
+        _next.Enqueue(new Event<T>(evt, target, timeout));
       }
     }
 
@@ -165,6 +193,12 @@ namespace BlueJay.Events
     /// <param name="evt">The event we need to process</param>
     private void ProcessEvent(IEvent evt)
     {
+      if (evt is IInternalEvent internalEvt && ShouldEventNotProcess(internalEvt))
+      {
+        _next.Enqueue(evt);
+        return;
+      }
+
       if (_handlers.ContainsKey(evt.Name))
       {
         for (var i = 0; i < _handlers[evt.Name].Count; ++i)
@@ -181,6 +215,17 @@ namespace BlueJay.Events
           }
         }
       }
+    }
+
+    /// <summary>
+    /// Helper method meant to handle if this event should be processed and update the timeout for the event itself
+    /// </summary>
+    /// <param name="evt">The event that should be processed</param>
+    /// <returns>Will return true if we do not need to process the event</returns>
+    private bool ShouldEventNotProcess(IInternalEvent evt)
+    {
+      evt.Timeout -= _delta.Delta;
+      return evt.Timeout > 0;
     }
 
     /// <summary>

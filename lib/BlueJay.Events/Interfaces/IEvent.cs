@@ -28,6 +28,17 @@
   }
 
   /// <summary>
+  /// Internal Event is meant to handle the countdown timer for delayed events
+  /// </summary>
+  internal interface IInternalEvent
+  {
+    /// <summary>
+    /// Timeout down till the event should be triggered
+    /// </summary>
+    int Timeout { get; set; }
+  }
+
+  /// <summary>
   /// The event object that will be sent when an event is triggered
   /// </summary>
   /// <typeparam name="TData">The data that is sent from the triggered event</typeparam>
