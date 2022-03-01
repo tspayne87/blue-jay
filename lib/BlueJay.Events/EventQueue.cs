@@ -3,6 +3,7 @@ using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BlueJay.Events
 {
@@ -17,6 +18,11 @@ namespace BlueJay.Events
     private readonly IDeltaService _delta;
 
     /// <summary>
+    /// The current null weight which allows for 100000 events to be added without a weight attached
+    /// </summary>
+    private int _nullWeight = int.MaxValue - 100000;
+
+    /// <summary>
     /// The current queue we are working with on any particular frame
     /// </summary>
     private Queue<IEvent> _current = new Queue<IEvent>();
@@ -29,7 +35,7 @@ namespace BlueJay.Events
     /// <summary>
     /// All the handlers we are dealing with when processing events
     /// </summary>
-    private Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
+    private Dictionary<string, List<EventListenerWeight>> _handlers = new Dictionary<string, List<EventListenerWeight>>();
 
     /// <summary>
     /// Constructor meant to inject various services for use inside the class
@@ -73,11 +79,12 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="handler">The handler when the event is fired</param>
-    public IDisposable AddEventListener<T>(IEventListener<T> handler)
+    public IDisposable AddEventListener<T>(IEventListener<T> handler, int? weight = null)
     {
       var name = typeof(T).Name;
-      if (!_handlers.ContainsKey(name)) _handlers[name] = new List<IEventListener>();
-      _handlers[name].Add(handler);
+      if (!_handlers.ContainsKey(name)) _handlers[name] = new List<EventListenerWeight>();
+      _handlers[name].Add(new EventListenerWeight(handler, weight ?? _nullWeight++));
+      _handlers[name].Sort((a, b) => a.Weight > b.Weight ? 1 : -1);
 
       return new Unsubscriber(_handlers, handler, name);
     }
@@ -88,9 +95,9 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public IDisposable AddEventListener<T>(Func<T, bool> callback)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback, int? weight = null)
     {
-      return AddEventListener (new CallbackListener<T>((x, t) => callback(x), null, false));
+      return AddEventListener (new CallbackListener<T>((x, t) => callback(x), null, false), weight);
     }
 
     /// <summary>
@@ -99,21 +106,9 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public IDisposable AddEventListener<T>(Func<T, object, bool> callback)
+    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, int? weight = null)
     {
-      return AddEventListener(new CallbackListener<T>(callback, null, false));
-    }
-
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    /// <param name="target">The target this callback should be attached to</param>
-    public IDisposable AddEventListener<T>(Func<T, bool> callback, object target)
-    {
-      return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true));
+      return AddEventListener(new CallbackListener<T>(callback, null, false), weight);
     }
 
     /// <summary>
@@ -123,9 +118,21 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback, object target, int? weight = null)
     {
-      return AddEventListener(new CallbackListener<T>(callback, target, true));
+      return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true), weight);
+    }
+
+    /// <summary>
+    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
+    /// with events that get dispatched
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <param name="target">The target this callback should be attached to</param>
+    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target, int? weight = null)
+    {
+      return AddEventListener(new CallbackListener<T>(callback, target, true), weight);
     }
 
     /// <summary>
@@ -203,9 +210,9 @@ namespace BlueJay.Events
       {
         for (var i = 0; i < _handlers[evt.Name].Count; ++i)
         {
-          if (_handlers[evt.Name][i].ShouldProcess(evt))
+          if (_handlers[evt.Name][i].EventListener.ShouldProcess(evt))
           {
-            _handlers[evt.Name][i].Process(evt);
+            _handlers[evt.Name][i].EventListener.Process(evt);
 
             // Break out of the look so we do not process any more handlers since stop propagation was called
             if (evt.IsComplete)
@@ -236,7 +243,7 @@ namespace BlueJay.Events
       /// <summary>
       /// The handlers that exist in the system
       /// </summary>
-      private readonly Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
+      private readonly Dictionary<string, List<EventListenerWeight>> _handlers = new Dictionary<string, List<EventListenerWeight>>();
 
       /// <summary>
       /// The current handler we will need to remove when the time comes
@@ -254,7 +261,7 @@ namespace BlueJay.Events
       /// <param name="handlers"></param>
       /// <param name="handler"></param>
       /// <param name="key"></param>
-      internal Unsubscriber(Dictionary<string, List<IEventListener>> handlers, IEventListener handler, string key)
+      internal Unsubscriber(Dictionary<string, List<EventListenerWeight>> handlers, IEventListener handler, string key)
       {
         _handlers = handlers;
         _handler = handler;
@@ -266,8 +273,9 @@ namespace BlueJay.Events
       /// </summary>
       public void Dispose()
       {
-        if (_handlers.ContainsKey(_key) && _handlers[_key].Contains(_handler))
-          _handlers[_key].Remove(_handler);
+        var item = _handlers[_key].FirstOrDefault(x => x.EventListener == _handler);
+        if (item != null)
+          _handlers[_key].Remove(item);
       }
     }
   }

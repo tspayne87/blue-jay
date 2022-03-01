@@ -117,6 +117,26 @@ namespace BlueJay.Events.Test
     }
 
     [Fact]
+    public void Weight()
+    {
+      var scope = Provider.CreateScope();
+      var processor = scope.ServiceProvider.GetRequiredService<IEventProcessor>();
+      var queue = scope.ServiceProvider.GetRequiredService<IEventQueue>();
+
+      var data = 5;
+      scope.ServiceProvider.AddEventListener<int>(x => (data += x) > 0);
+      scope.ServiceProvider.AddEventListener<int>(x => (data *= x) > 0, -1);
+
+      queue.DispatchEvent(2);
+      processor.Update();
+      Assert.Equal(12, data);
+
+      queue.DispatchEvent(1);
+      processor.Update();
+      Assert.Equal(13, data);
+    }
+
+    [Fact]
     public void StopPropegation()
     {
       var scope = Provider.CreateScope();
