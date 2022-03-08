@@ -20,7 +20,7 @@ namespace BlueJay.Events.Interfaces
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="timeout">The timeout that should be used when delaying the event</param>
     /// <param name="target">The target this event is being triggered on</param>
-    void DispatchDelayedEvent<T>(T evt, int timeout, object target = null);
+    IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object target = null);
 
     /// <summary>
     /// Helper method is meant to add on event listeners into the system so they can interact with events that get dispatched

@@ -25,12 +25,12 @@ namespace BlueJay.Events
     /// <summary>
     /// The current queue we are working with on any particular frame
     /// </summary>
-    private Queue<IEvent> _current = new Queue<IEvent>();
+    private readonly Queue<IEvent> _current = new Queue<IEvent>();
 
     /// <summary>
     /// The next queue that should store the defered events that should be handled in the next frame
     /// </summary>
-    private Queue<IEvent> _next = new Queue<IEvent>();
+    private readonly Queue<IEvent> _next = new Queue<IEvent>();
 
     /// <summary>
     /// All the handlers we are dealing with when processing events
@@ -65,13 +65,17 @@ namespace BlueJay.Events
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="timeout">The timeout this event should take before triggering in milliseconds</param>
     /// <param name="target">The target we want to filter this event too</param>
-    public void DispatchDelayedEvent<T>(T evt, int timeout, object target = null)
+    public IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object target = null)
     {
       var name = typeof(T).Name;
       if (_handlers.ContainsKey(name) && _handlers[name].Count > 0)
       {
-        _next.Enqueue(new Event<T>(evt, target, timeout));
+        var @event = new Event<T>(evt, target, timeout);
+
+        _next.Enqueue(@event);
+        return new EventUnsubscriber(@event);
       }
+      return new EventUnsubscriber(null);
     }
 
     /// <summary>
@@ -200,6 +204,9 @@ namespace BlueJay.Events
     /// <param name="evt">The event we need to process</param>
     private void ProcessEvent(IEvent evt)
     {
+      if (evt is IInternalEvent iEvt && iEvt.IsCancelled)
+        return;
+
       if (evt is IInternalEvent internalEvt && ShouldEventNotProcess(internalEvt))
       {
         _next.Enqueue(evt);
@@ -233,6 +240,35 @@ namespace BlueJay.Events
     {
       evt.Timeout -= _delta.Delta;
       return evt.Timeout > 0;
+    }
+
+    /// <summary>
+    /// Disposable class is meant to remove an event from the queue and not process it
+    /// </summary>
+    private class EventUnsubscriber : IDisposable
+    {
+      /// <summary>
+      /// The event that needs to be cancelled
+      /// </summary>
+      private readonly IInternalEvent _event;
+
+      /// <summary>
+      /// Constructor meant to create the disposable so that the event can be cancelled if needed
+      /// </summary>
+      /// <param name="event">The event that needs to be cancelled</param>
+      public EventUnsubscriber(IInternalEvent @event)
+      {
+        _event = @event;
+      }
+
+      /// <summary>
+      /// Disposable that is meant to cancel the current event so it is not processed
+      /// </summary>
+      public void Dispose()
+      {
+        if (_event != null)
+          _event.IsCancelled = true;
+      }
     }
 
     /// <summary>
