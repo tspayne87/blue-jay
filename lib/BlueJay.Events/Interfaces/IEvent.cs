@@ -36,6 +36,11 @@
     /// Timeout down till the event should be triggered
     /// </summary>
     int Timeout { get; set; }
+
+    /// <summary>
+    /// If this event is currently cancelled and should be removed from the queue and not processed
+    /// </summary>
+    bool IsCancelled { get; set; }
   }
 
   /// <summary>

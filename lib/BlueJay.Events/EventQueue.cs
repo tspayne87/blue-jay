@@ -3,6 +3,7 @@ using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BlueJay.Events
 {
@@ -17,19 +18,24 @@ namespace BlueJay.Events
     private readonly IDeltaService _delta;
 
     /// <summary>
+    /// The current null weight which allows for 100000 events to be added without a weight attached
+    /// </summary>
+    private int _nullWeight = int.MaxValue - 100000;
+
+    /// <summary>
     /// The current queue we are working with on any particular frame
     /// </summary>
-    private Queue<IEvent> _current = new Queue<IEvent>();
+    private readonly Queue<IEvent> _current = new Queue<IEvent>();
 
     /// <summary>
     /// The next queue that should store the defered events that should be handled in the next frame
     /// </summary>
-    private Queue<IEvent> _next = new Queue<IEvent>();
+    private readonly Queue<IEvent> _next = new Queue<IEvent>();
 
     /// <summary>
     /// All the handlers we are dealing with when processing events
     /// </summary>
-    private Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
+    private Dictionary<string, List<EventListenerWeight>> _handlers = new Dictionary<string, List<EventListenerWeight>>();
 
     /// <summary>
     /// Constructor meant to inject various services for use inside the class
@@ -59,13 +65,17 @@ namespace BlueJay.Events
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="timeout">The timeout this event should take before triggering in milliseconds</param>
     /// <param name="target">The target we want to filter this event too</param>
-    public void DispatchDelayedEvent<T>(T evt, int timeout, object target = null)
+    public IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object target = null)
     {
       var name = typeof(T).Name;
       if (_handlers.ContainsKey(name) && _handlers[name].Count > 0)
       {
-        _next.Enqueue(new Event<T>(evt, target, timeout));
+        var @event = new Event<T>(evt, target, timeout);
+
+        _next.Enqueue(@event);
+        return new EventUnsubscriber(@event);
       }
+      return new EventUnsubscriber(null);
     }
 
     /// <summary>
@@ -73,11 +83,12 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="handler">The handler when the event is fired</param>
-    public IDisposable AddEventListener<T>(IEventListener<T> handler)
+    public IDisposable AddEventListener<T>(IEventListener<T> handler, int? weight = null)
     {
       var name = typeof(T).Name;
-      if (!_handlers.ContainsKey(name)) _handlers[name] = new List<IEventListener>();
-      _handlers[name].Add(handler);
+      if (!_handlers.ContainsKey(name)) _handlers[name] = new List<EventListenerWeight>();
+      _handlers[name].Add(new EventListenerWeight(handler, weight ?? _nullWeight++));
+      _handlers[name].Sort((a, b) => a.Weight > b.Weight ? 1 : -1);
 
       return new Unsubscriber(_handlers, handler, name);
     }
@@ -88,9 +99,9 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public IDisposable AddEventListener<T>(Func<T, bool> callback)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback, int? weight = null)
     {
-      return AddEventListener (new CallbackListener<T>((x, t) => callback(x), null, false));
+      return AddEventListener (new CallbackListener<T>((x, t) => callback(x), null, false), weight);
     }
 
     /// <summary>
@@ -99,21 +110,9 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public IDisposable AddEventListener<T>(Func<T, object, bool> callback)
+    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, int? weight = null)
     {
-      return AddEventListener(new CallbackListener<T>(callback, null, false));
-    }
-
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    /// <param name="target">The target this callback should be attached to</param>
-    public IDisposable AddEventListener<T>(Func<T, bool> callback, object target)
-    {
-      return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true));
+      return AddEventListener(new CallbackListener<T>(callback, null, false), weight);
     }
 
     /// <summary>
@@ -123,9 +122,21 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback, object target, int? weight = null)
     {
-      return AddEventListener(new CallbackListener<T>(callback, target, true));
+      return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true), weight);
+    }
+
+    /// <summary>
+    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
+    /// with events that get dispatched
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <param name="target">The target this callback should be attached to</param>
+    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target, int? weight = null)
+    {
+      return AddEventListener(new CallbackListener<T>(callback, target, true), weight);
     }
 
     /// <summary>
@@ -193,6 +204,9 @@ namespace BlueJay.Events
     /// <param name="evt">The event we need to process</param>
     private void ProcessEvent(IEvent evt)
     {
+      if (evt is IInternalEvent iEvt && iEvt.IsCancelled)
+        return;
+
       if (evt is IInternalEvent internalEvt && ShouldEventNotProcess(internalEvt))
       {
         _next.Enqueue(evt);
@@ -203,9 +217,9 @@ namespace BlueJay.Events
       {
         for (var i = 0; i < _handlers[evt.Name].Count; ++i)
         {
-          if (_handlers[evt.Name][i].ShouldProcess(evt))
+          if (_handlers[evt.Name][i].EventListener.ShouldProcess(evt))
           {
-            _handlers[evt.Name][i].Process(evt);
+            _handlers[evt.Name][i].EventListener.Process(evt);
 
             // Break out of the look so we do not process any more handlers since stop propagation was called
             if (evt.IsComplete)
@@ -229,6 +243,35 @@ namespace BlueJay.Events
     }
 
     /// <summary>
+    /// Disposable class is meant to remove an event from the queue and not process it
+    /// </summary>
+    private class EventUnsubscriber : IDisposable
+    {
+      /// <summary>
+      /// The event that needs to be cancelled
+      /// </summary>
+      private readonly IInternalEvent _event;
+
+      /// <summary>
+      /// Constructor meant to create the disposable so that the event can be cancelled if needed
+      /// </summary>
+      /// <param name="event">The event that needs to be cancelled</param>
+      public EventUnsubscriber(IInternalEvent @event)
+      {
+        _event = @event;
+      }
+
+      /// <summary>
+      /// Disposable that is meant to cancel the current event so it is not processed
+      /// </summary>
+      public void Dispose()
+      {
+        if (_event != null)
+          _event.IsCancelled = true;
+      }
+    }
+
+    /// <summary>
     /// The disposable class that is meant remove a handle from all the handlers
     /// </summary>
     private class Unsubscriber : IDisposable
@@ -236,7 +279,7 @@ namespace BlueJay.Events
       /// <summary>
       /// The handlers that exist in the system
       /// </summary>
-      private readonly Dictionary<string, List<IEventListener>> _handlers = new Dictionary<string, List<IEventListener>>();
+      private readonly Dictionary<string, List<EventListenerWeight>> _handlers = new Dictionary<string, List<EventListenerWeight>>();
 
       /// <summary>
       /// The current handler we will need to remove when the time comes
@@ -254,7 +297,7 @@ namespace BlueJay.Events
       /// <param name="handlers"></param>
       /// <param name="handler"></param>
       /// <param name="key"></param>
-      internal Unsubscriber(Dictionary<string, List<IEventListener>> handlers, IEventListener handler, string key)
+      internal Unsubscriber(Dictionary<string, List<EventListenerWeight>> handlers, IEventListener handler, string key)
       {
         _handlers = handlers;
         _handler = handler;
@@ -266,8 +309,9 @@ namespace BlueJay.Events
       /// </summary>
       public void Dispose()
       {
-        if (_handlers.ContainsKey(_key) && _handlers[_key].Contains(_handler))
-          _handlers[_key].Remove(_handler);
+        var item = _handlers[_key].FirstOrDefault(x => x.EventListener == _handler);
+        if (item != null)
+          _handlers[_key].Remove(item);
       }
     }
   }

@@ -34,6 +34,11 @@ namespace BlueJay.Events
     public int Timeout { get; set; }
 
     /// <summary>
+    /// If this event is currently cancelled and should be removed from the queue and not processed
+    /// </summary>
+    public bool IsCancelled { get; set; }
+
+    /// <summary>
     /// Constructor method to build out the event object with a easy way of doing it
     /// </summary>
     /// <param name="data">The data we are working with this event</param>
@@ -45,6 +50,7 @@ namespace BlueJay.Events
       Target = target;
       IsComplete = false;
       Timeout = timeout;
+      IsCancelled = false;
     }
 
     /// <summary>

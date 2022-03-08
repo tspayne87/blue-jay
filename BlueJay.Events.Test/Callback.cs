@@ -117,6 +117,55 @@ namespace BlueJay.Events.Test
     }
 
     [Fact]
+    public void Cancellable()
+    {
+      var scope = Provider.CreateScope();
+      var processor = scope.ServiceProvider.GetRequiredService<IEventProcessor>();
+      var queue = scope.ServiceProvider.GetRequiredService<IEventQueue>();
+
+      DeltaService.Setup(ms => ms.Delta).Returns(200);
+
+      var times = 0;
+      scope.ServiceProvider.AddEventListener<int>(x => ++times >= 0);
+
+      var dispose = queue.DispatchDelayedEvent(1, 500);
+      processor.Update();
+
+      queue.DispatchDelayedEvent(2, 300);
+      processor.Update();
+      Assert.Equal(0, times);
+
+      dispose.Dispose();
+      processor.Update();
+      processor.Update();
+
+      Assert.Equal(1, times);
+
+      processor.Update();
+      Assert.Equal(1, times);
+    }
+
+    [Fact]
+    public void Weight()
+    {
+      var scope = Provider.CreateScope();
+      var processor = scope.ServiceProvider.GetRequiredService<IEventProcessor>();
+      var queue = scope.ServiceProvider.GetRequiredService<IEventQueue>();
+
+      var data = 5;
+      scope.ServiceProvider.AddEventListener<int>(x => (data += x) > 0);
+      scope.ServiceProvider.AddEventListener<int>(x => (data *= x) > 0, -1);
+
+      queue.DispatchEvent(2);
+      processor.Update();
+      Assert.Equal(12, data);
+
+      queue.DispatchEvent(1);
+      processor.Update();
+      Assert.Equal(13, data);
+    }
+
+    [Fact]
     public void StopPropegation()
     {
       var scope = Provider.CreateScope();
