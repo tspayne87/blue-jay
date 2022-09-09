@@ -1,15 +1,3 @@
-﻿using BlueJay.Shared;
-using System;
-
-namespace BlueJay.App
-{
-  public static class Program
-  {
-    [STAThread]
-    static void Main()
-    {
-      using (var game = new BlueJayAppGame())
-        game.Run();
-    }
-  }
-}
+﻿
+using var game = new BlueJay.Shared.BlueJayAppGame();
+game.Run();

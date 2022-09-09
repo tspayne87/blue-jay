@@ -1,12 +1,11 @@
-﻿using System;
-using BlueJay.Content.App;
+﻿using BlueJay.Shared;
 using Foundation;
 using UIKit;
 
 namespace BlueJay.IOS.App
 {
   [Register("AppDelegate")]
-  class Program : UIApplicationDelegate
+  internal class Program : UIApplicationDelegate
   {
     private static BlueJayAppGame game;
 
@@ -21,7 +20,7 @@ namespace BlueJay.IOS.App
     /// </summary>
     static void Main(string[] args)
     {
-      UIApplication.Main(args, null, "AppDelegate");
+      UIApplication.Main(args, null, typeof(Program));
     }
 
     public override void FinishedLaunching(UIApplication app)
