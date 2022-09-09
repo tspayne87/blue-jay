@@ -1,153 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
-    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{A4878805-DDB9-4502-97AB-F954CF30E629}</ProjectGuid>
+    <TargetFramework>net6.0-ios</TargetFramework>
     <OutputType>Exe</OutputType>
-    <RootNamespace>BlueJay.IOS.App</RootNamespace>
-    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>BlueJay.IOS.App</AssemblyName>
-    <ProvisioningType>manual</ProvisioningType>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <MtouchArch>i386, x86_64</MtouchArch>
-    <MtouchLink>None</MtouchLink>
-    <MtouchFastDev>true</MtouchFastDev>
-    <MtouchDebug>true</MtouchDebug>
-    <MtouchProfiling>true</MtouchProfiling>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <MtouchArch>i386, x86_64</MtouchArch>
-    <MtouchLink>None</MtouchLink>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
-    <DeviceSpecificBuild>true</DeviceSpecificBuild>
-    <MtouchDebug>true</MtouchDebug>
-    <MtouchProfiling>true</MtouchProfiling>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <SupportedOSPlatformVersion>11.2</SupportedOSPlatformVersion>
     <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\iPhone\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignKey>iPhone Developer</CodesignKey>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <BuildIpa>True</BuildIpa>
-    <CodesignProvision>Automatic:AdHoc</CodesignProvision>
-    <CodesignKey>iPhone Distribution</CodesignKey>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\iPhone\AppStore</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <CodesignProvision>Automatic:AppStore</CodesignProvision>
-    <CodesignKey>iPhone Distribution</CodesignKey>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
-    <AppExtensionDebugBundleId />
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="Xamarin.iOS" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.1.303" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\lib\BlueJay.Common\BlueJay.Common.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Core\BlueJay.Core.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Events\BlueJay.Events.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.UI.Component\BlueJay.UI.Component.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.UI\BlueJay.UI.csproj" />
+    <ProjectReference Include="..\lib\BlueJay\BlueJay.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Entitlements.plist" />
-    <None Include="Info.plist" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Default.png" />
-    <BundleResource Include="GameThumbnail.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <InterfaceDefinition Include="LaunchScreen.storyboard" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
-    <PackageReference Include="MonoGame.Framework.iOS" Version="3.8.0.1641" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\lib\BlueJay.Common\BlueJay.Common.csproj">
-      <Project>{3f2351d3-b640-4147-a6b5-dc3c6c1e7d49}</Project>
-      <Name>BlueJay.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj">
-      <Project>{3df0932e-182f-41be-8cc1-c0363520e7ff}</Project>
-      <Name>BlueJay.Component.System</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\BlueJay.Core\BlueJay.Core.csproj">
-      <Project>{e1834302-4b28-4845-8d03-9c78a00d63e7}</Project>
-      <Name>BlueJay.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\BlueJay.Events\BlueJay.Events.csproj">
-      <Project>{4226338c-261b-4c09-89ea-258e2f96e4e6}</Project>
-      <Name>BlueJay.Events</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\BlueJay.UI.Component\BlueJay.UI.Component.csproj">
-      <Project>{22b69fd5-c6a7-4f54-9619-d23e177396ee}</Project>
-      <Name>BlueJay.UI.Component</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\BlueJay.UI\BlueJay.UI.csproj">
-      <Project>{45c9f90e-6d1e-4967-b323-3ff4508d317e}</Project>
-      <Name>BlueJay.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\lib\BlueJay\BlueJay.csproj">
-      <Project>{77f7abc5-55bb-48c0-b589-402f0a8c35e1}</Project>
-      <Name>BlueJay</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
+  <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+    <Message Text="Restoring dotnet tools" Importance="High" />
+    <Exec Command="dotnet tool restore" />
+  </Target>
   <Import Project="..\BlueJay.Shared\BlueJay.Shared.projitems" Label="Shared" />
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
