@@ -12,7 +12,7 @@ namespace BlueJay.Interfaces
     /// <summary>
     /// The current view we are updating/rendering to the screen
     /// </summary>
-    IView Current { get; }
+    IView? Current { get; }
 
     /// <summary>
     /// Helper method is meant to set the current view so that it is updated/rendered

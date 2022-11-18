@@ -14,12 +14,12 @@ namespace BlueJay.Views
     /// <summary>
     /// The scope we are currently working with
     /// </summary>
-    private IServiceScope _scope;
+    private IServiceScope? _scope;
 
     /// <summary>
     /// Getter to get the current service provider based on the scope
     /// </summary>
-    protected IServiceProvider ServiceProvider => _scope.ServiceProvider;
+    protected IServiceProvider? ServiceProvider => _scope?.ServiceProvider;
 
     /// <summary>
     /// Initialization method is meant to set a new scope for the DI and have the view configure that provider once it has been created
@@ -31,8 +31,7 @@ namespace BlueJay.Views
       if (_scope != null) throw new ArgumentException("Scope has already been created", nameof(_scope));
 
       _scope = serviceProvider.CreateScope();
-
-      ConfigureProvider(ServiceProvider);
+      ConfigureProvider(_scope.ServiceProvider);
     }
 
     /// <summary>
@@ -46,7 +45,7 @@ namespace BlueJay.Views
     /// </summary>
     public virtual void Draw()
     {
-      ServiceProvider.GetRequiredService<IEventProcessor>().Draw();
+      ServiceProvider?.GetRequiredService<IEventProcessor>().Draw();
     }
 
 
@@ -55,7 +54,7 @@ namespace BlueJay.Views
     /// </summary>
     public virtual void Update()
     {
-      ServiceProvider.GetRequiredService<IEventProcessor>().Update();
+      ServiceProvider?.GetRequiredService<IEventProcessor>().Update();
     }
 
     /// <summary>
@@ -63,7 +62,7 @@ namespace BlueJay.Views
     /// </summary>
     public void Activate()
     {
-      ServiceProvider.GetRequiredService<IEventProcessor>().Activate();
+      ServiceProvider?.GetRequiredService<IEventProcessor>().Activate();
     }
 
     /// <summary>
@@ -71,7 +70,7 @@ namespace BlueJay.Views
     /// </summary>
     public void Deactivate()
     {
-      ServiceProvider.GetRequiredService<IEventProcessor>().Deactivate();
+      ServiceProvider?.GetRequiredService<IEventProcessor>().Deactivate();
     }
 
     /// <summary>
@@ -79,7 +78,7 @@ namespace BlueJay.Views
     /// </summary>
     public void Exit()
     {
-      ServiceProvider.GetRequiredService<IEventProcessor>().Exit();
+      ServiceProvider?.GetRequiredService<IEventProcessor>().Exit();
     }
 
     /// <summary>

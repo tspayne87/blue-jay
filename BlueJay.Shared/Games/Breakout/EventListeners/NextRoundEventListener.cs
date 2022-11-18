@@ -69,15 +69,15 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     public override void Process(IEvent<NextRoundEvent> evt)
     {
       // Clear the ball layer
-      if (_layerCollection[LayerNames.BallLayer]?.Entities.Count == 1)
+      if (_layerCollection[LayerNames.BallLayer]?.Count == 1)
       {
-        _layerCollection[LayerNames.BallLayer].Entities.Clear();
+        _layerCollection[LayerNames.BallLayer].Clear();
       }
 
       // Clear all blocks if any
-      if (_layerCollection[LayerNames.BlockLayer]?.Entities.Count > 0)
+      if (_layerCollection[LayerNames.BlockLayer]?.Count > 0)
       {
-        _layerCollection[LayerNames.BlockLayer].Entities.Clear();
+        _layerCollection[LayerNames.BlockLayer].Clear();
       }
 
       // Start the new game with the blocks and ball added

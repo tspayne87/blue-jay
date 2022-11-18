@@ -3,6 +3,7 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.EventListeners;
 using BlueJay.Events.Interfaces;
 using BlueJay.Interfaces;
+using BlueJay.Views;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueJay
@@ -32,6 +33,17 @@ namespace BlueJay
         eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<DrawEventListener>(provider, new object[] { system }));
 
       return system;
+    }
+
+    /// <summary>
+    /// Method meant to include all the blue jay dependencies to the service collection
+    /// </summary>
+    /// <param name="collection">The collection we are adding dependencies too</param>
+    /// <returns>Will return the collection for chaining</returns>
+    public static IServiceCollection AddBlueJay(this IServiceCollection collection)
+    {
+      return collection
+        .AddSingleton<IViewCollection, ViewCollection>();
     }
 
     /// <summary>

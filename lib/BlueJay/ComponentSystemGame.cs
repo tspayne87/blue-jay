@@ -27,13 +27,16 @@ namespace BlueJay
     /// <summary>
     /// The service provider for the DI implementation
     /// </summary>
-    private IServiceProvider _serviceProvider;
+    private IServiceProvider? _serviceProvider;
 
     /// <summary>
     /// The delta service that can be injected by things in the system
     /// </summary>
     private DeltaService _deltaService;
 
+    /// <summary>
+    /// The graphics device manager
+    /// </summary>
     protected GraphicsDeviceManager GraphicsManager { get; private set; }
 
     /// <summary>
@@ -71,10 +74,10 @@ namespace BlueJay
       _serviceCollection.AddSingleton(Content);
       _serviceCollection.AddSingleton(Window);
       _serviceCollection.AddSingleton(GraphicsDevice);
-      _serviceCollection.AddSingleton<IViewCollection, ViewCollection>();
       _serviceCollection.AddSingleton<SpriteBatch>();
       _serviceCollection.AddSingleton<SpriteBatchExtension>();
       _serviceCollection.AddBlueJayEvents();
+      _serviceCollection.AddBlueJaySystem();
       _serviceCollection.AddBlueJay();
 
       ConfigureServices(_serviceCollection);
@@ -91,7 +94,7 @@ namespace BlueJay
     {
       _deltaService.Delta = gameTime.ElapsedGameTime.Milliseconds;
       _deltaService.DeltaSeconds = gameTime.ElapsedGameTime.TotalSeconds;
-      _serviceProvider.GetRequiredService<IViewCollection>()
+      _serviceProvider?.GetRequiredService<IViewCollection>()
         .Current?.Update();
 
       base.Update(gameTime);
@@ -103,7 +106,7 @@ namespace BlueJay
     /// <param name="gameTime">The current elapsed game time</param>
     protected override void Draw(GameTime gameTime)
     {
-      _serviceProvider.GetRequiredService<IViewCollection>()
+      _serviceProvider?.GetRequiredService<IViewCollection>()
         .Current?.Draw();
 
       base.Draw(gameTime);
@@ -121,7 +124,7 @@ namespace BlueJay
     /// <inheritdoc />
     protected override void OnDeactivated(object sender, EventArgs args)
     {
-      _serviceProvider.GetRequiredService<IViewCollection>()
+      _serviceProvider?.GetRequiredService<IViewCollection>()
         .Current?.Deactivate();
 
       base.OnDeactivated(sender, args);
@@ -130,7 +133,7 @@ namespace BlueJay
     /// <inheritdoc />
     protected override void OnExiting(object sender, EventArgs args)
     {
-      _serviceProvider.GetRequiredService<IViewCollection>()
+      _serviceProvider?.GetRequiredService<IViewCollection>()
         .Current?.Exit();
 
       base.OnExiting(sender, args);

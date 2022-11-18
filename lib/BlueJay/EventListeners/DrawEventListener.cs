@@ -46,12 +46,11 @@ namespace BlueJay.EventListeners
         {
           if (_system.Layers.Count == 0 || _system.Layers.Contains(_layerCollection[j].Id))
           {
-            var entities = _layerCollection[j].Entities.GetByKey(_system.Key);
-            for (var k = 0; k < entities.Count; ++k)
+            foreach(var entity in _layerCollection[j].GetByKey(_system.Key))
             {
-              if (entities[k].Active)
+              if (entity.Active)
               {
-                ((IDrawEntitySystem)_system).OnDraw(entities[k]);
+                ((IDrawEntitySystem)_system).OnDraw(entity);
               }
             }
           }

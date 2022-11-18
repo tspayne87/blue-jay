@@ -1,7 +1,4 @@
 ﻿using BlueJay.Component.System.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using BlueJay.Component.System.Events;
 using BlueJay.Events.Interfaces;
 
@@ -54,6 +51,7 @@ namespace BlueJay.Component.System
       _addonsId = 0;
       _addons = new IAddon[0];
       Active = true;
+      Layer = string.Empty;
     }
 
     #region Lifecycle Methods
@@ -66,9 +64,9 @@ namespace BlueJay.Component.System
         Array.Resize(ref _addons, _addons.Length + 1);
         _addons[_addons.Length - 1] = addon;
         _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
-        _layerCollection[Layer].Entities.UpdateAddonTree(this);
+        _layerCollection[Layer]?.UpdateAddonTree(this);
 
-        _eventQueue.DispatchEvent(new AddAddonEvent() { Addon = addon }, this);
+        _eventQueue.DispatchEvent(new AddAddonEvent(addon), this);
         return true;
       }
       return false;
@@ -87,11 +85,19 @@ namespace BlueJay.Component.System
         }
         Array.Resize(ref _addons, _addons.Length - 1);
         _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
-        _layerCollection[Layer].Entities.UpdateAddonTree(this);
-        _eventQueue.DispatchEvent(new RemoveAddonEvent() { Addon = addon }, this);
+        _layerCollection[Layer]?.UpdateAddonTree(this);
+        _eventQueue.DispatchEvent(new RemoveAddonEvent(addon), this);
         return true;
       }
       return false;
+    }
+
+    /// <inheritdoc />
+    public bool Remove<T>()
+      where T : struct, IAddon
+    {
+      if (!Contains<T>()) return false;
+      return Remove((T)_addons.First(x => x is T));
     }
 
     /// <inheritdoc />
@@ -103,7 +109,7 @@ namespace BlueJay.Component.System
         if (_addons[i].GetType() == typeof(T))
         {
           _addons[i] = addon;
-          _eventQueue.DispatchEvent(new UpdateAddonEvent() { Addon = addon }, this);
+          _eventQueue.DispatchEvent(new UpdateAddonEvent(addon), this);
           return true;
         }
       }
@@ -160,9 +166,50 @@ namespace BlueJay.Component.System
     }
     #endregion
 
+    /// <inheritdoc />
     public virtual void Dispose()
     {
 
     }
+
+    /// <inheritdoc />
+    public bool Contains<A1>() where A1 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2>() where A1 : struct, IAddon where A2 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4, A5>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4, A5>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4, A5, A6>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4, A5, A6>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4, A5, A6, A7>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4, A5, A6, A7>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4, A5, A6, A7, A8>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon where A8 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4, A5, A6, A7, A8>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4, A5, A6, A7, A8, A9>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon where A8 : struct, IAddon where A9 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4, A5, A6, A7, A8, A9>());
+
+    /// <inheritdoc />
+    public bool Contains<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon where A8 : struct, IAddon where A9 : struct, IAddon where A10 : struct, IAddon
+      => MatchKey(KeyHelper.Create<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>());
   }
 }

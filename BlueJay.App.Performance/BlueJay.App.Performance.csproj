@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Core\BlueJay.Core.csproj" />
+    <ProjectReference Include="..\lib\BlueJay.Events\BlueJay.Events.csproj" />
+    <ProjectReference Include="..\lib\BlueJay\BlueJay.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -33,7 +33,7 @@ namespace BlueJay.Component.System
     {
       entity.Layer = layer;
       provider.GetRequiredService<ILayerCollection>()
-        .AddEntity(entity, layer, weight);
+        .Add(entity, layer, weight);
       return entity;
     }
 
