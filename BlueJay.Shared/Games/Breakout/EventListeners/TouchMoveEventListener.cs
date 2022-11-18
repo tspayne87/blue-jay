@@ -32,9 +32,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<TouchMoveEvent> evt)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Entities.Count == 1)
+      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
       {
-        var paddle = _layerCollection[LayerNames.PaddleLayer].Entities[0];
+        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var ba = paddle.GetAddon<BoundsAddon>();
 
         ba.Bounds.X = (int)evt.Data.Position.X - (ba.Bounds.Width / 2);

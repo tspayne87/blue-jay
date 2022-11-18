@@ -64,10 +64,10 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<LostBallEvent> evt)
     {
-      if (_layerCollection[LayerNames.BallLayer].Entities.Count == 1)
+      if (_layerCollection[LayerNames.BallLayer].Count == 1)
       {
-        var ball = _layerCollection[LayerNames.BallLayer].Entities[0];
-        _layerCollection[LayerNames.BallLayer].Entities.Remove(ball);
+        var ball = _layerCollection[LayerNames.BallLayer][0];
+        _layerCollection[LayerNames.BallLayer].Remove(ball);
         _service.Balls--;
 
         if (_service.Balls >= 0)

@@ -4,6 +4,7 @@ using BlueJay.Events.Lifecycle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace BlueJay.Events
 {
@@ -215,11 +216,11 @@ namespace BlueJay.Events
 
       if (_handlers.ContainsKey(evt.Name))
       {
-        for (var i = 0; i < _handlers[evt.Name].Count; ++i)
+        foreach (var handler in CollectionsMarshal.AsSpan(_handlers[evt.Name]))
         {
-          if (_handlers[evt.Name][i].EventListener.ShouldProcess(evt))
+          if (handler.EventListener.ShouldProcess(evt))
           {
-            _handlers[evt.Name][i].EventListener.Process(evt);
+            handler.EventListener.Process(evt);
 
             // Break out of the look so we do not process any more handlers since stop propagation was called
             if (evt.IsComplete)

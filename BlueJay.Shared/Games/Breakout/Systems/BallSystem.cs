@@ -73,9 +73,9 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="entity">The entity we are working with (aka: The ball)</param>
     private void BeforeStart(IEntity entity)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Entities.Count == 1)
+      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
       {
-        var paddle = _layerCollection[LayerNames.PaddleLayer].Entities[0];
+        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var ba = entity.GetAddon<BoundsAddon>();
         var pba = paddle.GetAddon<BoundsAddon>();
 
@@ -92,7 +92,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="entity">The entity we are working with (aka: The ball)</param>
     private void DuringGame(IEntity entity)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Entities.Count == 1)
+      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
       {
         var ba = entity.GetAddon<BoundsAddon>();
         var va = entity.GetAddon<VelocityAddon>();
@@ -100,7 +100,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
         // Add the velocity to the bounds to move it around
         ba.Bounds = ba.Bounds.Add(va.Velocity);
 
-        var paddle = _layerCollection[LayerNames.PaddleLayer].Entities[0];
+        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var pba = paddle.GetAddon<BoundsAddon>();
 
         var side = RectangleHelper.SideIntersection(ba.Bounds, pba.Bounds);
@@ -130,12 +130,11 @@ namespace BlueJay.Shared.Games.Breakout.Systems
         }
         else if (ba.Bounds.Y >= _graphics.Viewport.Height - ba.Bounds.Height)
         { // Ball Lost Remove ball from calculation systems and trigger event
-          // _layerCollection[LayerNames.BallLayer].Entities.Remove(entity);
           _eventQueue.DispatchEvent(new LostBallEvent());
         }
         else
         { // Check if the ball has intersected with any blocks on this frame
-          var blocks = _layerCollection[LayerNames.BlockLayer].Entities;
+          var blocks = _layerCollection[LayerNames.BlockLayer];
           for (var i = 0; i < blocks.Count; ++i)
           {
             var bba = blocks[i].GetAddon<BoundsAddon>();
@@ -153,9 +152,9 @@ namespace BlueJay.Shared.Games.Breakout.Systems
               }
 
               // Remove the block from the screen since the ball has hit it
-              _layerCollection[LayerNames.BlockLayer].Entities.Remove(blocks[i]);
+              _layerCollection[LayerNames.BlockLayer].Remove(blocks[i]);
               _service.Score += bi.Score;
-              if (_layerCollection[LayerNames.BlockLayer].Entities.Count == 0)
+              if (_layerCollection[LayerNames.BlockLayer].Count == 0)
               {
                 _eventQueue.DispatchEvent(new NextRoundEvent());
               }

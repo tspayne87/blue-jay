@@ -46,10 +46,12 @@ namespace BlueJay.UI.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<MouseDownEvent> evt)
     {
+      var uiLayer = _layers[UIStatic.LayerName];
+      if (uiLayer == null) return;
       // Iterate over all entities so we can find the entity we need to fire the click event on
-      var entities = _layers[UIStatic.LayerName].Entities;
-      IEntity foundEntity = null;
-      for (var i = entities.Count - 1; i >= 0; --i)
+      IEntity? foundEntity = null;
+      var entities = uiLayer.AsSpan();
+      for (var i = entities.Length - 1; i >= 0; --i)
       {
         var entity = entities[i];
         if (entity.Active && Contains(entity, evt.Data.Position))

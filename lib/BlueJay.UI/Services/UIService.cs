@@ -10,6 +10,6 @@ namespace BlueJay.UI.Services
     /// <summary>
     /// The currently focused entity on the UI
     /// </summary>
-    public IEntity FocusedEntity { get; set; }
+    public IEntity? FocusedEntity { get; set; }
   }
 }

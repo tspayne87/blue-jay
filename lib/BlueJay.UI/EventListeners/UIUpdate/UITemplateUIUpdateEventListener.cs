@@ -35,10 +35,8 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UIUpdateEvent> evt)
     {
-      for (var i = 0; i < _layers[UIStatic.LayerName].Entities.Count; ++i)
-      {
-        ProcessStretchEntity(_layers[UIStatic.LayerName].Entities[i], evt.Data);
-      }
+      foreach (var entity in _layers[UIStatic.LayerName].AsSpan())
+        ProcessStretchEntity(entity, evt.Data);
     }
 
     /// <summary>

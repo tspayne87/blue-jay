@@ -340,7 +340,7 @@ namespace BlueJay.UI.Component
     internal static void RemoveEntity(ILayerCollection layers, IEntity entity)
     {
       // Remove the entity
-      layers[entity.Layer].Entities.Remove(entity);
+      layers[entity.Layer].Remove(entity);
       entity.Dispose();
 
       // Remove all children

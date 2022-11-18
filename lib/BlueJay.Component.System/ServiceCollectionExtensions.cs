@@ -11,7 +11,7 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <param name="collection">The service collection to configure scoped and singletons</param>
     /// <returns>Will return the collection for chaining</returns>
-    public static IServiceCollection AddBlueJay(this IServiceCollection collection)
+    public static IServiceCollection AddBlueJaySystem(this IServiceCollection collection)
     {
 
       return collection

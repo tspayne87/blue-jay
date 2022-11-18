@@ -18,6 +18,7 @@ namespace BlueJay.Common
     /// <param name="defaultValue">The value that each value should start with</param>
     /// <returns>Will return the primed dictionary to track states</returns>
     internal static Dictionary<T, V> GenerateEnumDictionary<T, V>(V defaultValue)
+      where T : notnull
     {
       var result = new Dictionary<T, V>();
       foreach (var key in Enum.GetValues(typeof(T)))

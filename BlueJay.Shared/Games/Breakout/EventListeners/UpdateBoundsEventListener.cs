@@ -46,9 +46,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
       {
         if (_layers[i].Id != UIStatic.LayerName)
         {
-          for (var j = 0; j < _layers[i].Entities.Count; ++j)
+          for (var j = 0; j < _layers[i].Count; ++j)
           {
-            ProcessEntity(_layers[i].Entities[j], evt.Data);
+            ProcessEntity(_layers[i][j], evt.Data);
           }
         }
       }

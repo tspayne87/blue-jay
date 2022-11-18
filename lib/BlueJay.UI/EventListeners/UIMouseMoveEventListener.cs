@@ -50,11 +50,13 @@ namespace BlueJay.UI.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<MouseMoveEvent> evt)
     {
-      IEntity hoverEntity = null; // The current hover entity that was found in the system
+      var uiLayer = _layers[UIStatic.LayerName];
+      if (uiLayer == null) return;
 
+      IEntity? hoverEntity = null; // The current hover entity that was found in the system
+      var entities = uiLayer.AsSpan();
       // Iterate over all entities so we can find the hover entity and reset hovering if needed
-      var entities = _layers[UIStatic.LayerName].Entities;
-      for (var i = entities.Count - 1; i >= 0; --i)
+      for (var i = entities.Length - 1; i >= 0; --i)
       {
         var entity = entities[i];
         if (entity.Active)

@@ -32,10 +32,10 @@ namespace BlueJay.UI.EventListeners.UIUpdate
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UIUpdateEvent> evt)
     {
-      for (var i = _layers[UIStatic.LayerName].Entities.Count - 1; i >= 0; --i)
-      {
-        ProcessEntity(_layers[UIStatic.LayerName].Entities[i]);
-      }
+      /// TODO: Need to create reverse span here
+      var collection = _layers[UIStatic.LayerName].AsSpan();
+      for (var i = collection.Length - 1; i >= 0; --i)
+        ProcessEntity(collection[i]);
     }
 
     /// <summary>

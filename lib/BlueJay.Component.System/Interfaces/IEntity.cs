@@ -38,6 +38,13 @@ namespace BlueJay.Component.System.Interfaces
     bool Remove<T>(T addon) where T : struct, IAddon;
 
     /// <summary>
+    /// Method is meant to remove an added based on the type
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    bool Remove<T>() where T : struct, IAddon;
+
+    /// <summary>
     /// Method is meant to update an addon from the list
     /// </summary>
     /// <typeparam name="T">The type of addon</typeparam>
@@ -71,5 +78,120 @@ namespace BlueJay.Component.System.Interfaces
     /// <param name="key">The key that is meant to be a bitwise flag to determine the possible addons that exist on this entity</param>
     /// <returns>Will return true if the key matches the list of addons in this entity</returns>
     bool MatchKey(long key);
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1>() where A1 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2>() where A1 : struct, IAddon where A2 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <typeparam name="A5">The fifth addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4, A5>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <typeparam name="A5">The fifth addon</typeparam>
+    /// <typeparam name="A6">The sixth addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4, A5, A6>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <typeparam name="A5">The fifth addon</typeparam>
+    /// <typeparam name="A6">The sixth addon</typeparam>
+    /// <typeparam name="A7">The seventh addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4, A5, A6, A7>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <typeparam name="A5">The fifth addon</typeparam>
+    /// <typeparam name="A6">The sixth addon</typeparam>
+    /// <typeparam name="A7">The seventh addon</typeparam>
+    /// <typeparam name="A8">The eighth addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4, A5, A6, A7, A8>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon where A8 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <typeparam name="A5">The fifth addon</typeparam>
+    /// <typeparam name="A6">The sixth addon</typeparam>
+    /// <typeparam name="A7">The seventh addon</typeparam>
+    /// <typeparam name="A8">The eighth addon</typeparam>
+    /// <typeparam name="A9">The ninth addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4, A5, A6, A7, A8, A9>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon where A8 : struct, IAddon where A9 : struct, IAddon;
+
+    /// <summary>
+    /// Helper method to determine if this entity has a specific addon
+    /// </summary>
+    /// <typeparam name="A1">The first addon</typeparam>
+    /// <typeparam name="A2">The second addon</typeparam>
+    /// <typeparam name="A3">The third addon</typeparam>
+    /// <typeparam name="A4">The forth addon</typeparam>
+    /// <typeparam name="A5">The fifth addon</typeparam>
+    /// <typeparam name="A6">The sixth addon</typeparam>
+    /// <typeparam name="A7">The seventh addon</typeparam>
+    /// <typeparam name="A8">The eighth addon</typeparam>
+    /// <typeparam name="A9">The ninth addon</typeparam>
+    /// <typeparam name="A10">The tenth addon</typeparam>
+    /// <returns>Will return true if all the addons are found</returns>
+    bool Contains<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>() where A1 : struct, IAddon where A2 : struct, IAddon where A3 : struct, IAddon where A4 : struct, IAddon where A5 : struct, IAddon where A6 : struct, IAddon where A7 : struct, IAddon where A8 : struct, IAddon where A9 : struct, IAddon where A10 : struct, IAddon;
   }
 }

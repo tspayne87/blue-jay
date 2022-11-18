@@ -76,13 +76,13 @@ namespace BlueJay.Shared.Games.Breakout.Systems
       _batch.Begin();
       // Calculate the text that should exist on the screen
       var txt = string.Empty;
-      if (_layers[LayerNames.BallLayer]?.Entities.Count == 0)
+      if (_layers[LayerNames.BallLayer]?.Count == 0)
       {
         txt = $"Game Over\n\nScore: {_service.Score}";
       }
-      else if (_layers[LayerNames.BallLayer]?.Entities.Count == 1)
+      else if (_layers[LayerNames.BallLayer]?.Count == 1)
       {
-        var baa = _layers[LayerNames.BallLayer].Entities[0].GetAddon<BallActiveAddon>();
+        var baa = _layers[LayerNames.BallLayer][0].GetAddon<BallActiveAddon>();
         if (!baa.IsActive)
         {
           txt = $"Round {_service.Round} Start\nPress Space To Start";

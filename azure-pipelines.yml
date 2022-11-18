@@ -3,7 +3,7 @@ pool:
 
 variables:
   - name: MajorMinor
-    value: '0.2'
+    value: '0.3'
   - name: Patch
     value: $[counter(variables['MajorMinor'], 1)]
   - name: Version

@@ -1,22 +1,36 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace BlueJay.Component.System.Collections
 {
+  /// <summary>
+  /// The implmentation of the layer collections
+  /// </summary>
   internal class LayerCollection : ILayerCollection
   {
+    /// <summary>
+    /// Service provider needed to generate layers
+    /// </summary>
     private readonly IServiceProvider _provider;
 
     /// <summary>
     /// The internal layer collection we are working with
     /// </summary>
-    private List<ILayer> _collection = new List<ILayer>();
+    private List<ILayer> _collection;
 
     /// <inheritdoc />
     public int Count => _collection.Count;
+
+    /// <inheritdoc />
+    public bool IsReadOnly => false;
+
+    /// <inheritdoc />
+    ILayer IList<ILayer>.this[int index] { get => _collection[index]; set => _collection[index] = value; }
 
     /// <summary>
     /// Constructor meant to inject various services into this collection
@@ -25,10 +39,11 @@ namespace BlueJay.Component.System.Collections
     public LayerCollection(IServiceProvider provider)
     {
       _provider = provider;
+      _collection = new List<ILayer>();
     }
 
     /// <inheritdoc />
-    public void AddEntity(IEntity entity, string layer = "", int weight = 0)
+    public void Add(IEntity entity, string layer = "", int weight = 0)
     {
       var item = this[layer];
       if (item == null)
@@ -38,16 +53,7 @@ namespace BlueJay.Component.System.Collections
         Sort();
       }
 
-      item.Entities.Add(entity);
-    }
-
-    /// <inheritdoc />
-    public void RemoveEntity(IEntity entity)
-    {
-      if (Contains(entity.Layer))
-      {
-        this[entity.Layer].Entities.Remove(entity);
-      }
+      item.Add(entity);
     }
 
     /// <inheritdoc />
@@ -61,25 +67,62 @@ namespace BlueJay.Component.System.Collections
     }
 
     /// <inheritdoc />
-    public bool Contains(string layer)
+    public void Remove(IEntity entity)
     {
-      return this[layer] != null;
+      if (Contains(entity.Layer))
+      {
+        this[entity.Layer]?.Remove(entity);
+      }
     }
 
     /// <inheritdoc />
-    public ILayer this[int i]
+    public bool Contains(string layer) => _collection.Any(x => x.Id == layer);
+
+    /// <inheritdoc />
+    public ReadOnlySpan<ILayer> AsSpan() => CollectionsMarshal.AsSpan(_collection);
+
+    /// <inheritdoc />
+    public int IndexOf(ILayer item) => _collection.IndexOf(item);
+
+    /// <inheritdoc />
+    public void Insert(int index, ILayer item) => _collection.Insert(index, item);
+
+    /// <inheritdoc />
+    public void RemoveAt(int index) => _collection.RemoveAt(index);
+
+    /// <inheritdoc />
+    public void Add(ILayer item)
     {
-      get { return _collection[i]; }
+      _collection.Add(item);
+      Sort();
     }
 
     /// <inheritdoc />
-    public ILayer this[string id]
+    public void Clear() => _collection.Clear();
+
+    /// <inheritdoc />
+    public bool Contains(ILayer item) => _collection.Contains(item);
+
+    /// <inheritdoc />
+    public void CopyTo(ILayer[] array, int arrayIndex) => _collection.CopyTo(array, arrayIndex);
+
+    /// <inheritdoc />
+    public bool Remove(ILayer item) => _collection.Remove(item);
+
+    /// <inheritdoc />
+    public IEnumerator<ILayer> GetEnumerator() => _collection.GetEnumerator();
+
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
+
+    /// <inheritdoc />
+    public ILayer? this[string id]
     {
       get
       {
-        for (var i = 0; i < _collection.Count; ++i)
-          if (_collection[i].Id == id)
-            return _collection[i];
+        foreach (var layer in AsSpan())
+          if (layer.Id == id)
+            return layer;
         return null;
       }
     }

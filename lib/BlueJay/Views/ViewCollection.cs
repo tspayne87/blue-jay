@@ -19,17 +19,17 @@ namespace BlueJay.Views
     /// <summary>
     /// The list of collections so we can switch between them
     /// </summary>
-    private List<IView> _collection = new List<IView>();
+    private List<IView> _collection;
 
     /// <summary>
     /// The current view that was assigned
     /// </summary>
-    private IView _current;
+    private IView? _current;
 
     /// <summary>
     /// The current rendering view
     /// </summary>
-    public IView Current
+    public IView? Current
     {
       get => _current;
       private set
@@ -47,6 +47,8 @@ namespace BlueJay.Views
     public ViewCollection(IServiceProvider provider)
     {
       _provider = provider;
+      _collection = new List<IView>();
+      _current = null;
     }
 
     /// <summary>

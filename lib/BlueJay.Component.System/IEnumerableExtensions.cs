@@ -13,7 +13,7 @@ namespace BlueJay.Component.System
     /// <param name="list">The list we are looking in</param>
     /// <returns>Will return the FirstOrDefault addon it finds</returns>
     internal static TComponent ByIdentifier<TComponent>(this IEnumerable<IAddon> list)
-      where TComponent : IAddon
+      where TComponent : struct, IAddon
     {
       var identifier = KeyHelper.Create<TComponent>();
       foreach(var item in list)
