@@ -18,7 +18,7 @@
     /// <summary>
     /// The current target we are working with
     /// </summary>
-    object Target { get; }
+    object? Target { get; }
 
     /// <summary>
     /// Method is meant to stop the event cycle from moving forward and make sure that no other event listeners past the

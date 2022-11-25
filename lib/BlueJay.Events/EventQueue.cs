@@ -54,7 +54,7 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="target">The target we want to filter this event too</param>
-    public void DispatchEvent<T>(T evt, object target = null)
+    public void DispatchEvent<T>(T evt, object? target = null)
     {
       DispatchDelayedEvent(evt, 0, target);
     }
@@ -66,15 +66,30 @@ namespace BlueJay.Events
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="timeout">The timeout this event should take before triggering in milliseconds</param>
     /// <param name="target">The target we want to filter this event too</param>
-    public IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object target = null)
+    public IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object? target = null)
     {
-      var name = typeof(T).Name;
-      if (_handlers.ContainsKey(name) && _handlers[name].Count > 0)
+      if (evt != null)
       {
-        var @event = new Event<T>(evt, target, timeout);
+        var name = evt.GetType().Name;
+        if (_handlers.ContainsKey(name) && _handlers[name].Count > 0)
+        {
+          object? @event; // The current event that should be the instance of the event being created
+          if (typeof(T) == typeof(object))
+          { // If we are dealing with just an object we need to create an event threw
+            // reflection since using the T could result in the wrong type during casting
+            var eType = typeof(Event<>); // Create a blank type of the event object
+            var fullType = eType.MakeGenericType(evt.GetType()); // Add the generic type based on the value given
+            @event = Activator.CreateInstance(fullType, new object[] { evt, target, timeout }); // Reflectively create the object
+          }
+          else // We just create the event in a normal way since we do not need to reflectivly create the event object
+            @event = new Event<T>(evt, target, timeout);
 
-        _next.Enqueue(@event);
-        return new EventUnsubscriber(@event);
+          if (@event != null && @event is IEvent nEvent && @event is IInternalEvent iEvent)
+          {
+            _next.Enqueue(nEvent);
+            return new EventUnsubscriber(iEvent);
+          }
+        }
       }
       return new EventUnsubscriber(null);
     }
@@ -111,7 +126,7 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, int? weight = null)
+    public IDisposable AddEventListener<T>(Func<T, object?, bool> callback, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>(callback, null, false), weight);
     }
@@ -123,7 +138,7 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    public IDisposable AddEventListener<T>(Func<T, bool> callback, object target, int? weight = null)
+    public IDisposable AddEventListener<T>(Func<T, bool> callback, object? target, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true), weight);
     }
@@ -135,7 +150,7 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    public IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target, int? weight = null)
+    public IDisposable AddEventListener<T>(Func<T, object?, bool> callback, object? target, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>(callback, target, true), weight);
     }
@@ -251,13 +266,13 @@ namespace BlueJay.Events
       /// <summary>
       /// The event that needs to be cancelled
       /// </summary>
-      private readonly IInternalEvent _event;
+      private readonly IInternalEvent? _event;
 
       /// <summary>
       /// Constructor meant to create the disposable so that the event can be cancelled if needed
       /// </summary>
       /// <param name="event">The event that needs to be cancelled</param>
-      public EventUnsubscriber(IInternalEvent @event)
+      public EventUnsubscriber(IInternalEvent? @event)
       {
         _event = @event;
       }

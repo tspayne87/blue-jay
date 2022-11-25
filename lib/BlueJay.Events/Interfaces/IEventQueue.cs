@@ -11,7 +11,7 @@ namespace BlueJay.Events.Interfaces
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="target">The target this event is being triggered on</param>
-    void DispatchEvent<T>(T evt, object target = null);
+    void DispatchEvent<T>(T evt, object? target = null);
 
     /// <summary>
     /// Helper method is meant to dispatched events, this will defer them till the timeout from the arguments
@@ -20,7 +20,7 @@ namespace BlueJay.Events.Interfaces
     /// <param name="evt">The event that is being triggered</param>
     /// <param name="timeout">The timeout that should be used when delaying the event</param>
     /// <param name="target">The target this event is being triggered on</param>
-    IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object target = null);
+    IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object? target = null);
 
     /// <summary>
     /// Helper method is meant to add on event listeners into the system so they can interact with events that get dispatched
@@ -44,7 +44,7 @@ namespace BlueJay.Events.Interfaces
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    IDisposable AddEventListener<T>(Func<T, object, bool> callback, int? weight = null);
+    IDisposable AddEventListener<T>(Func<T, object?, bool> callback, int? weight = null);
 
     /// <summary>
     /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
@@ -53,7 +53,7 @@ namespace BlueJay.Events.Interfaces
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    IDisposable AddEventListener<T>(Func<T, bool> callback, object target, int? weight = null);
+    IDisposable AddEventListener<T>(Func<T, bool> callback, object? target, int? weight = null);
 
     /// <summary>
     /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
@@ -62,7 +62,7 @@ namespace BlueJay.Events.Interfaces
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    IDisposable AddEventListener<T>(Func<T, object, bool> callback, object target, int? weight = null);
+    IDisposable AddEventListener<T>(Func<T, object?, bool> callback, object? target, int? weight = null);
 
     /// <summary>
     /// Helper method to process the current queue

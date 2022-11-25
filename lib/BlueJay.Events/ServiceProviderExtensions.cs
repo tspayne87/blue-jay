@@ -39,7 +39,7 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    public static IDisposable AddEventListener<T>(this IServiceProvider provider, Func<T, object, bool> callback, int? weight = null)
+    public static IDisposable AddEventListener<T>(this IServiceProvider provider, Func<T, object?, bool> callback, int? weight = null)
     {
       var eventQueue = provider.GetRequiredService<IEventQueue>();
       return eventQueue.AddEventListener(callback, weight);
@@ -65,7 +65,7 @@ namespace BlueJay.Events
     /// <typeparam name="T">The type of event we are working with</typeparam>
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     /// <param name="target">The target this callback should be attached to</param>
-    public static IDisposable AddEventListener<T>(this IServiceProvider provider, Func<T, object, bool> callback, object target, int? weight = null)
+    public static IDisposable AddEventListener<T>(this IServiceProvider provider, Func<T, object?, bool> callback, object? target, int? weight = null)
     {
       var eventQueue = provider.GetRequiredService<IEventQueue>();
       return eventQueue.AddEventListener(callback, target, weight);
