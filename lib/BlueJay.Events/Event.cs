@@ -26,7 +26,7 @@ namespace BlueJay.Events
     /// <summary>
     /// The current target we are working with
     /// </summary>
-    public object Target { get; private set; }
+    public object? Target { get; private set; }
 
     /// <summary>
     /// Timeout down till the event should be triggered
@@ -43,10 +43,10 @@ namespace BlueJay.Events
     /// </summary>
     /// <param name="data">The data we are working with this event</param>
     /// <param name="target">The current target this event was triggered on</param>
-    public Event(T data, object target = null, int timeout = 0)
+    public Event(T data, object? target = null, int timeout = 0)
     {
       Data = data;
-      Name = data.GetType().Name;
+      Name = data != null ? data.GetType().Name : string.Empty;
       Target = target;
       IsComplete = false;
       Timeout = timeout;

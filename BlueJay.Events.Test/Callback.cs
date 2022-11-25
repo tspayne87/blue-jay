@@ -3,7 +3,9 @@ using BlueJay.Events.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
+using System.Diagnostics;
 using Xunit;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace BlueJay.Events.Test
 {
@@ -190,6 +192,50 @@ namespace BlueJay.Events.Test
       queue.DispatchEvent(1);
       processor.Update();
       Assert.Equal(7, times);
+    }
+
+    [Fact]
+    public void TriggerObjectEvent()
+    {
+      var scope = Provider.CreateScope();
+      var processor = scope.ServiceProvider.GetRequiredService<IEventProcessor>();
+      var queue = scope.ServiceProvider.GetRequiredService<IEventQueue>();
+
+      var times = 0;
+      scope.ServiceProvider.AddEventListener<int>(x => ++times > -1);
+
+      queue.DispatchEvent((object)1);
+      processor.Update();
+      Assert.Equal(1, times);
+    }
+
+    [Fact]
+    public void TriggerDelayedObjectEvent()
+    {
+      var scope = Provider.CreateScope();
+      var processor = scope.ServiceProvider.GetRequiredService<IEventProcessor>();
+      var queue = scope.ServiceProvider.GetRequiredService<IEventQueue>();
+
+      DeltaService.Setup(ms => ms.Delta).Returns(200);
+
+      var times = 0;
+      scope.ServiceProvider.AddEventListener<int>(x => ++times >= 0);
+
+      var dispose = queue.DispatchDelayedEvent((object)1, 500);
+      processor.Update();
+
+      queue.DispatchDelayedEvent((object)2, 300);
+      processor.Update();
+      Assert.Equal(0, times);
+
+      dispose.Dispose();
+      processor.Update();
+      processor.Update();
+
+      Assert.Equal(1, times);
+
+      processor.Update();
+      Assert.Equal(1, times);
     }
   }
 }

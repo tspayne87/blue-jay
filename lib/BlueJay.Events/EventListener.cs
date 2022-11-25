@@ -13,7 +13,7 @@ namespace BlueJay.Events
     /// <summary>
     /// Property to determine if this event listener should process the event being triggered
     /// </summary>
-    public object ProcessTarget { get; protected set; }
+    public object? ProcessTarget { get; protected set; }
 
     /// <summary>
     /// Helper method is meant to handle the internal event processing and pass it along to the abstracted process
