@@ -37,16 +37,18 @@ namespace BlueJay.EventListeners
     /// <param name="evt">The current update event we are working with</param>
     public override void Process(IEvent<DrawEvent> evt)
     {
-      if (_system is IDrawSystem)
+      if (_system is IDrawSystem && !(_system is IDrawEntitySystem))
         ((IDrawSystem)_system).OnDraw();
 
       if (_system.Key != 0 && _system is IDrawEntitySystem)
       {
-        for (var j = 0; j < _layerCollection.Count; ++j)
+        foreach(var layer in _layerCollection.AsSpan())
         {
-          if (_system.Layers.Count == 0 || _system.Layers.Contains(_layerCollection[j].Id))
+          if (_system is IDrawSystem)
+            ((IDrawSystem)_system).OnDraw();
+          if (_system.Layers.Count == 0 || _system.Layers.Contains(layer.Id))
           {
-            foreach(var entity in _layerCollection[j].GetByKey(_system.Key))
+            foreach(var entity in layer.GetByKey(_system.Key))
             {
               if (entity.Active)
               {
@@ -54,10 +56,12 @@ namespace BlueJay.EventListeners
               }
             }
           }
+          if (_system is IDrawEndSystem)
+            ((IDrawEndSystem)_system).OnDrawEnd();
         }
       }
 
-      if (_system is IDrawEndSystem)
+      if (_system is IDrawEndSystem && !(_system is IDrawEntitySystem))
         ((IDrawEndSystem)_system).OnDrawEnd();
     }
   }
