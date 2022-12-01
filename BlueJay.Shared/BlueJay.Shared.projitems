@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)BlueJayAppGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\BreakoutViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\LayoutViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\TitleViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\UIComponentTestComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Addons\BallActiveAddon.cs" />
@@ -43,7 +44,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Systems\BreakoutRenderingSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\Systems\ClampPositionSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Breakout\UpdateBoundsEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\Addons\BottomAddon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\Addons\TopAddon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\RectangleFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\Systems\BottomRectangleDrawSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\Systems\TopRectangleDrawSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\BreakOutView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\LayerView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\TitleView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\UIComponentView.cs" />
   </ItemGroup>

@@ -30,7 +30,7 @@ namespace BlueJay
 
       // If this is a draw system we need to add an event listener to the queue
       if (system is IDrawSystem || system is IDrawEntitySystem || system is IDrawEndSystem)
-        eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<DrawEventListener>(provider, new object[] { system }));
+        provider.GetRequiredService<DrawableSystemCollection>().Add(system);
 
       return system;
     }
@@ -43,7 +43,8 @@ namespace BlueJay
     public static IServiceCollection AddBlueJay(this IServiceCollection collection)
     {
       return collection
-        .AddSingleton<IViewCollection, ViewCollection>();
+        .AddSingleton<IViewCollection, ViewCollection>()
+        .AddScoped<DrawableSystemCollection>();
     }
 
     /// <summary>
