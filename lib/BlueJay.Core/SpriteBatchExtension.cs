@@ -44,5 +44,16 @@ namespace BlueJay.Core
         _batch.Draw(_pixel, new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), width, height), color);
       }
     }
+
+    /// <summary>
+    /// Method is meant to draw a rectangle to the screen
+    /// </summary>
+    /// <param name="size">The size of the rectangle to draw</param>
+    /// <param name="position">The position of the rectangle</param>
+    /// <param name="color">The color of the rectangle</param>
+    public virtual void DrawRectangle(Size size, Vector2 position, Color color)
+    {
+      DrawRectangle(size.Width, size.Height, position, color);
+    }
   }
 }

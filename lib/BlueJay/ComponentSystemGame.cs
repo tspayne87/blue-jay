@@ -10,6 +10,8 @@ using BlueJay.Interfaces;
 using BlueJay.Views;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System;
+using BlueJay.EventListeners;
+using BlueJay.Events.Lifecycle;
 
 namespace BlueJay
 {

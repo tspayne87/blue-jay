@@ -19,7 +19,8 @@ namespace BlueJay.Shared.Components
   </Container>
 
   <Button @Select=""OnBreakoutClick()"">{{BreakoutTitle}}</Button>
-  <Button Style=""ColumnOffset: 1"" @Select=""OnTetrisClick()"">{{TetrisTitle}}</Button>
+  <Button @Select=""OnLayoutClick()"">{{LayoutTitle}}</Button>
+  <Button @Select=""OnTetrisClick()"">{{TetrisTitle}}</Button>
   <Button Style=""ColumnSpan: 3"" @Select=""OnUIComponentClick()"">{{UIComponentTitle}}</Button>
 </Container>
   ")]
@@ -47,6 +48,11 @@ namespace BlueJay.Shared.Components
     public readonly ReactiveProperty<string> UIComponentTitle;
 
     /// <summary>
+    /// The layout component title
+    /// </summary>
+    private readonly ReactiveProperty<string> LayoutTitle;
+
+    /// <summary>
     /// Constructor is meant to bootstrap the component
     /// </summary>
     /// <param name="views">The views collection we need to switch between views</param>
@@ -57,6 +63,7 @@ namespace BlueJay.Shared.Components
       BreakoutTitle = new ReactiveProperty<string>("Breakout");
       TetrisTitle = new ReactiveProperty<string>("Tetris");
       UIComponentTitle = new ReactiveProperty<string>("UI Components");
+      LayoutTitle = new ReactiveProperty<string>("Layout");
     }
 
     /// <summary>
@@ -67,6 +74,17 @@ namespace BlueJay.Shared.Components
     public bool OnBreakoutClick()
     {
       _views.SetCurrent<BreakOutView>();
+      return true;
+    }
+
+    /// <summary>
+    /// Callback method that is triggered when the user clicks the element in the component
+    /// </summary>
+    /// <param name="evt">The select event</param>
+    /// <returns>will return true to continue propegation</returns>
+    public bool OnLayoutClick()
+    {
+      _views.SetCurrent<LayerView>();
       return true;
     }
 

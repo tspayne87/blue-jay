@@ -2,6 +2,7 @@
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
+using System.Runtime.InteropServices;
 
 namespace BlueJay.EventListeners
 {
@@ -16,19 +17,19 @@ namespace BlueJay.EventListeners
     private readonly ILayerCollection _layerCollection;
 
     /// <summary>
-    /// The system we need to draw on
+    /// The list of systems that have been set to be drawable
     /// </summary>
-    private readonly ISystem _system;
+    private readonly DrawableSystemCollection _systems;
 
     /// <summary>
     /// Constructor to build out the update event
     /// </summary>
     /// <param name="layerCollection">The entity collection we are working with</param>
-    /// <param name="system">The current system being processed</param>
-    public DrawEventListener(ILayerCollection layerCollection, ISystem system)
+    /// <param name="systems">The list of systems that have been set to be drawable</param>
+    public DrawEventListener(ILayerCollection layerCollection, DrawableSystemCollection systems)
     {
       _layerCollection = layerCollection;
-      _system = system;
+      _systems = systems;
     }
 
     /// <summary>
@@ -37,32 +38,41 @@ namespace BlueJay.EventListeners
     /// <param name="evt">The current update event we are working with</param>
     public override void Process(IEvent<DrawEvent> evt)
     {
-      if (_system is IDrawSystem && !(_system is IDrawEntitySystem))
-        ((IDrawSystem)_system).OnDraw();
-
-      if (_system.Key != 0 && _system is IDrawEntitySystem)
+      foreach (var system in CollectionsMarshal.AsSpan(_systems))
       {
-        foreach(var layer in _layerCollection.AsSpan())
+        if (!(system is IDrawEntitySystem))
         {
-          if (_system is IDrawSystem)
-            ((IDrawSystem)_system).OnDraw();
-          if (_system.Layers.Count == 0 || _system.Layers.Contains(layer.Id))
-          {
-            foreach(var entity in layer.GetByKey(_system.Key))
-            {
-              if (entity.Active)
-              {
-                ((IDrawEntitySystem)_system).OnDraw(entity);
-              }
-            }
-          }
-          if (_system is IDrawEndSystem)
-            ((IDrawEndSystem)_system).OnDrawEnd();
+          if (system is IDrawSystem)
+            ((IDrawSystem)system).OnDraw();
+
+          if (system is IDrawEndSystem)
+            ((IDrawEndSystem)system).OnDrawEnd();
         }
       }
 
-      if (_system is IDrawEndSystem && !(_system is IDrawEntitySystem))
-        ((IDrawEndSystem)_system).OnDrawEnd();
+      foreach (var layer in _layerCollection.AsSpan())
+      {
+        foreach (var system in CollectionsMarshal.AsSpan(_systems))
+        {
+          if (system is IDrawEntitySystem)
+          {
+            if (system is IDrawSystem)
+              ((IDrawSystem)system).OnDraw();
+            if (system.Key != 0 && (system.Layers.Count == 0 || system.Layers.Contains(layer.Id)))
+            {
+              foreach (var entity in layer.GetByKey(system.Key))
+              {
+                if (entity.Active)
+                {
+                  ((IDrawEntitySystem)system).OnDraw(entity);
+                }
+              }
+            }
+            if (system is IDrawEndSystem)
+              ((IDrawEndSystem)system).OnDrawEnd();
+          }
+        }
+      }
     }
   }
 }

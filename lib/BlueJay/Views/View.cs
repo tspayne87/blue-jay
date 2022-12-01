@@ -3,6 +3,9 @@ using BlueJay.Interfaces;
 using BlueJay.Common.Systems;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using BlueJay.EventListeners;
+using BlueJay.Events.Lifecycle;
+using BlueJay.Events;
 
 namespace BlueJay.Views
 {
@@ -32,6 +35,8 @@ namespace BlueJay.Views
 
       _scope = serviceProvider.CreateScope();
       ConfigureProvider(_scope.ServiceProvider);
+
+      _scope.ServiceProvider.AddEventListener<DrawEventListener, DrawEvent>();
     }
 
     /// <summary>
