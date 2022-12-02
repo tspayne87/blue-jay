@@ -11,14 +11,14 @@
     /// method
     /// </summary>
     /// <param name="evt">The event that is being processed</param>
-    void Process(IEvent evt);
+    internal void Process(IEvent evt);
 
     /// <summary>
     /// Helper method to determine if we should process this event listener
     /// </summary>
     /// <param name="evt">The event that is being processed</param>
     /// <returns>Will return a boolean determining if we should process the event listener</returns>
-    bool ShouldProcess(IEvent evt);
+    internal bool ShouldProcess(IEvent evt);
   }
 
   /// <summary>
@@ -32,5 +32,12 @@
     /// </summary>
     /// <param name="evt">The current event object that was triggered</param>
     void Process(IEvent<T> evt);
+
+    /// <summary>
+    /// Helper method to determine if we should process this event listener
+    /// </summary>
+    /// <param name="evt">The event that is being processed</param>
+    /// <returns>Will return a boolean determining if we should process the event listener</returns>
+    bool ShouldProcess(IEvent<T> evt);
   }
 }
