@@ -22,7 +22,8 @@ namespace BlueJay.Events
     /// <param name="evt">The event that is being processed</param>
     public void Process(IEvent evt)
     {
-      Process((Event<T>)evt);
+      if (evt is Event<T> @event)
+        Process(@event);
     }
 
     /// <summary>
