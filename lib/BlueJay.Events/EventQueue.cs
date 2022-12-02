@@ -25,12 +25,12 @@ namespace BlueJay.Events
     /// <summary>
     /// The current queue we are working with on any particular frame
     /// </summary>
-    private readonly Queue<IEvent> _current = new Queue<IEvent>();
+    private readonly Queue<IEvent?> _current = new Queue<IEvent?>();
 
     /// <summary>
     /// The next queue that should store the defered events that should be handled in the next frame
     /// </summary>
-    private readonly Queue<IEvent> _next = new Queue<IEvent>();
+    private readonly Queue<IEvent?> _next = new Queue<IEvent?>();
 
     /// <summary>
     /// All the handlers we are dealing with when processing events
@@ -217,8 +217,11 @@ namespace BlueJay.Events
     /// </summary>
     /// <typeparam name="T">The type of event we need to process</typeparam>
     /// <param name="evt">The event we need to process</param>
-    private void ProcessEvent(IEvent evt)
+    private void ProcessEvent(IEvent? evt)
     {
+      if (evt == null)
+        return;
+
       if (evt is IInternalEvent iEvt && iEvt.IsCancelled)
         return;
 
