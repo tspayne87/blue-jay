@@ -1,9 +1,8 @@
 ﻿using BlueJay.Core.Interfaces;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
+using System.Runtime.CompilerServices;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace BlueJay.Events
@@ -79,7 +78,7 @@ namespace BlueJay.Events
             // reflection since using the T could result in the wrong type during casting
             var eType = typeof(Event<>); // Create a blank type of the event object
             var fullType = eType.MakeGenericType(evt.GetType()); // Add the generic type based on the value given
-            @event = Activator.CreateInstance(fullType, new object[] { evt, target, timeout }); // Reflectively create the object
+            @event = Activator.CreateInstance(fullType, new object?[] { evt, target, timeout }); // Reflectively create the object
           }
           else // We just create the event in a normal way since we do not need to reflectivly create the event object
             @event = new Event<T>(evt, target, timeout);
@@ -117,7 +116,7 @@ namespace BlueJay.Events
     /// <param name="callback">The callback that should be called when the event listener is processed</param>
     public IDisposable AddEventListener<T>(Func<T, bool> callback, int? weight = null)
     {
-      return AddEventListener (new CallbackListener<T>((x, t) => callback(x), null, false), weight);
+      return AddEventListener(new CallbackListener<T>((x, t) => callback(x), null, false), weight);
     }
 
     /// <summary>
@@ -233,7 +232,7 @@ namespace BlueJay.Events
       {
         foreach (var handler in CollectionsMarshal.AsSpan(_handlers[evt.Name]))
         {
-          if (handler.EventListener.ShouldProcess(evt))
+          if (handler != null && handler.EventListener.ShouldProcess(evt))
           {
             handler.EventListener.Process(evt);
 

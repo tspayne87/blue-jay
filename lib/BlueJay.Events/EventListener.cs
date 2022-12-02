@@ -33,7 +33,9 @@ namespace BlueJay.Events
     /// <returns>Will return a boolean determining if we should process the event listener</returns>
     public virtual bool ShouldProcess(IEvent evt)
     {
-      return ProcessTarget == null || ProcessTarget == evt.Target;
+      if (evt is Event<T> @event)
+        return ShouldProcess(@event);
+      return false;
     }
 
     /// <summary>
@@ -41,5 +43,15 @@ namespace BlueJay.Events
     /// </summary>
     /// <param name="evt">The current event object that was triggered</param>
     public abstract void Process(IEvent<T> evt);
+
+    /// <summary>
+    /// Helper method to determine if we should process this event listener
+    /// </summary>
+    /// <param name="evt">The event that is being processed</param>
+    /// <returns>Will return a boolean determining if we should process the event listener</returns>
+    public virtual bool ShouldProcess(IEvent<T> evt)
+    {
+      return ProcessTarget == null || ProcessTarget == evt.Target;
+    }
   }
 }
