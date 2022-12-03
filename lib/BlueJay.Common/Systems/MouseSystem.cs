@@ -3,9 +3,6 @@ using BlueJay.Events.Interfaces;
 using BlueJay.Common.Events.Mouse;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static BlueJay.Common.Events.Mouse.MouseEvent;
 
 namespace BlueJay.Common.Systems
@@ -93,7 +90,7 @@ namespace BlueJay.Common.Systems
       // Trigger event for scroll wheel
       if (PreviousScrollWheelValue != state.ScrollWheelValue)
       {
-        _queue.DispatchEvent(new ScrollEvent() { PreviousScrollWheelValue = PreviousScrollWheelValue, ScrollWheelValue = state.ScrollWheelValue });
+        _queue.DispatchEvent(new ScrollEvent() { PreviousScrollWheelValue = PreviousScrollWheelValue, ScrollWheelValue = state.ScrollWheelValue, Position = state.Position });
       }
 
       // Set all the previous states

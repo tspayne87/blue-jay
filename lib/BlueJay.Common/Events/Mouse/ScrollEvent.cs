@@ -1,4 +1,6 @@
-﻿namespace BlueJay.Common.Events.Mouse
+﻿using Microsoft.Xna.Framework;
+
+namespace BlueJay.Common.Events.Mouse
 {
   /// <summary>
   /// The mouse scroll event
@@ -14,5 +16,10 @@
     /// Last frames scroll wheel value that was tracked
     /// </summary>
     public int PreviousScrollWheelValue { get; set; }
+
+    /// <summary>
+    /// The current position of the mouse cursor
+    /// </summary>
+    public Point Position { get; set; }
   }
 }
