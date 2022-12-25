@@ -7,6 +7,7 @@ using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
+using BlueJay.UI.Events;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;

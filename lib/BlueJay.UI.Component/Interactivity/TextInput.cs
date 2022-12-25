@@ -5,14 +5,14 @@ using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
-using System;
+using BlueJay.UI.Events;
 
 namespace BlueJay.UI.Component.Interactivity
 {
-  /// <summary>
-  /// Text input to give inputs for string input
-  /// </summary>
-  [View(@"
+    /// <summary>
+    /// Text input to give inputs for string input
+    /// </summary>
+    [View(@"
 <Container Style=""TextAlign: Left"" @Focus=""OnFocus(evt)"" @Blur=""OnBlur(evt)"" @KeyboardUp=""OnKeyboardUp(evt)"">
   <Container :Style=""ContainerStyle"" @Focus=""OnFocus(evt)"" @Blur=""OnBlur(evt)"" @KeyboardUp=""OnKeyboardUp(evt)"">{{Model}}</Container>
   <Container :if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60"" :Style=""CursorStyle"" />

@@ -23,11 +23,10 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
-      serviceProvider.AddKeyboardSupport();
+      serviceProvider.AddUIKeyboardSupport();
       serviceProvider.AddUITouchSupport();
 
-      serviceProvider.AddSystem<RenderingSystem>();
-      serviceProvider.AddSystem<DebugBoundingBoxSystem>();
+      serviceProvider.AddUIRenderSystems(true);
 
       serviceProvider.AddUIComponent<UIComponentTestComponent>();
     }

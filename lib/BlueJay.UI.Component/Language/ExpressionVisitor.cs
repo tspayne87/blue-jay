@@ -265,7 +265,6 @@ namespace BlueJay.UI.Component.Language
       }
       return new BuilderExpression(_param); /// TODO: Need to send error for this
     }
-
     #endregion
 
     #region Functional Expressions

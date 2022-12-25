@@ -17,10 +17,12 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using BlueJay.UI.Events;
+using BlueJay.UI.Component.Nodes;
 
 namespace BlueJay.UI.Component
 {
-  public static class ServiceProviderExtension
+    public static class ServiceProviderExtension
   {
     /// <summary>
     /// Method is meant to add a UI component to the system
@@ -57,6 +59,40 @@ namespace BlueJay.UI.Component
       var visitor = new XMLParserVisitor(serviceProvider, instance, components);
       visitor.Visit(expr);
       return visitor.Root;
+    }
+
+    public static INode? ParseJayTML<T>(this IServiceProvider provider)
+      where T : UIComponent
+    {
+      return ParseJayTML(provider, typeof(T));
+    }
+
+    public static INode? ParseJayTML(this IServiceProvider provider, Type type)
+    {
+      var view = Attribute.GetCustomAttribute(type, typeof(ViewAttribute)) as ViewAttribute;
+      return ParseJayTML(provider, view?.XML ?? String.Empty, type);
+    }
+
+    public static INode? ParseJayTML<T>(this IServiceProvider provider, string xml)
+      where T : UIComponent
+    {
+      return ParseJayTML(provider, xml, typeof(T));
+    }
+
+    public static INode? ParseJayTML(this IServiceProvider provider, string xml, Type type)
+    {
+      var components = Attribute.GetCustomAttribute(type, typeof(ComponentAttribute)) as ComponentAttribute;
+      var stream = new AntlrInputStream(xml.Trim());
+      ITokenSource lexer = new JayTMLLexer(stream);
+      ITokenStream tokens = new CommonTokenStream(lexer);
+      var parser = new JayTMLParser(tokens);
+
+      var expr = parser.document();
+
+      var visitor = new JayTMLVisitor(provider, type, components?.Components ?? new List<Type>());
+      var result = visitor.Visit(expr);
+
+      return result as INode;
     }
 
     /// <summary>

@@ -6,14 +6,17 @@ using BlueJay.Common.Events.Mouse;
 using BlueJay.Common.Events.Touch;
 using BlueJay.Common.Systems;
 using BlueJay.UI.Addons;
-using BlueJay.UI.EventListeners;
-using BlueJay.UI.EventListeners.UIUpdate;
+using BlueJay.UI.Events.EventListeners;
+using BlueJay.UI.Events.EventListeners.UIUpdate;
 using BlueJay.UI.Systems;
-using System;
 using BlueJay.Common.Events;
+using BlueJay.UI.Events;
 
 namespace BlueJay.UI
 {
+  /// <summary>
+  /// Service provider extensions to add in extra functionallity to the provider to add in entities and systems
+  /// </summary>
   public static class ServiceProviderExtensions
   {
     /// <summary>
@@ -22,7 +25,7 @@ namespace BlueJay.UI
     /// </summary>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <returns>Will return the entity that was created and added to the collection</returns>
-    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity parent = null)
+    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity? parent = null)
     {
       var entity = provider.AddEntity(UIStatic.LayerName, 15);
 
@@ -45,7 +48,7 @@ namespace BlueJay.UI
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="entity">The current created entity we need to add</param>
     /// <returns></returns>
-    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity entity, IEntity parent = null)
+    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity entity, IEntity? parent = null)
     {
       provider.AddEntity(entity, UIStatic.LayerName, 15);
 
@@ -110,7 +113,7 @@ namespace BlueJay.UI
     /// </summary>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <returns>Will return the entity that was created and added to the collection</returns>
-    public static IServiceProvider AddKeyboardSupport(this IServiceProvider provider)
+    public static IServiceProvider AddUIKeyboardSupport(this IServiceProvider provider)
     {
       // Add the keyboard system if it has not been added
       provider.AddSystem<KeyboardSystem>();
@@ -132,6 +135,21 @@ namespace BlueJay.UI
 
       // Add the event listener
       provider.AddEventListener<UITouchDownEventListener, TouchDownEvent>();
+      return provider;
+    }
+
+    /// <summary>
+    /// Method is meant to add in the UI Rendering systems
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="addDebugRendering">If we want to include the debug rendering systems</param>
+    /// <returns>Will return the service provider for chaining</returns>
+    public static IServiceProvider AddUIRenderSystems(this IServiceProvider provider, bool addDebugRendering = false)
+    {
+      provider.AddSystem<UIRenderingSystem>();
+
+      if (addDebugRendering)
+        provider.AddSystem<DebugBoundingBoxSystem>();
       return provider;
     }
   }

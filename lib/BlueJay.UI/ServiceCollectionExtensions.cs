@@ -1,11 +1,11 @@
 ﻿using BlueJay.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BlueJay.UI
 {
+  /// <summary>
+  /// Service collections to add in various DI elements to the service collection
+  /// </summary>
   public static class ServiceCollectionExtensions
   {
     /// <summary>

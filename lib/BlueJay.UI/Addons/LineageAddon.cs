@@ -11,7 +11,7 @@ namespace BlueJay.UI.Addons
     /// <summary>
     /// The parent for this lineage
     /// </summary>
-    public IEntity Parent { get; set; }
+    public IEntity? Parent { get; set; }
 
     /// <summary>
     /// The children for this lineage
@@ -22,7 +22,7 @@ namespace BlueJay.UI.Addons
     /// The constructor for the lineage
     /// </summary>
     /// <param name="parent">The parent that should be assigned to this addon</param>
-    public LineageAddon(IEntity parent)
+    public LineageAddon(IEntity? parent)
     {
       Parent = parent;
       Children = new List<IEntity>();

@@ -1,11 +1,12 @@
 ﻿using BlueJay.UI.Component.Reactivity;
+using BlueJay.UI.Events;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
 namespace BlueJay.UI.Component.Test
 {
-  public class Expression
+    public class Expression
   {
     public IServiceProvider Provider => new ServiceCollection().BuildServiceProvider();
 

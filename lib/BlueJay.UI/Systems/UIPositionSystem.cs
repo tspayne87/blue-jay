@@ -10,7 +10,7 @@ namespace BlueJay.UI.Systems
   /// <summary>
   /// The UI positioning system so that we can keep children in there parents space
   /// </summary>
-  public class UIPositionSystem : IUpdateEntitySystem
+  internal class UIPositionSystem : IUpdateEntitySystem
   {
     /// <inheritdoc />
     public long Key => KeyHelper.Create<LineageAddon, PositionAddon, BoundsAddon>();

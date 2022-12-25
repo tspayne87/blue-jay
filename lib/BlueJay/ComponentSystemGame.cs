@@ -82,6 +82,9 @@ namespace BlueJay
       _serviceCollection.AddBlueJaySystem();
       _serviceCollection.AddBlueJay();
 
+      // Add scoped collection that is meant to track what happens in views
+      _serviceCollection.AddScoped<SystemTypeCollection>();
+
       ConfigureServices(_serviceCollection);
 
       _serviceProvider = _serviceCollection.BuildServiceProvider();

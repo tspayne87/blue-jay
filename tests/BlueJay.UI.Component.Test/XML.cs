@@ -1,7 +1,9 @@
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Interactivity;
 using BlueJay.UI.Component.Language;
+using BlueJay.UI.Component.Nodes.Attributes;
 using BlueJay.UI.Component.Reactivity;
+using BlueJay.UI.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework;
 using System;
@@ -13,9 +15,19 @@ using Xunit;
 
 namespace BlueJay.UI.Component.Test
 {
-  public class XML
+    public class XML
   {
     public IServiceProvider Provider => new ServiceCollection().BuildServiceProvider();
+
+    [Fact]
+    public void TestJayTML()
+    {
+      var tree = Provider.ParseJayTML<Component>(@"Hello {{Integer}}");
+
+      //tree[0].GenerateUI();
+
+      var i = 0;
+    }
 
     [Fact]
     public void Single()
@@ -215,7 +227,6 @@ namespace BlueJay.UI.Component.Test
         Integer = new ReactiveProperty<int>(integer);
         Str = new ReactiveProperty<string>(str);
         Items = new ReactiveCollection<string>("Hello World");
-
         StaticInteger = 10;
       }
 

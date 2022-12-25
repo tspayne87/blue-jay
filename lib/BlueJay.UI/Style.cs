@@ -1,38 +1,63 @@
 ﻿using BlueJay.Core;
 using Microsoft.Xna.Framework;
-using System;
 
 namespace BlueJay.UI
 {
+  /// <summary>
+  /// Style class meant to manipulate the appearance of UI elements
+  /// </summary>
   public class Style
   {
-    private int? _width = null;
-    private float? _widthPercentage = null;
-    private int? _height = null;
-    private float? _heightPercentage = null;
-    private int? _topOffset = null;
-    private int? _leftOffset = null;
-    private int? _padding = null;
-    private HorizontalAlign? _horizontalAlign = null;
-    private VerticalAlign? _verticalAlign = null;
-    private NinePatch _ninePatch = null;
+
+    /// <summary>
+    /// The color of the text that should be used
+    /// </summary>
     private Color? _textColor = null;
-    private Color? _backgroundColor = null;
-    private TextAlign? _textAlign = null;
-    private TextBaseline? _textBaseline = null;
-    private Position? _position = null;
+
+    /// <summary>
+    /// The current number of grid columns the internals for this element should have
+    /// </summary>
     private int? _gridColumns = null;
+
+    /// <summary>
+    /// The gap in pixels where each column should be rendered
+    /// </summary>
     private Point? _columnGap = null;
+
+    /// <summary>
+    /// The column span this element should use in its parent elemenet
+    /// </summary>
     private int? _columnSpan = null;
+
+    /// <summary>
+    /// The column offset this element should use in its parent element
+    /// </summary>
     private int? _columnOffset = null;
-    private string _font = null;
-    private string _textureFont = null;
+
+    /// <summary>
+    /// The current basic sprite font name this element should use to render text
+    /// </summary>
+    private string? _font = null;
+
+    /// <summary>
+    /// The texture font that should be used to render text for this element
+    /// </summary>
+    private string? _textureFont = null;
+
+    /// <summary>
+    /// The texture font size that should be used when rendering the text element
+    /// </summary>
     private int? _textureFontSize = null;
-    private HeightTemplate? _heightTemplate = null;
 
-    private Style _parent;
+    /// <summary>
+    /// The parent style that will determine certain styles
+    /// </summary>
+    private Style? _parent;
 
-    public Style Parent {
+    /// <summary>
+    /// The parent style that will determine certain styles
+    /// </summary>
+    public Style? Parent {
       get => _parent;
       set
       {
@@ -46,38 +71,126 @@ namespace BlueJay.UI
       }
     }
 
-    public int? Width { get => _width ?? Parent?.Width; set => _width = value; }
-    public float? WidthPercentage { get => _widthPercentage ?? Parent?.WidthPercentage; set => _widthPercentage = value; }
+    /// <summary>
+    /// The current width in pixels of the UI element
+    /// </summary>
+    public int? Width { get; set; }
 
-    public int? Height { get => _height ?? Parent?.Height; set => _height = value; }
-    public float? HeightPercentage { get => _heightPercentage ?? Parent?.HeightPercentage; set => _heightPercentage = value; }
+    /// <summary>
+    /// The current width percentage of the UI element
+    /// </summary>
+    public float? WidthPercentage { get; set; }
 
-    public int? TopOffset { get => _topOffset ?? Parent?.TopOffset; set => _topOffset = value; }
-    public int? LeftOffset { get => _leftOffset ?? Parent?.LeftOffset; set => _leftOffset = value; }
+    /// <summary>
+    /// The current height in pixels of the UI element
+    /// </summary>
+    public int? Height { get; set; }
 
-    public int? Padding { get => _padding ?? Parent?.Padding; set => _padding = value; }
+    /// <summary>
+    /// The current height percentage of the UI element
+    /// </summary>
+    public float? HeightPercentage { get; set; }
 
-    public HorizontalAlign? HorizontalAlign { get => _horizontalAlign ?? Parent?.HorizontalAlign; set => _horizontalAlign = value; }
-    public VerticalAlign? VerticalAlign { get => _verticalAlign ?? Parent?.VerticalAlign; set => _verticalAlign = value; }
-    public Position? Position { get => _position ?? Parent?.Position; set => _position = value; }
+    /// <summary>
+    /// The offset of this element for the top based on its parent position
+    /// </summary>
+    public int? TopOffset { get; set; }
 
-    public NinePatch NinePatch { get => _ninePatch ?? Parent?.NinePatch; set => _ninePatch = value; }
+    /// <summary>
+    /// The offset of this element for the left based on its parent position
+    /// </summary>
+    public int? LeftOffset { get; set; }
 
-    public Color? TextColor { get => _textColor ?? Parent?.TextColor; set => _textColor = value; }
-    public Color? BackgroundColor { get => _backgroundColor ?? Parent?.BackgroundColor; set => _backgroundColor = value; }
-    public TextAlign? TextAlign { get => _textAlign ?? Parent?.TextAlign; set => _textAlign = value; }
-    public TextBaseline? TextBaseline { get => _textBaseline ?? Parent?.TextBaseline; set => _textBaseline = value; }
-    public HeightTemplate? HeightTemplate { get => _heightTemplate ?? Parent?.HeightTemplate; set => _heightTemplate = value; }
+    /// <summary>
+    /// The padding this element should have around the contents of it
+    /// </summary>
+    public int? Padding { get; set; }
 
-    public int GridColumns { get => _gridColumns ?? Parent?.GridColumns ?? 1; set => _gridColumns = value; }
-    public Point ColumnGap { get => _columnGap ?? Parent?.ColumnGap ?? Point.Zero; set => _columnGap = value; }
-    public int ColumnSpan { get => _columnSpan ?? Parent?.ColumnSpan ?? 1; set => _columnSpan = Math.Max(value, 0); }
-    public int ColumnOffset { get => _columnOffset ?? Parent?.ColumnOffset ?? 0; set => _columnOffset = Math.Max(value, 0); }
+    /// <summary>
+    /// The horizontal alignment of where this element should exist
+    /// </summary>
+    public HorizontalAlign? HorizontalAlign { get; set; }
 
-    public string Font { get => _font ?? Parent?.Font; set => _font = value; }
-    public string TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
+    /// <summary>
+    /// The veritcal alignment of where this element should exist
+    /// </summary>
+    public VerticalAlign? VerticalAlign { get; set; }
+
+    /// <summary>
+    /// The type of position this element should use when determining offsets
+    /// </summary>
+    public Position? Position { get; set; }
+
+    /// <summary>
+    /// The nine patch texture to render the rectangle for the background
+    /// </summary>
+    public NinePatch? NinePatch { get; set; }
+
+    /// <summary>
+    /// The color of the text that should be used
+    /// </summary>
+    public Color? TextColor { get => _textColor ?? _parent?.TextColor; set => _textColor = value; }
+
+    /// <summary>
+    /// The color of the background that should be used
+    /// </summary>
+    public Color? BackgroundColor { get; set; }
+
+    /// <summary>
+    /// The alignment of the text that should be used
+    /// </summary>
+    public TextAlign? TextAlign { get; set; }
+
+    /// <summary>
+    /// The alignment of the baseline for the text that should be used
+    /// </summary>
+    public TextBaseline? TextBaseline { get; set; }
+
+    /// <summary>
+    /// How the height shold be handled
+    /// </summary>
+    public HeightTemplate? HeightTemplate { get; set; }
+
+    /// <summary>
+    /// The current number of grid columns the internals for this element should have
+    /// </summary>
+    public int GridColumns { get => _gridColumns ?? 1; set => _gridColumns = value; }
+
+    /// <summary>
+    /// The gap in pixels where each column should be rendered
+    /// </summary>
+    public Point ColumnGap { get => _columnGap ?? Point.Zero; set => _columnGap = value; }
+
+    /// <summary>
+    /// The column span this element should use in its parent elemenet
+    /// </summary>
+    public int ColumnSpan { get => _columnSpan ?? 1; set => _columnSpan = Math.Max(value, 0); }
+
+    /// <summary>
+    /// The column offset this element should use in its parent element
+    /// </summary>
+    public int ColumnOffset { get => _columnOffset ?? 0; set => _columnOffset = Math.Max(value, 0); }
+
+    /// <summary>
+    /// The current basic sprite font name this element should use to render text
+    /// </summary>
+    public string? Font { get => _font ?? Parent?.Font; set => _font = value; }
+
+    /// <summary>
+    /// The texture font that should be used to render text for this element
+    /// </summary>
+    public string? TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
+
+    /// <summary>
+    /// The texture font size that should be used when rendering the text element
+    /// </summary>
     public int? TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize; set { if (value != null) _textureFontSize = Math.Max(value ?? 1, 1); else _textureFontSize = null; } }
 
+    /// <summary>
+    /// Helper method to determine if a circular refernce would happen
+    /// </summary>
+    /// <param name="t">The style we are determining if a circular refernce would happen</param>
+    /// <returns>Will return true if a circular reference happens</returns>
     private bool WouldCreateCircularReference(Style t)
     {
       if (Parent == null) return false;
@@ -85,23 +198,27 @@ namespace BlueJay.UI
       return Parent.WouldCreateCircularReference(t);
     }
 
+    /// <summary>
+    /// Helper method meant to merge a style into this style
+    /// </summary>
+    /// <param name="merge">The style we want to merge into this one</param>
     public void Merge(Style merge)
     {
-      if (merge._width != null) Width = merge._width;
-      if (merge._widthPercentage != null) WidthPercentage = merge._widthPercentage;
-      if (merge._height != null) Height = merge._height;
-      if (merge._heightPercentage != null) HeightPercentage = merge._heightPercentage;
-      if (merge._topOffset != null) TopOffset = merge._topOffset;
-      if (merge._leftOffset != null) LeftOffset = merge._leftOffset;
-      if (merge._padding != null) Padding = merge._padding;
-      if (merge._horizontalAlign != null) HorizontalAlign = merge._horizontalAlign;
-      if (merge._verticalAlign != null) VerticalAlign = merge._verticalAlign;
-      if (merge._position != null) Position = merge._position;
-      if (merge._ninePatch != null) NinePatch = merge._ninePatch;
+      if (merge.Width != null) Width = merge.Width;
+      if (merge.WidthPercentage != null) WidthPercentage = merge.WidthPercentage;
+      if (merge.Height != null) Height = merge.Height;
+      if (merge.HeightPercentage != null) HeightPercentage = merge.HeightPercentage;
+      if (merge.TopOffset != null) TopOffset = merge.TopOffset;
+      if (merge.LeftOffset != null) LeftOffset = merge.LeftOffset;
+      if (merge.Padding != null) Padding = merge.Padding;
+      if (merge.HorizontalAlign != null) HorizontalAlign = merge.HorizontalAlign;
+      if (merge.VerticalAlign != null) VerticalAlign = merge.VerticalAlign;
+      if (merge.Position != null) Position = merge.Position;
+      if (merge.NinePatch != null) NinePatch = merge.NinePatch;
       if (merge._textColor != null) TextColor = merge._textColor;
-      if (merge._backgroundColor != null) BackgroundColor = merge._backgroundColor;
-      if (merge._textAlign != null) TextAlign = merge._textAlign;
-      if (merge._textBaseline != null) TextBaseline = merge._textBaseline;
+      if (merge.BackgroundColor != null) BackgroundColor = merge.BackgroundColor;
+      if (merge.TextAlign != null) TextAlign = merge.TextAlign;
+      if (merge.TextBaseline != null) TextBaseline = merge.TextBaseline;
       if (merge._gridColumns != null) GridColumns = merge._gridColumns.Value;
       if (merge._columnGap != null) ColumnGap = merge._columnGap.Value;
       if (merge._columnSpan != null) ColumnSpan = merge._columnSpan.Value;
@@ -109,7 +226,7 @@ namespace BlueJay.UI
       if (merge._font != null) Font = merge._font;
       if (merge._textureFont != null) TextureFont = merge._textureFont;
       if (merge._textureFontSize != null) TextureFontSize = merge._textureFontSize;
-      if (merge._heightTemplate != null) HeightTemplate = merge._heightTemplate;
+      if (merge.HeightTemplate != null) HeightTemplate = merge.HeightTemplate;
     }
   }
 }

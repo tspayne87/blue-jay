@@ -17,22 +17,25 @@ namespace BlueJay
     /// <typeparam name="T">The current object we are adding to the service collection</typeparam>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="parameters">The constructor parameters that do not exists in D</param>
-    /// <returns>Will return the system that was created and added to the collection</returns>
-    public static T AddSystem<T>(this IServiceProvider provider, params object[] parameters)
+    public static void AddSystem<T>(this IServiceProvider provider, params object[] parameters)
       where T : ISystem
     {
-      var eventQueue = provider.GetRequiredService<IEventQueue>();
-      var system = ActivatorUtilities.CreateInstance<T>(provider, parameters);
+      var systems = provider.GetRequiredService<SystemTypeCollection>();
+      if (!systems.Contains(typeof(T)))
+      {
+        var eventQueue = provider.GetRequiredService<IEventQueue>();
+        var system = ActivatorUtilities.CreateInstance<T>(provider, parameters);
 
-      // If this is an update system we need to add an event listener to the queue
-      if (system is IUpdateSystem || system is IUpdateEntitySystem || system is IUpdateEndSystem)
-        eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(provider, new object[] { system }));
+        // If this is an update system we need to add an event listener to the queue
+        if (system is IUpdateSystem || system is IUpdateEntitySystem || system is IUpdateEndSystem)
+          eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(provider, new object[] { system }));
 
-      // If this is a draw system we need to add an event listener to the queue
-      if (system is IDrawSystem || system is IDrawEntitySystem || system is IDrawEndSystem)
-        provider.GetRequiredService<DrawableSystemCollection>().Add(system);
+        // If this is a draw system we need to add an event listener to the queue
+        if (system is IDrawSystem || system is IDrawEntitySystem || system is IDrawEndSystem)
+          provider.GetRequiredService<DrawableSystemCollection>().Add(system);
 
-      return system;
+        systems.Add(typeof(T));
+      }
     }
 
     /// <summary>
