@@ -1,10 +1,7 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Component.Attributes;
-using BlueJay.UI.Component.Language;
-using BlueJay.UI.Component.Reactivity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using BlueJay.UI.Component.Nodes;
+using System.Reflection;
 
 namespace BlueJay.UI.Component
 {
@@ -13,111 +10,62 @@ namespace BlueJay.UI.Component
   /// </summary>
   public abstract class UIComponent
   {
-    private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
-
     /// <summary>
     /// The root entity that was created for this UI component
     /// </summary>
-    public IEntity Root { get; set; }
-
-    /// <summary>
-    /// The parent of this UI component so we can process emits and bubble up events
-    /// </summary>
-    public UIComponent Parent { get; private set; }
-
-    /// <summary>
-    /// The current reactive scope that will need to be used to access scopes
-    /// </summary>
-    public ReactiveScope Scope { get; set; }
-
-    /// <summary>
-    /// The events that were found on the node creating this
-    /// </summary>
-    internal List<ElementEvent> Events { get; private set; }
+    public List<IEntity>? Root { get; set; }
 
     /// <summary>
     /// The identifier that exists on the scope
     /// </summary>
-    internal string Identifier { get; private set; } = $"{PropNames.Identifier}_{Utils.GetNextIdentifier()}";
+    internal string Identifier { get; private set; } = $"CI_{Utils.GetNextIdentifier()}";
 
     /// <summary>
-    /// Initialization method is meant to set all the basic properties on this component
+    /// The current providers for this component
     /// </summary>
-    /// <param name="parent">The parent component we are processing</param>
-    internal void Initialize(UIComponent parent, List<ElementEvent> events)
-    {
-      Parent = parent;
-      Events = events;
-
-      ClearSubscriptions();
-    }
+    internal ParentDictionary? Providers { get; private set; }
 
     /// <summary>
     /// Helper method is called when the component is mounted to the UI tree
     /// </summary>
     public virtual void Mounted() { }
 
-    /// <summary>
-    /// Emitter method is meant to bubble up events that were bound in the internal parent view when using the component
-    /// </summary>
-    /// <typeparam name="T">The type of emitable data we are sending</typeparam>
-    /// <param name="eventName">The event name that will be concatinated with 'on' to determine what method to grab from the xml</param>
-    /// <param name="data">The data being passed to the method</param>
-    /// <returns>Method will need to return a boolean to determine if propegation should continue</returns>
-    public bool Emit<T>(string eventName, T data)
+    internal void InitializeProviders(ParentDictionary? providers = null)
     {
-      var evt = Events.FirstOrDefault(x => x.Name == eventName);
-      var reactiveRoot = Root as ReactiveEntity;
-      if (reactiveRoot != null && evt != null)
+      if (Providers != null)
+        return;
+
+      var members = GetType().GetMembers()
+        .Where(x => x.GetCustomAttribute<ProvideAttribute>() != null);
+
+      var result = new ParentDictionary(providers);
+      foreach (var member in members)
       {
-        return ElementHelper.InvokeEvent(evt, reactiveRoot.Scope, data);
-      }
-      return true;
-    }
-
-    /// <summary>
-    /// Will generate a scope that could be used for testing
-    /// </summary>
-    /// <returns>Will return a reactive scope for calling callbacks</returns>
-    public ReactiveScope GenerateScope()
-    {
-      var scope = Scope ?? new ReactiveScope();
-      if (!scope.ContainsKey(Identifier))
-        scope[Identifier] = this;
-      return scope;
-    }
-
-    /// <summary>
-    /// Helper method is meant to process watch expressions on a reactive entity
-    /// </summary>
-    internal void ProcessWatch()
-    {
-      var items = GetType().GetMethods()
-        .Select(x => new { Method = x, WatchProp = x.GetCustomAttributes(typeof(WatchAttribute), false).FirstOrDefault() as WatchAttribute })
-        .Where(x => x.WatchProp != null);
-
-      foreach (var item in items)
-      {
-        var field = GetType().GetField(item.WatchProp.Prop);
-        if (field.IsInitOnly && typeof(IReactiveProperty).IsAssignableFrom(field.FieldType))
+        switch (member.MemberType)
         {
-          var reactive = field.GetValue(this) as IReactiveProperty;
-          if (reactive != null)
-          {
-            _subscriptions.Add(reactive.Subscribe(x => item.Method.Invoke(this, new object[] { x.Data })));
-          }
+          case MemberTypes.Field:
+            var field = member as FieldInfo;
+            if (field != null)
+              result[field.Name] = field.GetValue(this);
+            break;
+          case MemberTypes.Property:
+            var prop = member as PropertyInfo;
+            if (prop != null)
+              result[prop.Name] = prop.GetValue(this);
+            break;
+          case MemberTypes.Method:
+            var method = member as MethodInfo;
+            if (method != null) {
+              var parameters = method.GetParameters().Select(x => x.ParameterType).ToList();
+              parameters.Add(method.ReturnType);
+
+              var funcType = parameters.ToFuncType();
+              result[method.Name] = Delegate.CreateDelegate(funcType, this, method);
+            }
+            break;
         }
       }
-    }
-
-    /// <summary>
-    /// Clear subscriptions so we can clear up subscriptions if this entity is removed
-    /// </summary>
-    private void ClearSubscriptions()
-    {
-      foreach (var subscription in _subscriptions)
-        subscription.Dispose();
-      _subscriptions.Clear();
+      Providers = result;
     }
   }
 }

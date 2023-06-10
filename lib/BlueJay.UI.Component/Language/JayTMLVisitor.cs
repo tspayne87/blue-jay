@@ -17,28 +17,27 @@ namespace BlueJay.UI.Component.Language
   {
     private readonly IServiceProvider _provider;
     private readonly ContentManager _content;
-    private readonly Type _type;
     private readonly List<Type> _components;
     private readonly UIComponent _instance;
     private readonly ParameterExpression _instanceParam;
     private readonly ParameterExpression _eventParam;
     private readonly ParameterExpression _scopeParam;
+    private readonly Type _styleType;
+
+    private Type _type => _instance.GetType();
 
     private bool _hasEventObj;
 
-    public JayTMLVisitor(IServiceProvider provider, Type type, List<Type> components)
+    public JayTMLVisitor(IServiceProvider provider, UIComponent instance, List<Type> components)
     {
       _provider = provider;
-      _content = provider.GetRequiredService<ContentManager>();
-      _type = type;
       _components = components;
-      var instance = ActivatorUtilities.CreateInstance(provider, type) as UIComponent;
-      if (instance == null)
-        throw new ArgumentNullException("instance could not be created");
       _instance = instance;
+      _content = provider.GetRequiredService<ContentManager>();
       _instanceParam = Expression.Parameter(typeof(UIComponent), "x");
       _eventParam = Expression.Parameter(typeof(object), "evt");
       _scopeParam = Expression.Parameter(typeof(Dictionary<string, object>), "scope");
+      _styleType = typeof(Style);
 
       _hasEventObj = false;
     }
@@ -61,7 +60,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>The element expression needed to export the slot from</returns>
     public override object VisitSlotElement([NotNull] JayTMLParser.SlotElementContext context)
     {
-      return new SlotNode(_instance, _provider);
+      return new SlotNode(_instance, new List<Attribute>(), _provider);
     }
 
     /// <summary>
@@ -97,12 +96,12 @@ namespace BlueJay.UI.Component.Language
       Node? node = null;
       var component = _components.FirstOrDefault(x => x.Name == context.name.Text);
       if (component != null)
-        node = new ComponentNode(_instance, component, _provider);
+        node = new ComponentNode(_instance, component, attrs, _provider);
       else
-        node = new ContainerNode(context.name.Text, _instance, _provider);
+        node = new ContainerNode(context.name.Text, _instance, attrs, _provider);
 
-      node.Attributes.AddRange(attrs);
-      node.Children.AddRange(children);
+      foreach (var child in children)
+        child.Parent = node;
       return node;
     }
 
@@ -125,11 +124,9 @@ namespace BlueJay.UI.Component.Language
       Node? node = null;
       var component = _components.FirstOrDefault(x => x.Name == context.name.Text);
       if (component != null)
-        node = new ComponentNode(_instance, component, _provider);
+        node = new ComponentNode(_instance, component, attrs, _provider);
       else
-        node = new ContainerNode(context.name.Text, _instance, _provider);
-
-      node.Attributes.AddRange(attrs);
+        node = new ContainerNode(context.name.Text, _instance, attrs, _provider);
       return node;
     }
     #endregion
@@ -241,7 +238,9 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return the event attribute</returns>
     public override object VisitEventattribute([NotNull] JayTMLParser.EventattributeContext context)
     {
-      var name = context.name.Text.Substring(1, context.name.Text.Length - 3);
+      var pair = context.name.Text.Substring(1, context.name.Text.Length - 3).Split('.');
+      var name = pair != null && pair.Length > 0 ? pair[0] : string.Empty;
+      var modifier = pair != null && pair.Length > 1 ? pair[1] : string.Empty;
 
       _hasEventObj = true;
       var expr = Visit(context.expr) as CallbackExpression;
@@ -250,7 +249,7 @@ namespace BlueJay.UI.Component.Language
       if (expr == null)
         throw new ArgumentNullException("Expression could not be created in expression attribute");
 
-      return new EventAttribute(name, expr.Callback);
+      return new EventAttribute(name, modifier, expr.Callback);
     }
 
     /// <summary>
@@ -260,7 +259,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return the attribute for the basic string attribute</returns>
     public override object VisitStringattribute([NotNull] JayTMLParser.StringattributeContext context)
     {
-      var name = context.name.Text.Substring(0, context.name.Text.Length - 3);
+      var name = context.name.Text.Substring(0, context.name.Text.Length - 2);
       return new StringAttribute(name, context.str.Text);
     }
 
@@ -274,7 +273,8 @@ namespace BlueJay.UI.Component.Language
       var expr = Visit(context.expr) as CallbackExpression;
       if (expr == null)
         throw new ArgumentNullException("Expression could not be generated in if statement");
-      return new IfAttribute(expr.Callback);
+
+      return new IfAttribute(expr.Callback, expr.ReactiveProperties);
     }
 
     /// <summary>
@@ -391,13 +391,52 @@ namespace BlueJay.UI.Component.Language
       return styles;
     }
 
+    public override object VisitStyleExpression([NotNull] JayTMLParser.StyleExpressionContext context)
+    {
+      return Visit(context.scopeExpression());
+    }
+
     public override object VisitStyleItem([NotNull] JayTMLParser.StyleItemContext context)
     {
       var name = context.name.Text;
-      var expression = Visit(context.GetChild(2)) as CallbackExpression;
+      var type = Visit(context.alternate) as StyleAttribute.StyleItemType?;
+      var result = Visit(context.GetChild(context.ChildCount - 1));
+      var expression = result as CallbackExpression;
       if (expression == null)
         throw new ArgumentNullException($"Could not create the expression for {name}");
-      return new StyleAttribute.StyleItem(name, expression.ReactiveProperties, expression.Callback);
+
+      var prop = _styleType.GetProperty(name);
+      if (prop == null)
+        throw new ArgumentNullException($"Style {name} does not exist as a style");
+
+      var to = Nullable.GetUnderlyingType(prop.PropertyType);
+      var callback = (UIComponent c, object? evt, Dictionary<string, object>? r) =>
+      {
+        if (typeof(NinePatch) == prop.PropertyType)
+          return new NinePatch(_content.Load<Texture2D>(expression.Callback(c, evt, r) as string));
+        if ((to ?? prop.PropertyType).IsEnum)
+        {
+          var value = expression.Callback(c, evt, r);
+          if (value != null && value.GetType() == typeof(string))
+            return Enum.Parse(to ?? prop.PropertyType, (string)value);
+          return value;
+        }
+
+        var obj = expression.Callback(c, evt, r);
+        if (obj == null && to != null)
+          return obj;
+        return Convert.ChangeType(obj, to ?? prop.PropertyType);
+      };
+      return new StyleAttribute.StyleItem(name, type ?? StyleAttribute.StyleItemType.Basic, expression.ReactiveProperties, callback);
+    }
+
+    public override object VisitStyleAlternate([NotNull] JayTMLParser.StyleAlternateContext context)
+    {
+      switch (context.type?.Text)
+      {
+        case "Hover": return StyleAttribute.StyleItemType.Hover;
+        default: return StyleAttribute.StyleItemType.Basic;
+      }
     }
 
     #region Value Helpers
@@ -413,12 +452,6 @@ namespace BlueJay.UI.Component.Language
       if (int.TryParse(context.GetText(), out var integer))
         return new CallbackExpression((c, e, r) => integer);
       throw new ArgumentNullException("Could not parse interger in style");
-    }
-
-    public override object VisitStyleNinePatch([NotNull] JayTMLParser.StyleNinePatchContext context)
-    {
-      var texture = context.GetText();
-      return new CallbackExpression((c, e, r) => new NinePatch(_content.Load<Texture2D>(texture)));
     }
 
     public override object VisitStyleColor([NotNull] JayTMLParser.StyleColorContext context)
@@ -472,49 +505,6 @@ namespace BlueJay.UI.Component.Language
     {
       var txt = context.GetText();
       return new CallbackExpression((c, e, r) => txt);
-    }
-    #endregion
-
-    #region Style Enum Helpers
-    public override object VisitHorizontalAlign([NotNull] JayTMLParser.HorizontalAlignContext context)
-    {
-      if (Enum.TryParse<HorizontalAlign>(context.GetText(), out var horizontalAlign))
-        return new CallbackExpression((c, e, r) => horizontalAlign);
-      throw new ArgumentNullException("HorizontalAlign");
-    }
-    public override object VisitVerticalAlign([NotNull] JayTMLParser.VerticalAlignContext context)
-    {
-      if (Enum.TryParse<VerticalAlign>(context.GetText(), out var verticalAlign))
-        return new CallbackExpression((c, e, r) => verticalAlign);
-      throw new ArgumentNullException("VerticalAlign");
-    }
-
-    public override object VisitTextAlign([NotNull] JayTMLParser.TextAlignContext context)
-    {
-      if (Enum.TryParse<TextAlign>(context.GetText(), out var textAlign))
-        return new CallbackExpression((c, e, r) => textAlign);
-      throw new ArgumentNullException("TextAlign");
-    }
-
-    public override object VisitTextBaseline([NotNull] JayTMLParser.TextBaselineContext context)
-    {
-      if (Enum.TryParse<TextBaseline>(context.GetText(), out var textBaseline))
-        return new CallbackExpression((c, e, r) => textBaseline);
-      throw new ArgumentNullException("TextBaseline");
-    }
-
-    public override object VisitPosition([NotNull] JayTMLParser.PositionContext context)
-    {
-      if (Enum.TryParse<Position>(context.GetText(), out var position))
-        return new CallbackExpression((c, e, r) => position);
-      throw new ArgumentNullException("Position");
-    }
-
-    public override object VisitHeightTemplate([NotNull] JayTMLParser.HeightTemplateContext context)
-    {
-      if (Enum.TryParse<HeightTemplate>(context.GetText(), out var heightTemplate))
-        return new CallbackExpression((c, e, r) => heightTemplate);
-      throw new ArgumentNullException("HeightTemplate");
     }
     #endregion
     #endregion

@@ -18,21 +18,14 @@ namespace BlueJay.UI.Component.Reactivity
     private readonly ReactiveEvent.EventType _type;
 
     /// <summary>
-    /// The path we need to filter on
-    /// </summary>
-    private readonly string _path;
-
-    /// <summary>
     /// Constructor to build out defaults
     /// </summary>
     /// <param name="action">The action that should be called if the path and type are bound to next call</param>
     /// <param name="type">The type we need to filter on</param>
-    /// <param name="path">The path we need to filter on</param>
-    internal ReactivePropertyTypeObserver(Action<ReactiveEvent> action, ReactiveEvent.EventType type, string path)
+    internal ReactivePropertyTypeObserver(Action<ReactiveEvent> action, ReactiveEvent.EventType type)
     {
       _action = action;
       _type = type;
-      _path = path;
     }
 
     /// <inheritdoc />
@@ -51,7 +44,7 @@ namespace BlueJay.UI.Component.Reactivity
     /// <inheritdoc />
     public void OnNext(ReactiveEvent value)
     {
-      if (value.Type == _type && (string.IsNullOrWhiteSpace(_path) || value.Path == _path))
+      if (_type.HasFlag(value.Type))
         _action(value);
     }
   }

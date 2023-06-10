@@ -17,20 +17,23 @@ namespace BlueJay.Shared.Views
   {
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
-      serviceProvider.AddSystem<ClearSystem>(Color.White);
-
+      serviceProvider.AddSystem<ViewportSystem>();
       serviceProvider.AddUISystems();
       serviceProvider.AddUIMouseSupport();
       serviceProvider.AddUIKeyboardSupport();
       serviceProvider.AddUITouchSupport();
+
+      serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddSystem<TopRectangleDrawSystem>();
       serviceProvider.AddSystem<BottomRectangleDrawSystem>();
+
+      serviceProvider.AddUIRenderSystems();
       serviceProvider.AddSystem<RenderingSystem>();
 
       serviceProvider.AddTopEntity(new Size(100, 50), new Vector2(200, 200), Color.Blue);
       serviceProvider.AddBottomEntity(new Size(120, 70), new Vector2(190, 190), Color.Green);
 
-      serviceProvider.AddUIComponent<LayoutViewComponent>();
+      serviceProvider.AttachComponent<LayoutViewComponent>();
     }
   }
 }

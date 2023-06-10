@@ -93,6 +93,24 @@ namespace BlueJay.Events
       return new EventUnsubscriber(null);
     }
 
+    /// <inheritdoc />
+    public IDisposable Timeout(Action callback, int timeout = -1)
+    {
+      IDisposable? listener = null;
+
+      listener = AddEventListener<TimeoutEvent>((x, obj) =>
+      {
+        if (obj is IDisposable targetListener && listener == targetListener)
+        {
+          callback();
+          targetListener.Dispose();
+        }
+        return true;
+      });
+
+      return new ZipDisposable(listener, DispatchDelayedEvent(new TimeoutEvent(), timeout, listener));
+    }
+
     /// <summary>
     /// Helper method is meant to add on event listeners into the system so they can interact with events that get dispatched
     /// </summary>

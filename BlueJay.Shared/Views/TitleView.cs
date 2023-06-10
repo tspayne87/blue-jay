@@ -32,8 +32,7 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddUIRenderSystems();
       serviceProvider.AddSystem<FPSSystem>("Default");
 
-      serviceProvider.ParseJayTML<TitleViewComponent>()
-        ?.GenerateUI();
+      serviceProvider.AttachComponent<TitleViewComponent>();
     }
   }
 }

@@ -23,6 +23,14 @@ namespace BlueJay.Events.Interfaces
     IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object? target = null);
 
     /// <summary>
+    /// Helper method is meant to trigger a callback after the timeout clears
+    /// </summary>
+    /// <param name="callback">The function that will get called when</param>
+    /// <param name="timeout">The current timeout that this callback should wait till it needs to be triggered</param>
+    /// <returns>Will return the disposable to remove the timeout from being called</returns>
+    IDisposable Timeout(Action callback, int timeout = -1);
+
+    /// <summary>
     /// Helper method is meant to add on event listeners into the system so they can interact with events that get dispatched
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>

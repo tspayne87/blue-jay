@@ -1,34 +1,38 @@
-﻿using BlueJay.Core;
-using BlueJay.Interfaces;
+﻿using BlueJay.Interfaces;
 using BlueJay.Shared.Views;
 using BlueJay.UI;
 using BlueJay.UI.Component;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Interactivity;
+using BlueJay.UI.Component.Interactivity.Dropdown;
 using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace BlueJay.Shared.Components
 {
-  [View(@"
-<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
+    [View(@"
+<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default; Padding: 10"">
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
+  <TextInput Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
   <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 
-  <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
-  <Container :if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
+  <SwitchInput Style=""Height: 25"" Model=""Switch"" />
+  <Container if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
 
-  <SliderInput :Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
+  <SliderInput Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
   <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
 
-  <DropdownInput Style=""ColumnSpan: 2"" :Items=""DropdownItems"" :Model=""Dropdown"" :MenuStyle=""DropdownMenuStyle"" :ItemHoverStyle=""DropdownHoverItemStyle"" />
+  <DropdownInput Style=""ColumnSpan: 2; NinePatch: Sample_NinePatch; Padding: 13; WidthPercentage: 1; NinePatch::Hover: Sample_Hover_NinePatch"" Model=""Dropdown"">
+    <DropdownMenu Style=""NinePatch: Dropdown_Background_Ninepatch; Padding: 13"">
+      <DropdownItem for=""#item in DropdownItems"" Style=""BackgroundColor: 217, 87, 99"" Value=""#item.Id"" Text=""#item.Name"" />
+    </DropdownMenu>
+  </DropdownInput>
+
   <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5"">
     <Button @Select=""AddItem()"">Add Item</Button>
     <Button @Select=""InsertItem()"">Insert Item</Button>
@@ -38,7 +42,7 @@ namespace BlueJay.Shared.Components
   <Container Style=""TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
     ")]
-  [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput), typeof(DropdownInput))]
+  [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput), typeof(DropdownInput), typeof(DropdownMenu), typeof(DropdownItem))]
   public class UIComponentTestComponent : UIComponent
   {
     /// <summary>
@@ -64,27 +68,17 @@ namespace BlueJay.Shared.Components
     /// <summary>
     /// The text input value that is currently being set by the input component
     /// </summary>
-    public readonly ReactiveProperty<string> TextInput;
+    public readonly ReactiveProperty<Text> TextInput;
 
     /// <summary>
     /// The model value for the dropdown
     /// </summary>
-    public readonly ReactiveProperty<DropdownItem> Dropdown;
+    public readonly NullableReactiveProperty<int> Dropdown;
 
     /// <summary>
     /// The list of items that can be chosen from
     /// </summary>
-    public readonly ReactiveCollection<DropdownItem> DropdownItems;
-
-    /// <summary>
-    /// The dropdown menu style
-    /// </summary>
-    public readonly ReactiveStyle DropdownMenuStyle;
-
-    /// <summary>
-    /// The hover item style that should be used for the dropdown
-    /// </summary>
-    public readonly ReactiveStyle DropdownHoverItemStyle;
+    public readonly ReactiveCollection<SelectableItem> DropdownItems;
 
     /// <summary>
     /// Constructor to build out the breakcout UI Component
@@ -94,22 +88,16 @@ namespace BlueJay.Shared.Components
     {
       Switch = new ReactiveProperty<bool>(false);
       Slider = new ReactiveProperty<int>(0);
-      Dropdown = new ReactiveProperty<DropdownItem>(null);
-      TextInput = new ReactiveProperty<string>("");
-      DropdownItems = new ReactiveCollection<DropdownItem>(new List<DropdownItem>()
+      Dropdown = new NullableReactiveProperty<int>(null);
+      TextInput = new ReactiveProperty<Text>("");
+      DropdownItems = new ReactiveCollection<SelectableItem>(new List<SelectableItem>()
       {
-        new DropdownItem() { Name = "Item 1", Id = 1 },
-        new DropdownItem() { Name = "Item 2", Id = 2 },
-        new DropdownItem() { Name = "Item 3", Id = 3 },
-        new DropdownItem() { Name = "Item 4", Id = 4 },
-        new DropdownItem() { Name = "Item 5", Id = 5 }
+        new SelectableItem() { Name = "Item 1", Id = 1 },
+        new SelectableItem() { Name = "Item 2", Id = 2 },
+        new SelectableItem() { Name = "Item 3", Id = 3 },
+        new SelectableItem() { Name = "Item 4", Id = 4 },
+        new SelectableItem() { Name = "Item 5", Id = 5 }
       });
-      DropdownMenuStyle = new ReactiveStyle();
-      DropdownMenuStyle.NinePatch = new NinePatch(content.Load<Texture2D>("Dropdown_Background_Ninepatch"));
-      DropdownMenuStyle.Padding = 13;
-
-      DropdownHoverItemStyle = new ReactiveStyle();
-      DropdownHoverItemStyle.BackgroundColor = new Microsoft.Xna.Framework.Color(217, 87, 99);
 
       _views = views;
       _rand = new Random();
@@ -118,7 +106,6 @@ namespace BlueJay.Shared.Components
     /// <summary>
     /// Callback method is meant to switch to the title component on click
     /// </summary>
-    /// <param name="evt">The event that was sent from the triggered event</param>
     /// <returns>Will return true representing we should keep propegating this event</returns>
     public bool OnBackToTitleClick()
     {
@@ -128,7 +115,7 @@ namespace BlueJay.Shared.Components
 
     public bool AddItem()
     {
-      DropdownItems.Add(new DropdownItem()
+      DropdownItems.Add(new SelectableItem()
       {
         Name = $"Item {DropdownItems.Count + 1}",
         Id = DropdownItems.Count + 1
@@ -138,7 +125,7 @@ namespace BlueJay.Shared.Components
 
     public bool InsertItem()
     {
-      DropdownItems.Insert(1, new DropdownItem() { Name = "Changed Item 2", Id = 20000000 });
+      DropdownItems.Insert(1, new SelectableItem() { Name = "Changed Item 2", Id = 20000000 });
       return true;
     }
 
@@ -163,37 +150,37 @@ namespace BlueJay.Shared.Components
       return true;
     }
 
-    public string ShowDropdownItem(DropdownItem item)
+    public string ShowDropdownItem(int? item)
     {
-      return item?.ToString() ?? string.Empty;
+      SelectableItem? selected = null;
+      if (DropdownItems.Any(x => x.Id == item))
+        selected = DropdownItems.FirstOrDefault(x => x.Id == item);
+      return selected?.Name ?? string.Empty;
     }
 
     [Watch(nameof(Dropdown))]
-    public void OnDropdownChange(DropdownItem item)
+    public void OnDropdownChange(int? item)
     {
-      TextInput.Value = item?.Name ?? string.Empty;
+      SelectableItem? selected = null;
+      if (DropdownItems.Any(x => x.Id == item))
+        selected = DropdownItems.FirstOrDefault(x => x.Id == item);
+      TextInput.Value = selected?.Name ?? string.Empty;
     }
 
     /// <summary>
     /// A dropdown item for the dropdown input
     /// </summary>
-    public class DropdownItem
+    public struct SelectableItem
     {
       /// <summary>
       /// The name of the dropdown item
       /// </summary>
-      public string Name { get; set; }
+      public Text Name { get; set; }
 
       /// <summary>
       /// The id of the dropdown item
       /// </summary>
       public int Id { get; set; }
-
-      /// <inheritdoc />
-      public override string ToString()
-      {
-        return Name;
-      }
     }
   }
 }

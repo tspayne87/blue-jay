@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Interactivity\Dropdown\DropdownItemExtensions.cs~RF8f7af628.TMP" />
     <None Remove="Nodes\Attributes\ForAttribute.cs~RF30cafcee.TMP" />
   </ItemGroup>
 

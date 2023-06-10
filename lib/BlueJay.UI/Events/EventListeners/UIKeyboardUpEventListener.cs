@@ -35,7 +35,7 @@ namespace BlueJay.UI.Events.EventListeners
     /// <returns>Will return a boolean determining if we should process the event listener</returns>
     public override bool ShouldProcess(IEvent evt)
     {
-      return evt.Target == null;
+      return _service.FocusedEntity != null;
     }
 
     /// <summary>
@@ -44,11 +44,7 @@ namespace BlueJay.UI.Events.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<KeyboardUpEvent> evt)
     {
-      if (_service.FocusedEntity != null)
-      {
-        _eventQueue.DispatchEvent(evt.Data, _service.FocusedEntity);
-        evt.StopPropagation();
-      }
+      _eventQueue.DispatchEvent(evt.Data, _service.FocusedEntity);
     }
   }
 }

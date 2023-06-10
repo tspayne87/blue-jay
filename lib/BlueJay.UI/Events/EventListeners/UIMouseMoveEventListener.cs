@@ -81,7 +81,6 @@ namespace BlueJay.UI.Events.EventListeners
       if (hoverEntity != null)
       {
         _eventQueue.DispatchEvent(evt.Data, hoverEntity);
-        evt.StopPropagation();
 
         var sa = hoverEntity.GetAddon<StyleAddon>();
         var la = hoverEntity.GetAddon<LineageAddon>();

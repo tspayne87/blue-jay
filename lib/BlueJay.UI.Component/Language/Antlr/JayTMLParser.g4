@@ -81,44 +81,22 @@ stringDetails
  | CLOSEINTERP expr=expression EXITINTERP                                                                 #stringInterpExpression
  ;
 style
- : styleItem (SEMICOLON styleItem)* ;
+ : styleItem (SEMICOLON styleItem)* SEMICOLON? ;
 styleItem
- : name=WIDTH STYLECOLON (styleInteger | styleExpression)
- | name=WIDTHPERCENTAGE STYLECOLON (styleDecimal | styleExpression)
- | name=HEIGHT STYLECOLON (styleInteger | styleExpression)
- | name=HEIGHTPERCENTAGE STYLECOLON (styleDecimal | styleExpression)
- | name=TOPOFFSET STYLECOLON (styleInteger | styleExpression)
- | name=LEFTOFFSET STYLECOLON (styleInteger | styleExpression)
- | name=PADDING STYLECOLON (styleInteger | styleExpression)
- | name=HORIZONTALALIGN STYLECOLON (horizontalAlign | styleExpression)
- | name=VERTICALALIGN STYLECOLON (verticalAlign | styleExpression)
- | name=POSITION STYLECOLON (position | styleExpression)
- | name=NINEPATCH STYLECOLON (styleNinePatch | styleExpression)
- | name=TEXTCOLOR STYLECOLON (styleColor | styleExpression)
- | name=BACKGROUNDCOLOR STYLECOLON (styleColor | styleExpression)
- | name=TEXTALIGN STYLECOLON (textAlign | styleExpression)
- | name=TEXTBASELINE STYLECOLON (textBaseline | styleExpression)
- | name=GRIDCOLUMNS STYLECOLON (styleInteger | styleExpression)
- | name=COLUMNGAP STYLECOLON (stylePoint | styleExpression)
- | name=COLUMNSPAN STYLECOLON (styleInteger | styleExpression)
- | name=COLUMNOFFSET STYLECOLON (styleInteger | styleExpression)
- | name=FONT STYLECOLON (styleWord | styleExpression)
- | name=TEXTUREFONT STYLECOLON (styleWord | styleExpression)
- | name=TEXTUREFONTSIZE STYLECOLON (styleInteger | styleExpression)
- | name=HEIGHTTEMPLATE STYLECOLON (heightTemplate | styleExpression)
+ : name=WORD alternate=styleAlternate (styleInteger | styleDecimal | styleWord | styleColor | stylePoint | styleExpression)
+ ;
+styleAlternate
+ : STYLEDOUBLECOLON type=HOVER STYLECOLON
+ | STYLECOLON
  ;
 styleExpression
  : STYLEOPENEXPRESSION expr=scopeExpression CLOSEBRACKETS
  ;
 styleDecimal
  : DECIMAL
- | INTEGER
  ;
-styleInteger
+styleInteger 
  : INTEGER
- ;
-styleNinePatch
- : WORD
  ;
 styleColor
  : r=styleInteger STYLECOMMA g=styleInteger STYLECOMMA b=styleInteger (STYLECOMMA a=styleInteger)?
@@ -128,33 +106,4 @@ stylePoint
  ;
 styleWord
  : WORD
- ;
-
-// --- Enumerations ---
-horizontalAlign
- : RIGHT
- | CENTER
- | LEFT
- ;
-verticalAlign
- : TOP
- | CENTER
- | BOTTOM
- ;
-textAlign
- : RIGHT
- | CENTER
- | LEFT
- ;
-textBaseline
- : TOP
- | CENTER
- | BOTTOM
- ;
-position
- : RELATIVE
- | ABSOLUTE
- ;
-heightTemplate
- : STRETCH
  ;

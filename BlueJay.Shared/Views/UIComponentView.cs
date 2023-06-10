@@ -26,9 +26,9 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddUIKeyboardSupport();
       serviceProvider.AddUITouchSupport();
 
-      serviceProvider.AddUIRenderSystems(true);
+      serviceProvider.AddUIRenderSystems();
 
-      serviceProvider.AddUIComponent<UIComponentTestComponent>();
+      serviceProvider.AttachComponent<UIComponentTestComponent>();
     }
   }
 }

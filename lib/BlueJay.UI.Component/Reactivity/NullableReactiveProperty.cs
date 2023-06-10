@@ -1,10 +1,12 @@
-﻿namespace BlueJay.UI.Component.Reactivity
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BlueJay.UI.Component.Reactivity
 {
-  /// <summary>
-  /// Reactive property that will handle when props change on the component
-  /// </summary>
-  /// <typeparam name="T">The type of property this is</typeparam>
-  public class ReactiveProperty<T> : IReactiveProperty<T>
+  public class NullableReactiveProperty<T> : IReactiveProperty<T?>
     where T : struct
   {
     /// <summary>
@@ -15,12 +17,12 @@
     /// <summary>
     /// The internal value that was set for this property
     /// </summary>
-    private T _value;
+    private T? _value;
 
     /// <summary>
     /// Getter that is meant to update all the observers and the internal value
     /// </summary>
-    public T Value
+    public T? Value
     {
       get => _value;
       set
@@ -37,7 +39,7 @@
     /// Constructor to build out a reactive property starting with a value
     /// </summary>
     /// <param name="value">The value to start with</param>
-    public ReactiveProperty(T value)
+    public NullableReactiveProperty(T? value)
     {
       _value = value;
       _observers = new List<IObserver<ReactiveEvent>>();
@@ -71,7 +73,7 @@
     }
 
     /// <inheritdoc />
-    public void Next(T value, ReactiveEvent.EventType type = ReactiveEvent.EventType.Update)
+    public void Next(T? value, ReactiveEvent.EventType type = ReactiveEvent.EventType.Update)
     {
       foreach (var observer in _observers.ToArray())
         observer.OnNext(new ReactiveEvent() { Data = value, Type = type });

@@ -8,7 +8,7 @@ namespace BlueJay.UI.Addons
     /// <summary>
     /// The internal hover style that should be used for hovering
     /// </summary>
-    private Style? _hoverStyle;
+    private ChildStyle? _hoverStyle;
 
     /// <summary>
     /// The internal style that should be used by the UI element
@@ -39,19 +39,14 @@ namespace BlueJay.UI.Addons
     /// <summary>
     /// The style that should be used for hovering
     /// </summary>
-    public Style? HoverStyle
+    public ChildStyle? HoverStyle
     {
       get => _hoverStyle;
       set
       {
         _hoverStyle = value;
-
-        var style = _hoverStyle;
-        while (style?.Parent != null)
-          style = style.Parent;
-
-        if (style != null)
-          style.Parent = Style;
+        if (_hoverStyle != null)
+          _hoverStyle.Parent = _style;
       }
     }
 
@@ -92,15 +87,14 @@ namespace BlueJay.UI.Addons
     /// </summary>
     /// <param name="style">The style that should process the UI element bounds</param>
     /// <param name="hoverStyle">The hover style that should be processed for the UI element</param>
-    public StyleAddon(Style? style, Style? hoverStyle)
+    public StyleAddon(Style? style, ChildStyle? hoverStyle)
     {
       Hovering = false;
       CalculatedBounds = Rectangle.Empty;
       GridPosition = Point.Zero;
       _style = style ?? new Style();
-      _hoverStyle = hoverStyle;
-      if (_hoverStyle != null)
-        _hoverStyle.Parent = _style;
+      _hoverStyle = hoverStyle ?? new ChildStyle();
+      _hoverStyle.Parent = _style;
       CalculatedBounds = Rectangle.Empty;
       StyleUpdates = 0;
     }

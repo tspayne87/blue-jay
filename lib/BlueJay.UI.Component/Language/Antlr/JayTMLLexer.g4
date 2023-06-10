@@ -13,7 +13,7 @@ mode ATTRIBUTE;
 CLOSE                       : '>'                                                -> popMode ;
 SLASH_CLOSE                 : '/>'                                               -> popMode ;
 EXPRESSIONATTR              : ':' StartCharacter NameChar* '="'                  -> pushMode(EXPRESSION) ;
-EVENTATTR                   : '@' StartCharacter NameChar* ('.Global')? '="'     -> pushMode(EXPRESSION) ;
+EVENTATTR                   : '@' StartCharacter NameChar* ('.' NameChar*)? '="' -> pushMode(EXPRESSION) ;
 STYLEATTR                   : 'Style="'                                          -> pushMode(STYLE) ;
 STRATTR                     : StartCharacter NameChar* '="'                      -> pushMode(INSIDEATTRIBUTESTRING) ;
 IF                          : 'if="'                                             -> pushMode(EXPRESSION) ;
@@ -117,6 +117,7 @@ mode STYLE;
 
 STYLECLOSE                  : '"'                                                -> popMode ;
 STYLEOPENEXPRESSION         : '{{'                                               -> pushMode(EXPRESSION) ;
+STYLEDOUBLECOLON            : '::' ;
 STYLECOLON                  : ':' ;
 SEMICOLON                   : ';' ;
 STYLECOMMA                  : ',' ;
@@ -124,40 +125,8 @@ INTEGER                     : Minus? StyleDigit+ ;
 DECIMAL                     : Minus? StyleDigit+ Dot StyleDigit+ ;
 STYLEWS                     : [ \t\r\n]+ -> skip ;
 
-// --- Field Names ---
-WIDTH                       : 'Width' ;
-WIDTHPERCENTAGE             : 'WidthPercentage' ;
-HEIGHT                      : 'Height' ;
-HEIGHTPERCENTAGE            : 'HeightPercentage' ;
-TOPOFFSET                   : 'TopOffset';
-LEFTOFFSET                  : 'LeftOffset' ;
-PADDING                     : 'Padding';
-HORIZONTALALIGN             : 'HorizontalAlign' ;
-VERTICALALIGN               : 'VerticalAlign' ;
-POSITION                    : 'Position' ;
-NINEPATCH                   : 'NinePatch' ;
-TEXTCOLOR                   : 'TextColor' ;
-BACKGROUNDCOLOR             : 'BackgroundColor' ;
-TEXTALIGN                   : 'TextAlign' ;
-TEXTBASELINE                : 'TextBaseline' ;
-GRIDCOLUMNS                 : 'GridColumns' ;
-COLUMNGAP                   : 'ColumnGap' ;
-COLUMNSPAN                  : 'ColumnSpan' ;
-COLUMNOFFSET                : 'ColumnOffset' ;
-FONT                        : 'Font' ;
-TEXTUREFONT                 : 'TextureFont' ;
-TEXTUREFONTSIZE             : 'TextureFontSize' ;
-HEIGHTTEMPLATE              : 'HeightTemplate' ;
-
-// --- Enumerations ---
-RIGHT                       : 'Right' ;
-CENTER                      : 'Center' ;
-LEFT                        : 'Left' ;
-TOP                         : 'Top' ;
-BOTTOM                      : 'Bottom' ;
-RELATIVE                    : 'Relative' ;
-ABSOLUTE                    : 'Absolute' ;
-STRETCH                     : 'Stretch' ;
+// --- Alternate Styles ---
+HOVER                       : 'Hover' ;
 
 // --- Final Word to deal with strings ---
 WORD                         : (StyleNameChar | Underscore)+ ;

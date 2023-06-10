@@ -74,117 +74,117 @@ namespace BlueJay.UI
     /// <summary>
     /// The current width in pixels of the UI element
     /// </summary>
-    public int? Width { get; set; }
+    public virtual int? Width { get; set; }
 
     /// <summary>
     /// The current width percentage of the UI element
     /// </summary>
-    public float? WidthPercentage { get; set; }
+    public virtual float? WidthPercentage { get; set; }
 
     /// <summary>
     /// The current height in pixels of the UI element
     /// </summary>
-    public int? Height { get; set; }
+    public virtual int? Height { get; set; }
 
     /// <summary>
     /// The current height percentage of the UI element
     /// </summary>
-    public float? HeightPercentage { get; set; }
+    public virtual float? HeightPercentage { get; set; }
 
     /// <summary>
     /// The offset of this element for the top based on its parent position
     /// </summary>
-    public int? TopOffset { get; set; }
+    public virtual int? TopOffset { get; set; }
 
     /// <summary>
     /// The offset of this element for the left based on its parent position
     /// </summary>
-    public int? LeftOffset { get; set; }
+    public virtual int? LeftOffset { get; set; }
 
     /// <summary>
     /// The padding this element should have around the contents of it
     /// </summary>
-    public int? Padding { get; set; }
+    public virtual int? Padding { get; set; }
 
     /// <summary>
     /// The horizontal alignment of where this element should exist
     /// </summary>
-    public HorizontalAlign? HorizontalAlign { get; set; }
+    public virtual HorizontalAlign? HorizontalAlign { get; set; }
 
     /// <summary>
     /// The veritcal alignment of where this element should exist
     /// </summary>
-    public VerticalAlign? VerticalAlign { get; set; }
+    public virtual VerticalAlign? VerticalAlign { get; set; }
 
     /// <summary>
     /// The type of position this element should use when determining offsets
     /// </summary>
-    public Position? Position { get; set; }
+    public virtual Position? Position { get; set; }
 
     /// <summary>
     /// The nine patch texture to render the rectangle for the background
     /// </summary>
-    public NinePatch? NinePatch { get; set; }
+    public virtual NinePatch? NinePatch { get; set; }
 
     /// <summary>
     /// The color of the text that should be used
     /// </summary>
-    public Color? TextColor { get => _textColor ?? _parent?.TextColor; set => _textColor = value; }
+    public virtual Color? TextColor { get => _textColor ?? _parent?.TextColor; set => _textColor = value; }
 
     /// <summary>
     /// The color of the background that should be used
     /// </summary>
-    public Color? BackgroundColor { get; set; }
+    public virtual Color? BackgroundColor { get; set; }
 
     /// <summary>
     /// The alignment of the text that should be used
     /// </summary>
-    public TextAlign? TextAlign { get; set; }
+    public virtual TextAlign? TextAlign { get; set; }
 
     /// <summary>
     /// The alignment of the baseline for the text that should be used
     /// </summary>
-    public TextBaseline? TextBaseline { get; set; }
+    public virtual TextBaseline? TextBaseline { get; set; }
 
     /// <summary>
     /// How the height shold be handled
     /// </summary>
-    public HeightTemplate? HeightTemplate { get; set; }
+    public virtual HeightTemplate? HeightTemplate { get; set; }
 
     /// <summary>
     /// The current number of grid columns the internals for this element should have
     /// </summary>
-    public int GridColumns { get => _gridColumns ?? 1; set => _gridColumns = value; }
+    public virtual int GridColumns { get => _gridColumns ?? 1; set => _gridColumns = value; }
 
     /// <summary>
     /// The gap in pixels where each column should be rendered
     /// </summary>
-    public Point ColumnGap { get => _columnGap ?? Point.Zero; set => _columnGap = value; }
+    public virtual Point ColumnGap { get => _columnGap ?? Point.Zero; set => _columnGap = value; }
 
     /// <summary>
     /// The column span this element should use in its parent elemenet
     /// </summary>
-    public int ColumnSpan { get => _columnSpan ?? 1; set => _columnSpan = Math.Max(value, 0); }
+    public virtual int ColumnSpan { get => _columnSpan ?? 1; set => _columnSpan = Math.Max(value, 0); }
 
     /// <summary>
     /// The column offset this element should use in its parent element
     /// </summary>
-    public int ColumnOffset { get => _columnOffset ?? 0; set => _columnOffset = Math.Max(value, 0); }
+    public virtual int ColumnOffset { get => _columnOffset ?? 0; set => _columnOffset = Math.Max(value, 0); }
 
     /// <summary>
     /// The current basic sprite font name this element should use to render text
     /// </summary>
-    public string? Font { get => _font ?? Parent?.Font; set => _font = value; }
+    public virtual string? Font { get => _font ?? Parent?.Font; set => _font = value; }
 
     /// <summary>
     /// The texture font that should be used to render text for this element
     /// </summary>
-    public string? TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
+    public virtual string? TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
 
     /// <summary>
     /// The texture font size that should be used when rendering the text element
     /// </summary>
-    public int? TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize; set { if (value != null) _textureFontSize = Math.Max(value ?? 1, 1); else _textureFontSize = null; } }
+    public virtual int? TextureFontSize { get => _textureFontSize ?? Parent?.TextureFontSize; set { if (value != null) _textureFontSize = Math.Max(value ?? 1, 1); else _textureFontSize = null; } }
 
     /// <summary>
     /// Helper method to determine if a circular refernce would happen

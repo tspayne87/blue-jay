@@ -59,7 +59,7 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddPaddle();
 
       // Add UI Component
-      serviceProvider.AddUIComponent<BreakoutViewComponent>();
+      serviceProvider.AttachComponent<BreakoutViewComponent>();
     }
 
     /// <summary>

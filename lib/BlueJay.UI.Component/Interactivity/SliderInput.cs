@@ -12,9 +12,9 @@ namespace BlueJay.UI.Component.Interactivity
   /// The slider component
   /// </summary>
   [View(@"
-<Container @MouseMove.Global=""OnMouseMove(evt)"" @MouseUp.Global=""OnMouseUp()"">
-  <Container :ref=""Bar"" Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
-  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60"" :Style=""SliderStyle"" @MouseDown=""OnMouseDown()"" />
+<Container @MouseMove.Global=""OnMouseMove($evt)"" @MouseUp.Global=""OnMouseUp()"">
+  <Container ref=""Bar"" Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
+  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; Padding: {{Padding}}; LeftOffset: {{LeftOffset}}"" @MouseDown=""OnMouseDown()"" />
 </Container>
     ")]
   public class SliderInput : UIComponent
@@ -33,11 +33,6 @@ namespace BlueJay.UI.Component.Interactivity
     /// The current inner width of the input
     /// </summary>
     private int _innerWidth;
-
-    /// <summary>
-    /// The padding that should be used for the tick
-    /// </summary>
-    private int _padding;
 
     /// <summary>
     /// If we are selected
@@ -69,22 +64,25 @@ namespace BlueJay.UI.Component.Interactivity
     public readonly ReactiveProperty<int> Ticks;
 
     /// <summary>
-    /// The slider style that should be used
+    /// The padding that should be used for the tick
     /// </summary>
-    [Prop]
-    public readonly ReactiveStyle SliderStyle;
+    public readonly ReactiveProperty<int> Padding;
+
+    /// <summary>
+    /// The left offset of the slider
+    /// </summary>
+    public readonly ReactiveProperty<int> LeftOffset;
 
     /// <summary>
     /// The bar of the slider
     /// </summary>
-    public IEntity Bar;
+    public IEntity? Bar;
 
     /// <summary>
     /// Constructor to set up all the defaults for the class
     /// </summary>
     public SliderInput()
     {
-      _padding = 3;
       _tickOffset = 0;
       _xOffset = 0;
       _selected = false;
@@ -93,8 +91,8 @@ namespace BlueJay.UI.Component.Interactivity
       Min = new ReactiveProperty<int>(0);
       Max = new ReactiveProperty<int>(100);
       Ticks = new ReactiveProperty<int>(20);
-      SliderStyle = new ReactiveStyle();
-      SliderStyle.LeftOffset = _padding;
+      Padding = new ReactiveProperty<int>(3);
+      LeftOffset = new ReactiveProperty<int>(0);
     }
 
     /// <summary>
@@ -110,8 +108,8 @@ namespace BlueJay.UI.Component.Interactivity
         var pa = Bar.GetAddon<PositionAddon>();
         if (innerWidth > 0 && Ticks.Value > 0)
         {
-          _xOffset = (int)pa.Position.X + _padding;
-          _innerWidth = innerWidth - (_padding * 2) - 16;
+          _xOffset = (int)pa.Position.X + Padding.Value;
+          _innerWidth = innerWidth - (Padding.Value * 2) - 16;
           _tickOffset = Math.Max((float)_innerWidth / Ticks.Value, 1f);
         }
       }
@@ -128,7 +126,7 @@ namespace BlueJay.UI.Component.Interactivity
       if (_selected && _tickOffset != 0)
       {
         var tick = (evt.Position.X - _xOffset) / _tickOffset;
-        SliderStyle.LeftOffset = MathHelper.Clamp((int)((int)tick * _tickOffset) + _padding, _padding, _innerWidth);
+        LeftOffset.Value = MathHelper.Clamp((int)((int)tick * _tickOffset) + Padding.Value, Padding.Value, _innerWidth);
         Model.Value = MathHelper.Clamp((int)tick * (Max.Value / Ticks.Value), Min.Value, Max.Value);
       }
       return true;
