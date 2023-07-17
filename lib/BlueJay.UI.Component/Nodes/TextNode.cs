@@ -1,61 +1,65 @@
-﻿using BlueJay.Component.System;
-using BlueJay.Component.System.Interfaces;
-using BlueJay.UI.Addons;
-using BlueJay.UI.Component.Nodes.Attributes;
-using BlueJay.UI.Component.Nodes.Elements;
+﻿using BlueJay.UI.Addons;
+using BlueJay.UI.Component.Elements.Attributes;
 using BlueJay.UI.Component.Reactivity;
 using BlueJay.UI.Factories;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Xna.Framework;
-using System.Xml.Linq;
 
 namespace BlueJay.UI.Component.Nodes
 {
+  /// <summary>
+  /// The text node to create a basic text entity to the UI
+  /// </summary>
   internal class TextNode : Node
   {
+    /// <summary>
+    /// The callback function meant to get the text that should be used for the text entity
+    /// </summary>
     private Func<UIComponent, object?, Dictionary<string, object>?, object> _textCallback { get; set; }
-    private List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>> _reactiveProperties { get; set; }
 
-    public TextNode(UIComponent uiComponent, IServiceProvider provider, Func<UIComponent, object?, Dictionary<string, object>?, object> textCallback, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>> reactiveProperties)
-      : base("text", uiComponent, new List<Attributes.Attribute>(), provider)
+    /// <summary>
+    /// The reactive properties found when generating the text callback
+    /// </summary>
+    private List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> _reactiveProperties { get; set; }
+
+    /// <summary>
+    /// Constructor to build out the text node
+    /// </summary>
+    /// <param name="scope">The node scope this text node is currently in</param>
+    /// <param name="textCallback">The callback function meant to get the text that should be used for the text entity</param>
+    /// <param name="reactiveProperties">The reactive properties found when generating the text callback</param>
+    public TextNode(NodeScope scope, Func<UIComponent, object?, Dictionary<string, object>?, object> textCallback, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> reactiveProperties)
+      : base(scope, new List<UIElementAttribute>())
     {
       _textCallback = textCallback;
       _reactiveProperties = reactiveProperties;
     }
 
-    protected override List<UIElement> AddEntity(Style style, UIElement? parent, Dictionary<string, object>? scope)
+    /// <inheritdoc />
+    protected override List<UIEntity> AddEntity(Style style, UIEntity? parent, Dictionary<string, object>? scope)
     {
-      var data = _textCallback(UIComponent, null, scope) as string ?? string.Empty;
-      var entity = _provider.AddText(data, style, parent?.Entity);
+      if (parent == null || !parent.ScopeKey.HasValue)
+        throw new ArgumentNullException("Component");
+      var component = Scope[parent.ScopeKey.Value];
+
+      var data = _textCallback(component, null, scope) as string ?? string.Empty;
+      var entity = Scope.ServiceProvider.AddText(data, style, parent?.Entity);
       var callbacks = new List<IDisposable>();
       foreach (var callback in _reactiveProperties)
       {
-        var prop = callback(UIComponent, null, scope);
+        var prop = callback(component, null, scope);
         if (prop != null)
         {
           callbacks.Add(prop.Subscribe(evt =>
           {
             var test = prop;
             var ta = entity.GetAddon<TextAddon>();
-            ta.Text = _textCallback(UIComponent, null, scope) as string ?? string.Empty;
+            ta.Text = _textCallback(component, null, scope) as string ?? string.Empty;
             entity.Update(ta);
             TriggerUIUpdate();
           }));
         }
       }
 
-      return new List<UIElement>() { CreateUIElement(entity, callbacks) };
-    }
-
-    /// <inheritdoc />
-    /// <remarks>
-    /// Overriding this since the text node will not have events attach to them but should register the parents
-    /// events to itself since the text node will be a item on the page that will consume events and will not propogate them
-    /// down to their parent
-    /// </remarks>
-    protected override List<IDisposable> AttachEvents(Dictionary<string, object>? scope, IEntity entity, IEnumerable<EventAttribute> events)
-    {
-      return base.AttachEvents(scope, entity, Parent?.EventAttributes ?? events);
+      return new List<UIEntity>() { CreateUIElement(entity, callbacks) };
     }
   }
 }

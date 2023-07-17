@@ -12,6 +12,7 @@ using BlueJay.Component.System.Collections;
 using BlueJay.Component.System;
 using BlueJay.EventListeners;
 using BlueJay.Events.Lifecycle;
+using BlueJay.Utils;
 
 namespace BlueJay
 {
@@ -78,6 +79,8 @@ namespace BlueJay
       _serviceCollection.AddSingleton(GraphicsDevice);
       _serviceCollection.AddSingleton<SpriteBatch>();
       _serviceCollection.AddSingleton<SpriteBatchExtension>();
+      _serviceCollection.AddSingleton<IScreenViewport, ScreenViewport>();
+      _serviceCollection.AddSingleton<IContentManagerContainer, ContentManagerContainer>();
       _serviceCollection.AddBlueJayEvents();
       _serviceCollection.AddBlueJaySystem();
       _serviceCollection.AddBlueJay();

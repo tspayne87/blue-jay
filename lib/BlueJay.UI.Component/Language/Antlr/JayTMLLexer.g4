@@ -89,15 +89,18 @@ ATTRDETAILSSTRING           : ~["]+ ;
 mode FOREXPRESSION;
 
 FORCLOSE                    : '"'                                                -> popMode ;
+FOROPENEXPRESSION           : '{{'                                               -> pushMode(EXPRESSION) ;
 FORIN                       : 'in' ;
-FORDOT                      : '.' ;
-FOROPENSQUAREBRACKET        : '[' ;
-FORCLOSESQUAREBRACKET       : ']' ;
+FORDOUBLEDOT                : '..' ;
 FORHASH                     : '#' ;
-FORIDENTIFIER               : ForNameChar+ ;
+FORINTEGER                  : ForDash? ForInteger+ ;
+FORIDENTIFIER               : ForNameChar ForRefChar* ;
 
 // --- Fragments ---
-fragment ForNameChar        : [A-Z] | [a-z] | [0-9] ;
+fragment ForRefChar         : ForNameChar | ForInteger ;
+fragment ForNameChar        : [A-Z] | [a-z] ;
+fragment ForInteger         : [0-9] ;
+fragment ForDash            : '-' ;
 // --- End For Expression ---
 
 // --- Start Ref Expression ---

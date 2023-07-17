@@ -1,6 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace BlueJay.Component.System
 {
@@ -147,7 +146,7 @@ namespace BlueJay.Component.System
     /// <summary>
     /// The cache of keys based on the type of object given
     /// </summary>
-    private static Dictionary<Type, long> _cache = new Dictionary<Type, long>();
+    private static ConcurrentDictionary<Type, long> _cache = new ConcurrentDictionary<Type, long>();
 
     /// <summary>
     /// Helper method is meant to create an identifier if one does not exist and return either the cached or the created one

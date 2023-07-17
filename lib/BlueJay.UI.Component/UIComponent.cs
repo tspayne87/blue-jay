@@ -11,9 +11,9 @@ namespace BlueJay.UI.Component
   public abstract class UIComponent
   {
     /// <summary>
-    /// The root entity that was created for this UI component
+    /// The parent ui element that was created for this ui element
     /// </summary>
-    public List<IEntity>? Root { get; set; }
+    private UIComponent? _parent;
 
     /// <summary>
     /// The identifier that exists on the scope
@@ -21,51 +21,33 @@ namespace BlueJay.UI.Component
     internal string Identifier { get; private set; } = $"CI_{Utils.GetNextIdentifier()}";
 
     /// <summary>
-    /// The current providers for this component
+    /// The parent that should exist for this ui element is also meant to attach itself to the children and keep
+    /// the node tree intact
     /// </summary>
-    internal ParentDictionary? Providers { get; private set; }
+    public UIComponent? Parent
+    {
+      get => _parent;
+      set
+      {
+        // Remove this parent if it already exists on a different parent
+        if (_parent != null)
+          _parent.Children.Remove(this);
+
+        // Add the parent to the new child and update the parent that it has a new child
+        _parent = value;
+        if (_parent != null)
+          _parent.Children.Add(this);
+      }
+    }
+
+    /// <summary>
+    /// The parent component meant to bind to this child component
+    /// </summary>
+    public List<UIComponent> Children { get; } = new List<UIComponent>();
 
     /// <summary>
     /// Helper method is called when the component is mounted to the UI tree
     /// </summary>
     public virtual void Mounted() { }
-
-    internal void InitializeProviders(ParentDictionary? providers = null)
-    {
-      if (Providers != null)
-        return;
-
-      var members = GetType().GetMembers()
-        .Where(x => x.GetCustomAttribute<ProvideAttribute>() != null);
-
-      var result = new ParentDictionary(providers);
-      foreach (var member in members)
-      {
-        switch (member.MemberType)
-        {
-          case MemberTypes.Field:
-            var field = member as FieldInfo;
-            if (field != null)
-              result[field.Name] = field.GetValue(this);
-            break;
-          case MemberTypes.Property:
-            var prop = member as PropertyInfo;
-            if (prop != null)
-              result[prop.Name] = prop.GetValue(this);
-            break;
-          case MemberTypes.Method:
-            var method = member as MethodInfo;
-            if (method != null) {
-              var parameters = method.GetParameters().Select(x => x.ParameterType).ToList();
-              parameters.Add(method.ReturnType);
-
-              var funcType = parameters.ToFuncType();
-              result[method.Name] = Delegate.CreateDelegate(funcType, this, method);
-            }
-            break;
-        }
-      }
-      Providers = result;
-    }
   }
 }

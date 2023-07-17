@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BlueJay.UI.Component.Reactivity
+﻿namespace BlueJay.UI.Component.Reactivity
 {
   public class NullableReactiveProperty<T> : IReactiveProperty<T?>
     where T : struct

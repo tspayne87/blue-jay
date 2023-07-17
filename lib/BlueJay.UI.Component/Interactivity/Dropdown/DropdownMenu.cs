@@ -8,7 +8,7 @@ namespace BlueJay.UI.Component.Interactivity.Dropdown
   /// Dropdown menu wrapper to show the menu in a specific location
   /// </summary>
   [View(@"
-  <Container if=""ShowMenu"" Style=""Position: Absolute; TopOffset: {{TopOffset}}"">
+  <Container if=""ShowMenu"" Style=""Position: Absolute; TopOffset: 20"" ref=""Root"">
     <Slot />
   </Container>
   ")]
@@ -31,6 +31,11 @@ namespace BlueJay.UI.Component.Interactivity.Dropdown
     public readonly ReactiveProperty<float> TopOffset;
 
     /// <summary>
+    /// The root entity found when this compnent is created
+    /// </summary>
+    public IEntity? Root;
+
+    /// <summary>
     /// Constructor to give the show menu a default value if an injected property is not set
     /// </summary>
     public DropdownMenu(IFontCollection fonts)
@@ -43,9 +48,8 @@ namespace BlueJay.UI.Component.Interactivity.Dropdown
     /// <inheritdoc />
     public override void Mounted()
     {
-      var first = Root?.FirstOrDefault();
-      if (first != null)
-        TopOffset.Value = (int)first.MeasureString(" ", _fonts).Y + 5;
+      if (Root != null)
+        TopOffset.Value = (int)Root.MeasureString(" ", _fonts).Y + 5;
     }
   }
 }

@@ -1,65 +1,79 @@
 ﻿using Antlr4.Runtime;
-using BlueJay.Component.System.Interfaces;
-using BlueJay.Core;
-using BlueJay.Events;
-using BlueJay.Events.Interfaces;
-using BlueJay.Common.Events.Keyboard;
-using BlueJay.Common.Events.Mouse;
-using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Language;
-using BlueJay.UI.Component.Language.Antlr;
-using BlueJay.UI.Component.Reactivity;
-using BlueJay.UI.Factories;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using BlueJay.UI.Events;
 using BlueJay.UI.Component.Nodes;
-using BlueJay.UI.Component.Interactivity.Dropdown;
+using BlueJay.UI.Component.Elements;
+using BlueJay.Utils;
 
 namespace BlueJay.UI.Component
 {
+  /// <summary>
+  /// Service provider extensions meant to create UI elements out of strings and UIComponents
+  /// </summary>
   public static class ServiceProviderExtension
   {
+    /// <summary>
+    /// Creates the shadow dom and attaches the generated component on the UIComponent collection to be
+    /// used by other injectable services
+    /// </summary>
+    /// <typeparam name="T">The component that should be bound to the JayTML structure</typeparam>
+    /// <param name="provider">The service provider to be used to generate various objects from</param>
+    /// <param name="globalStyle">The global style that should be used when generating the UI for the node structure</param>
     public static void AttachComponent<T>(this IServiceProvider provider, Style? globalStyle = null)
       where T: UIComponent
     {
       var collection = provider.GetRequiredService<UIComponentCollection>();
 
-      var node = provider.ParseJayTML<T>(null);
+      var node = provider.ParseJayTML(typeof(T));
       if (node != null)
       {
-        collection.Add(node.UIComponent);
-        node.Initialize();
         node.GenerateUI(globalStyle);
+        if (node.RootComponent != null)
+        {
+          collection.Add(node.RootComponent);
+        }
       }
     }
 
-    public static INode? ParseJayTML<T>(this IServiceProvider provider, UIComponent? parentComponent)
-      where T : UIComponent
+    /// <summary>
+    /// Helper method meant to parse JayTML string and bind it to the component set
+    /// </summary>
+    /// <param name="provider">The service provider to be used to generate various objects from</param>
+    /// <param name="xml">The xml string the represents the JayTML structure</param>
+    /// <param name="componentType">The component that should be bound to the JayTML structure</param>
+    /// <returns>Will return a node that can be generate and attach to underlining UI entities</returns>
+    public static INode? ParseJayTML(this IServiceProvider provider, string xml, Type componentType)
     {
-      return ParseJayTML(provider, typeof(T), parentComponent);
+      return ParseJayTML(provider, xml, componentType, new NodeScope(provider, componentType));
     }
 
-    public static INode? ParseJayTML(this IServiceProvider provider, Type type, UIComponent? parentComponent)
+    /// <summary>
+    /// Internal method meant to genearate a node structure from the attached JayTML string as an attribute
+    /// on the component
+    /// </summary>
+    /// <param name="provider">The service provider to be used to generate various objects from</param>
+    /// <param name="componentType">The component that should be bound to the JayTML structure</param>
+    /// <param name="scope">The current node scope that should be used for this element node structure</param>
+    /// <returns>Will return a node that can be generate and attach to underlining UI entities</returns>
+    internal static INode? ParseJayTML(this IServiceProvider provider, Type componentType, NodeScope? scope = null)
     {
-      var view = Attribute.GetCustomAttribute(type, typeof(ViewAttribute)) as ViewAttribute;
-      return ParseJayTML(provider, view?.XML ?? String.Empty, type, parentComponent);
+      var view = Attribute.GetCustomAttribute(componentType, typeof(ViewAttribute)) as ViewAttribute;
+      return ParseJayTML(provider, view?.XML ?? String.Empty, componentType, scope ?? new NodeScope(provider, componentType));
     }
 
-    public static INode? ParseJayTML<T>(this IServiceProvider provider, string xml, UIComponent? parentComponent)
-      where T : UIComponent
+    /// <summary>
+    /// The internal workings to generate a node structure that handles creating and binding to the underlining
+    /// UI entities that are created by it
+    /// </summary>
+    /// <param name="provider">The service provider mean to inject various services into the generators</param>
+    /// <param name="xml">The xml string that needs to be parsed by the internal language</param>
+    /// <param name="componentType">The component that needs to be used when generating the node structure</param>
+    /// <param name="scope">The current node scope we exist in when generating this element</param>
+    /// <returns>Will return an internal node structure</returns>
+    internal static INode? ParseJayTML(IServiceProvider provider, string xml, Type componentType, NodeScope scope)
     {
-      return ParseJayTML(provider, xml, typeof(T), parentComponent);
-    }
-
-    public static INode? ParseJayTML(this IServiceProvider provider, string xml, Type type, UIComponent? parentComponent)
-    {
-      var components = Attribute.GetCustomAttribute(type, typeof(ComponentAttribute)) as ComponentAttribute;
+      var components = Attribute.GetCustomAttribute(componentType, typeof(ComponentAttribute)) as ComponentAttribute;
       var stream = new AntlrInputStream(xml.Trim());
       ITokenSource lexer = new JayTMLLexer(stream);
       ITokenStream tokens = new CommonTokenStream(lexer);
@@ -67,14 +81,12 @@ namespace BlueJay.UI.Component
 
       var expr = parser.document();
 
-      var instance = ActivatorUtilities.CreateInstance(provider, type) as UIComponent;
-      if (instance == null)
-        throw new ArgumentNullException("Could not create component instance");
-
-      var visitor = new JayTMLVisitor(provider, instance, components?.Components ?? new List<Type>());
+      var visitor = new JayTMLVisitor(provider.GetRequiredService<IContentManagerContainer>(), scope, components?.Components ?? new List<Type>());
       var result = visitor.Visit(expr);
 
-      return result as INode;
+      if (result is UIElement element)
+        return element.GenerateShadowTree();
+      return null;
     }
   }
 }

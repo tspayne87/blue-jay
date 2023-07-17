@@ -7,16 +7,14 @@
   public interface INode
   {
     /// <summary>
-    /// The UIComponent that is bound to this node
+    /// The component that started the node structure
     /// </summary>
-    internal UIComponent UIComponent { get; }
+    public UIComponent? RootComponent { get; }
 
     /// <summary>
     /// Generates the node and all attached node for the component
     /// </summary>
     /// <param name="globalStyle">The global style for this node</param>
     public void GenerateUI(Style? globalStyle = null);
-
-    internal void Initialize(UIComponent? parent = null);
   }
 }

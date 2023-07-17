@@ -3,7 +3,7 @@
   /// <summary>
   /// Extension methods meant for strings to do manipulation to string entities
   /// </summary>
-  public static class StringExtensions
+  internal static class StringExtensions
   {
     /// <summary>
     /// Extension method is meant to slice some characters into a string

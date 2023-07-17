@@ -110,6 +110,9 @@ namespace BlueJay.UI.Events.EventListeners
     /// <returns>Will return true if the position is in the bounds of the entity</returns>
     private bool Contains(IEntity entity, Point position)
     {
+      if (entity.Contains<TextAddon>())
+        return false;
+
       var ba = entity.GetAddon<BoundsAddon>();
       var pa = entity.GetAddon<PositionAddon>();
 

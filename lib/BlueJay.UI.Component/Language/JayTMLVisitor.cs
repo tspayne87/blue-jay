@@ -1,39 +1,74 @@
-﻿using System.Globalization;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Antlr4.Runtime.Misc;
 using BlueJay.Core;
+using BlueJay.UI.Component.Elements;
+using BlueJay.UI.Component.Elements.Attributes;
 using BlueJay.UI.Component.Nodes;
-using BlueJay.UI.Component.Nodes.Attributes;
 using BlueJay.UI.Component.Reactivity;
-using Microsoft.Extensions.DependencyInjection;
+using BlueJay.Utils;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Attribute = BlueJay.UI.Component.Nodes.Attributes.Attribute;
 
 namespace BlueJay.UI.Component.Language
 {
+  /// <summary>
+  /// The JayTML visitor to build out a element tree to create the node structure that will watch for changes
+  /// on itself to update the UI entities in the game
+  /// </summary>
   internal class JayTMLVisitor : JayTMLParserBaseVisitor<object>
   {
-    private readonly IServiceProvider _provider;
-    private readonly ContentManager _content;
+    /// <summary>
+    /// The wrapper element for the content manager container
+    /// </summary>
+    private readonly IContentManagerContainer _content;
+
+    /// <summary>
+    /// The set of components that this component has access to and should use when the container with the
+    /// same name as one is found
+    /// </summary>
     private readonly List<Type> _components;
-    private readonly UIComponent _instance;
+
+    /// <summary>
+    /// The component instance expression to reference it in the expressions
+    /// </summary>
     private readonly ParameterExpression _instanceParam;
+
+    /// <summary>
+    /// The event expression to reference it in the expressions
+    /// </summary>
     private readonly ParameterExpression _eventParam;
+
+    /// <summary>
+    /// The scope expression param to reference it in the expressions
+    /// </summary>
     private readonly ParameterExpression _scopeParam;
+
+    /// <summary>
+    /// The cached style type since it is one element that we could be looking up alot
+    /// </summary>
     private readonly Type _styleType;
 
-    private Type _type => _instance.GetType();
+    /// <summary>
+    /// The node scope this set of elements have
+    /// </summary>
+    private readonly NodeScope _scope;
 
+    /// <summary>
+    /// If we currently need to require the event object
+    /// </summary>
     private bool _hasEventObj;
 
-    public JayTMLVisitor(IServiceProvider provider, UIComponent instance, List<Type> components)
+    /// <summary>
+    /// Constructor meant to create a JayTML expression tree
+    /// </summary>
+    /// <param name="content">The content manager wrapper to load data from the content manager</param>
+    /// <param name="scope">The current node scope this element tree is in</param>
+    /// <param name="components">The list of components that this component has acccess to when generating elements</param>
+    public JayTMLVisitor(IContentManagerContainer content, NodeScope scope, List<Type> components)
     {
-      _provider = provider;
       _components = components;
-      _instance = instance;
-      _content = provider.GetRequiredService<ContentManager>();
+      _content = content;
+      _scope = scope;
       _instanceParam = Expression.Parameter(typeof(UIComponent), "x");
       _eventParam = Expression.Parameter(typeof(object), "evt");
       _scopeParam = Expression.Parameter(typeof(Dictionary<string, object>), "scope");
@@ -60,7 +95,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>The element expression needed to export the slot from</returns>
     public override object VisitSlotElement([NotNull] JayTMLParser.SlotElementContext context)
     {
-      return new SlotNode(_instance, new List<Attribute>(), _provider);
+      return new UISlotElement(_scope, new List<UIElementAttribute>());
     }
 
     /// <summary>
@@ -73,32 +108,32 @@ namespace BlueJay.UI.Component.Language
       if (context.name.Text != context.closename.Text)
         throw new ArgumentException("Opening and closing elements should be the same");
 
-      var attrs = new List<Attribute>();
-      var children = new List<Node>();
+      var attrs = new List<UIElementAttribute>();
+      var children = new List<UIElement>();
       for (var i = 2; i < context.ChildCount - 4; ++i)
       {
         var child = context.GetChild(i);
         if (child is JayTMLParser.AttributeContext aChild)
         {
-          var attr = Visit(aChild) as Attribute;
+          var attr = Visit(aChild) as UIElementAttribute;
           if (attr == null)
             throw new ArgumentNullException("Failed to create attributes");
           attrs.Add(attr);
         }
         else if (child is JayTMLParser.ContentContext cChild)
         {
-          var content = Visit(cChild) as Node;
+          var content = Visit(cChild) as UIElement;
           if (content == null)
             throw new ArgumentNullException("Failed to create content");
           children.Add(content);
         }
       }
-      Node? node = null;
+      UIElement? node = null;
       var component = _components.FirstOrDefault(x => x.Name == context.name.Text);
       if (component != null)
-        node = new ComponentNode(_instance, component, attrs, _provider);
+        node = new UIComponentElement(_scope, component, attrs);
       else
-        node = new ContainerNode(context.name.Text, _instance, attrs, _provider);
+        node = new UIContainerElement(context.name.Text, _scope, attrs);
 
       foreach (var child in children)
         child.Parent = node;
@@ -112,21 +147,21 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return the simple element meant to be used</returns>
     public override object VisitSimpleElement([NotNull] JayTMLParser.SimpleElementContext context)
     {
-      var attrs = new List<Attribute>();
+      var attrs = new List<UIElementAttribute>();
       for (var i = 2; i < context.ChildCount - 1; ++i)
       {
-        var attr = Visit(context.GetChild(i)) as Attribute;
+        var attr = Visit(context.GetChild(i)) as UIElementAttribute;
         if (attr == null)
           throw new ArgumentNullException("Failed to create attributes");
         attrs.Add(attr);
       }
 
-      Node? node = null;
+      UIElement? node = null;
       var component = _components.FirstOrDefault(x => x.Name == context.name.Text);
       if (component != null)
-        node = new ComponentNode(_instance, component, attrs, _provider);
+        node = new UIComponentElement(_scope, component, attrs);
       else
-        node = new ContainerNode(context.name.Text, _instance, attrs, _provider);
+        node = new UIContainerElement(context.name.Text, _scope, attrs);
       return node;
     }
     #endregion
@@ -139,7 +174,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return the comment element expression</returns>
     public override object VisitCommentContent([NotNull] JayTMLParser.CommentContentContext context)
     {
-      return new CommentNode(_instance, _provider);
+      return new UICommentElement(_scope);
     }
 
     /// <summary>
@@ -153,7 +188,7 @@ namespace BlueJay.UI.Component.Language
       Expression expr = Expression.Constant(string.Empty);
       var shouldConcat = false;
       var str = new List<string>();
-      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>();
+      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
       for (var i = 0; i < context.ChildCount; ++i)
       {
         var child = context.GetChild(i);
@@ -200,7 +235,7 @@ namespace BlueJay.UI.Component.Language
 
       var expression = Expression.Lambda<Func<UIComponent, object?, Dictionary<string, object>?, object>>(Expression.Convert(expr, typeof(object)), _instanceParam, _eventParam, _scopeParam).Compile();
 
-      return new TextNode(_instance, _provider, expression, reactiveProps);
+      return new UITextElement(_scope, expression, reactiveProps);
     }
 
     /// <summary>
@@ -228,7 +263,7 @@ namespace BlueJay.UI.Component.Language
       if (expr == null)
         throw new ArgumentNullException("Expression could not be created in expression attribute");
 
-      return new ExpressionAttribute(name, expr.Callback);
+      return new ExpressionAttribute(name, expr.Callback, expr.ReactiveProperties);
     }
 
     /// <summary>
@@ -273,7 +308,6 @@ namespace BlueJay.UI.Component.Language
       var expr = Visit(context.expr) as CallbackExpression;
       if (expr == null)
         throw new ArgumentNullException("Expression could not be generated in if statement");
-
       return new IfAttribute(expr.Callback, expr.ReactiveProperties);
     }
 
@@ -288,27 +322,10 @@ namespace BlueJay.UI.Component.Language
       if (scopeIdentifier == null)
         throw new ArgumentNullException("Could not find the scope identifier");
 
-      Expression expr = Expression.Convert(_instanceParam, _type);
-      for (var i = 3; i < context.ChildCount - 1; ++i)
-      {
-        if (typeof(IReactiveProperty).IsAssignableFrom(expr.Type))
-          expr = Expression.PropertyOrField(expr, "Value");
-
-        var identifier = Visit(context.GetChild(i)) as IdentifierResult;
-        if (identifier == null)
-          throw new ArgumentNullException("Could not create identifier path");
-
-        expr = Expression.PropertyOrField(expr, identifier.Name);
-
-        if (identifier.Callback != null)
-        {
-          var invoke = Expression.Invoke(Expression.Constant(identifier.Callback), _instanceParam, _eventParam, _scopeParam);
-          expr = Expression.Property(expr, "Item", Expression.Convert(invoke, typeof(int)));
-        }
-      }
-
-      var expression = Expression.Lambda<Func<UIComponent, object?, Dictionary<string, object>?, object>>(Expression.Convert(expr, typeof(object)), _instanceParam, _eventParam, _scopeParam).Compile();
-      return new ForAttribute(scopeIdentifier, expression);
+      var exp = Visit(context.exp) as CallbackExpression;
+      if (exp == null)
+        throw new ArgumentNullException("Could not create an expression for [for attribute]");
+      return new ForAttribute(scopeIdentifier.Substring(1), exp.Callback, exp.ReactiveProperties);
     }
 
     public override object VisitStyleattribute([NotNull] JayTMLParser.StyleattributeContext context)
@@ -331,49 +348,55 @@ namespace BlueJay.UI.Component.Language
 
     #region For Helpers
     /// <summary>
-    /// Visitor meant to access the identifier based on the dot
+    /// The range expression meant to generate a list of integers based on the upper and lower limits
     /// </summary>
-    /// <param name="context">The current context of the invoking method</param>
-    /// <returns>Will return an identifier result</returns>
-    public override object VisitSimpleForIdentifier([NotNull] JayTMLParser.SimpleForIdentifierContext context)
+    /// <param name="context">The range context to build out the enumeration from</param>
+    /// <returns>Will return a callback expression meant to create the enumeration on the fly</returns>
+    public override object VisitForRangeExpression([NotNull] JayTMLParser.ForRangeExpressionContext context)
     {
-      return new IdentifierResult(context.id.Text);
+      var left = Visit(context.left) as CallbackExpression;
+      var right = Visit(context.right) as CallbackExpression;
+
+      if (left ==null)
+        throw new ArgumentNullException(nameof(left));
+      if (right ==null)
+        throw new ArgumentNullException(nameof(right));
+
+      var reactiveProperties = left.ReactiveProperties.Concat(right.ReactiveProperties).ToList();
+      return new CallbackExpression((c, e, s) =>
+      {
+        var start = left.Callback(c, e, s);
+        var length = right.Callback(c, e, s);
+
+        if (start is int startNumber && length is int lengthNumber)
+        {
+          var result = Enumerable.Range(startNumber, lengthNumber);
+          return result;
+        }
+
+        return Enumerable.Range(0, 1);
+      }, reactiveProperties);
     }
 
     /// <summary>
-    /// Visitor meant to access the identifier based on the dot
+    /// Gets a constant integer expression meant to quickly create range operations
     /// </summary>
-    /// <param name="context">The current context of the invoking method</param>
-    /// <returns>Will return an identifier result</returns>
-    public override object VisitDotForIdentifier([NotNull] JayTMLParser.DotForIdentifierContext context)
+    /// <param name="context">The integer expression where the text for the interger exists</param>
+    /// <returns>Will return a callback expression to get the underlining parsed integer</returns>
+    public override object VisitForInteger([NotNull] JayTMLParser.ForIntegerContext context)
     {
-      return new IdentifierResult(context.id.Text);
+      var integer = int.Parse(context.GetText());
+      return new CallbackExpression((c, e, s) => integer);
     }
 
     /// <summary>
-    /// Visitor meant to access the array identifier and get a callback to calculate the index for the array
+    /// Generates the expression in a for context
     /// </summary>
-    /// <param name="context">The current context of the invoking method</param>
-    /// <returns>Will return an identifier result</returns>
-    public override object VisitSimpleForArrayIdentifier([NotNull] JayTMLParser.SimpleForArrayIdentifierContext context)
+    /// <param name="context">The for expression context to get the expression from</param>
+    /// <returns>Will return a callback expression meant to be called later</returns>
+    public override object VisitForExpression([NotNull] JayTMLParser.ForExpressionContext context)
     {
-      var expr = Visit(context.expr) as CallbackExpression;
-      if (expr == null)
-        throw new ArgumentNullException("Could not create an array for a simple visitor identifier");
-      return new IdentifierResult(context.id.Text, expr.ReactiveProperties, expr.Callback);
-    }
-
-    /// <summary>
-    /// Visitor meant to access the array identifier and get a callback to calculate the index for the array
-    /// </summary>
-    /// <param name="context">The current context of the invoking method</param>
-    /// <returns>Will return an identifier result</returns>
-    public override object VisitArrayForIdentifier([NotNull] JayTMLParser.ArrayForIdentifierContext context)
-    {
-      var expr = Visit(context.expr) as CallbackExpression;
-      if (expr == null)
-        throw new ArgumentNullException("Could not create an array visitor identifier");
-      return new IdentifierResult(context.id.Text, expr.ReactiveProperties, expr.Callback);
+      return Visit(context.expr);
     }
     #endregion
 
@@ -413,7 +436,12 @@ namespace BlueJay.UI.Component.Language
       var callback = (UIComponent c, object? evt, Dictionary<string, object>? r) =>
       {
         if (typeof(NinePatch) == prop.PropertyType)
-          return new NinePatch(_content.Load<Texture2D>(expression.Callback(c, evt, r) as string));
+        {
+          var assetName = expression.Callback(c, evt, r) as string;
+          if (assetName == null)
+            throw new ArgumentNullException(nameof(assetName));
+          return new NinePatch(_content.Load<Texture2D>(assetName));
+        }
         if ((to ?? prop.PropertyType).IsEnum)
         {
           var value = expression.Callback(c, evt, r);
@@ -427,7 +455,7 @@ namespace BlueJay.UI.Component.Language
           return obj;
         return Convert.ChangeType(obj, to ?? prop.PropertyType);
       };
-      return new StyleAttribute.StyleItem(name, type ?? StyleAttribute.StyleItemType.Basic, expression.ReactiveProperties, callback);
+      return new StyleAttribute.StyleItem(name, type ?? StyleAttribute.StyleItemType.Basic, callback, expression.ReactiveProperties);
     }
 
     public override object VisitStyleAlternate([NotNull] JayTMLParser.StyleAlternateContext context)
@@ -536,7 +564,7 @@ namespace BlueJay.UI.Component.Language
     public override object VisitStringExpression([NotNull] JayTMLParser.StringExpressionContext context)
     {
       Expression expr = Expression.Constant(string.Empty);
-      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>();
+      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
       for (var i = 1; i < context.ChildCount - 1; ++i)
       {
         var item = Visit(context.GetChild(i)) as JayExpression;
@@ -556,7 +584,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return an expression for the esacped character</returns>
     public override object VisitStringEscapeExpression([NotNull] JayTMLParser.StringEscapeExpressionContext context)
     {
-      return new JayExpression(Expression.Constant(context.escape.Text.Substring(1)), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+      return new JayExpression(Expression.Constant(context.escape.Text.Substring(1)), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
     }
 
     /// <summary>
@@ -566,7 +594,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return an expression of the string being processed</returns>
     public override object VisitStringDetailsExpression([NotNull] JayTMLParser.StringDetailsExpressionContext context)
     {
-      return new JayExpression(Expression.Constant(context.details.Text), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+      return new JayExpression(Expression.Constant(context.details.Text), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
     }
 
     /// <summary>
@@ -762,7 +790,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return an invocation of a property in the scope or on the context of the component this is bound to</returns>
     public override object VisitIdentifierExpression([NotNull] JayTMLParser.IdentifierExpressionContext context)
     {
-      Expression expr = Expression.Convert(_instanceParam, _type);
+      Expression expr = Expression.Convert(_instanceParam, _scope.ComponentType);
       for (var i = 0; i < context.ChildCount; ++i)
       {
         var identifier = Visit(context.GetChild(i)) as IdentifierResult;
@@ -781,7 +809,7 @@ namespace BlueJay.UI.Component.Language
         }
       }
 
-      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>();
+      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
       if (typeof(IReactiveProperty).IsAssignableFrom(expr.Type))
       {
         var expression = Expression.Lambda<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>(Expression.Convert(expr, typeof(IReactiveProperty)), _instanceParam, _eventParam, _scopeParam).Compile();
@@ -801,7 +829,7 @@ namespace BlueJay.UI.Component.Language
     {
       if (!_hasEventObj)
         throw new ArgumentException("Cannot access event object if not in context of event");
-      return new JayExpression(_eventParam, new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+      return new JayExpression(_eventParam, new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
     }
 
     /// <summary>
@@ -812,7 +840,7 @@ namespace BlueJay.UI.Component.Language
     public override object VisitScopeIdentifierExpression([NotNull] JayTMLParser.ScopeIdentifierExpressionContext context)
     {
       // TODO: Figure out how to handle multiple properties here
-      return new JayExpression(Expression.Property(_scopeParam, "Item", Expression.Constant(context.identifier.Text)), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+      return new JayExpression(Expression.Property(_scopeParam, "Item", Expression.Constant(context.identifier.Text)), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
     }
 
     /// <summary>
@@ -822,7 +850,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return an identifier result</returns>
     public override object VisitSimpleIdentifier([NotNull] JayTMLParser.SimpleIdentifierContext context)
     {
-      return new IdentifierResult(context.id.Text, new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+      return new IdentifierResult(context.id.Text);
     }
 
     /// <summary>
@@ -832,7 +860,7 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return an identifier result</returns>
     public override object VisitDotIdentifier([NotNull] JayTMLParser.DotIdentifierContext context)
     {
-      return new IdentifierResult(context.id.Text, new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+      return new IdentifierResult(context.id.Text);
     }
 
     /// <summary>
@@ -845,7 +873,7 @@ namespace BlueJay.UI.Component.Language
       var expr = Visit(context.expr) as CallbackExpression;
       if (expr == null)
         throw new ArgumentNullException("Could not create a simple array expression");
-      return new IdentifierResult(context.id.Text, expr.ReactiveProperties, expr.Callback);
+      return new IdentifierResult(context.id.Text, expr.Callback, expr.ReactiveProperties);
     }
 
     /// <summary>
@@ -858,7 +886,7 @@ namespace BlueJay.UI.Component.Language
       var expr = Visit(context.expr) as CallbackExpression;
       if (expr == null)
         throw new ArgumentNullException("Could not create a simple array expression");
-      return new IdentifierResult(context.id.Text, expr.ReactiveProperties, expr.Callback);
+      return new IdentifierResult(context.id.Text, expr.Callback, expr.ReactiveProperties);
     }
 
     /// <summary>
@@ -869,12 +897,12 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return in invocation method expression for further processing</returns>
     public override object VisitInvokeMethodExpression([NotNull] JayTMLParser.InvokeMethodExpressionContext context)
     {
-      var method = _type.GetMethod(context.method.Text);
+      var method = _scope.ComponentType.GetMethod(context.method.Text);
       if (method == null)
         throw new ArgumentNullException("Could not found method on type given");
 
       var args = new List<Expression>();
-      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>();
+      var reactiveProps = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
       if (context.ChildCount > 3)
       { // Only handle arguments if we have more children then 3
         for (var i = 2; i < context.ChildCount; i += 2)
@@ -891,7 +919,7 @@ namespace BlueJay.UI.Component.Language
         }
       }
 
-      return new JayExpression(Expression.Call(Expression.Constant(_instance), method, args), reactiveProps);
+      return new JayExpression(Expression.Call(Expression.Convert(_instanceParam, _scope.ComponentType), method, args), reactiveProps);
     }
     #endregion
 
@@ -904,9 +932,9 @@ namespace BlueJay.UI.Component.Language
     public override object VisitNumericExpression([NotNull] JayTMLParser.NumericExpressionContext context)
     {
       if (int.TryParse(context.num.Text, out var numInt))
-        return new JayExpression(Expression.Constant(numInt), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+        return new JayExpression(Expression.Constant(numInt), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
       if (float.TryParse(context.num.Text, out var numFloat))
-        return new JayExpression(Expression.Constant(numFloat), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+        return new JayExpression(Expression.Constant(numFloat), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
       throw new ArgumentOutOfRangeException("Could not create numeric expression because the we are not dealing with a number");
     }
 
@@ -918,49 +946,98 @@ namespace BlueJay.UI.Component.Language
     public override object VisitBoolExpression([NotNull] JayTMLParser.BoolExpressionContext context)
     {
       if (bool.TryParse(context.expr.GetText(), out var val))
-        return new JayExpression(Expression.Constant(val), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>());
+        return new JayExpression(Expression.Constant(val), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
       throw new ArgumentOutOfRangeException("Could not create a bool expression since a bool could not be parsed");
     }
     #endregion
     #endregion
 
     #region Internal Class Definitions
+    /// <summary>
+    /// The jay expression meant to store a slice of a callback function that will be used to build it out
+    /// </summary>
     private class JayExpression
     {
-      public Expression Expression { get; private set; }
-      public List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>> ReactiveProperties { get; private set; }
+      /// <summary>
+      /// The expression object that is currently being constructed
+      /// </summary>
+      public Expression Expression { get; }
 
-      public JayExpression(Expression expression, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>> reactiveProperties)
+      /// <summary>
+      /// The reactive properties found while generating the previous expression
+      /// </summary>
+      public List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> ReactiveProperties { get; }
+
+      /// <summary>
+      /// Constructor meant to return a expression object to watch for reactive properties and the section of the expression
+      /// </summary>
+      /// <param name="expression">The expression object that is currently being constructed</param>
+      /// <param name="reactiveProperties">The reactive properties found while generating the previous expression</param>
+      public JayExpression(Expression expression, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> reactiveProperties)
       {
         Expression = expression;
         ReactiveProperties = reactiveProperties;
       }
     }
 
+    /// <summary>
+    /// The callback expression that could have a bunch of different expressions all wrapped up into one
+    /// </summary>
     private class CallbackExpression
     {
-      public Func<UIComponent, object?, Dictionary<string, object>?, object> Callback { get; private set; }
-      public List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>> ReactiveProperties { get; private set; }
+      /// <summary>
+      /// The callback expression to get the underlining object
+      /// </summary>
+      public Func<UIComponent, object?, Dictionary<string, object>?, object> Callback { get; }
 
-      public CallbackExpression(Func<UIComponent, object?, Dictionary<string, object>?, object> callback, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>? reactiveProperties = null)
+      /// <summary>
+      /// The reactive properties that were found while creating the callback function
+      /// </summary>
+      public List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> ReactiveProperties { get; }
+
+      /// <summary>
+      /// Constructor meant to create the callback expression
+      /// </summary>
+      /// <param name="callback">The callback expression to get the underlining object</param>
+      /// <param name="reactiveProperties">The reactive properties that were found while creating the callback function</param>
+      public CallbackExpression(Func<UIComponent, object?, Dictionary<string, object>?, object> callback, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>? reactiveProperties = null)
       {
         Callback = callback;
-        ReactiveProperties = reactiveProperties ?? new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>();
+        ReactiveProperties = reactiveProperties ?? new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
       }
     }
 
+    /// <summary>
+    /// Identifier result meant to be a representation of something on the component we are accessing
+    /// </summary>
     private class IdentifierResult
     {
-      public string Name { get; set; }
+      /// <summary>
+      /// The current name that this identifier result is attached too
+      /// </summary>
+      public string Name { get; }
 
-      public Func<UIComponent, object?, Dictionary<string, object>?, object>? Callback { get; set; }
-      public List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>> ReactiveProperties { get; private set; }
+      /// <summary>
+      /// The callback method meant to be used when getting the identifier result
+      /// </summary>
+      public Func<UIComponent, object?, Dictionary<string, object>?, object>? Callback { get; }
 
-      public IdentifierResult(string name, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>? reactiveProperties = null, Func<UIComponent, object?, Dictionary<string, object>?, object>? callback = null)
+      /// <summary>
+      /// The reactive properties that were found along the way to create the callback
+      /// </summary>
+      public List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> ReactiveProperties { get; }
+
+      /// <summary>
+      /// Constructor for the identifier result
+      /// </summary>
+      /// <param name="name">The current name that this identifier result is attached too</param>
+      /// <param name="callback">The callback method meant to be used when getting the identifier result</param>
+      /// <param name="reactiveProperties">The reactive properties that were found along the way to create the callback</param>
+      public IdentifierResult(string name, Func<UIComponent, object?, Dictionary<string, object>?, object>? callback = null, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>? reactiveProperties = null)
       {
         Name = name;
         Callback = callback;
-        ReactiveProperties = reactiveProperties ?? new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty>>();
+        ReactiveProperties = reactiveProperties ?? new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
       }
     }
     #endregion

@@ -11,6 +11,8 @@ using BlueJay.UI.Events.EventListeners.UIUpdate;
 using BlueJay.UI.Systems;
 using BlueJay.Common.Events;
 using BlueJay.UI.Events;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 
 namespace BlueJay.UI
 {
@@ -151,6 +153,48 @@ namespace BlueJay.UI
       if (addDebugRendering)
         provider.AddSystem<DebugBoundingBoxSystem>();
       return provider;
+    }
+
+    public static string GetUIDebugStructureString(this IServiceProvider provider)
+    {
+      var layers = provider.GetRequiredService<ILayerCollection>();
+      var sb = new StringBuilder();
+
+      var uiLayer = layers[UIStatic.LayerName];
+      if (uiLayer != null)
+      {
+        foreach (var item in uiLayer.GetByKey(KeyHelper.Create<LineageAddon>()))
+        {
+          var la = item.GetAddon<LineageAddon>();
+          if (la.Parent == null)
+            sb.AppendLine(item.PrintUIStructure());
+        }
+        return sb.ToString().Trim();
+      }
+      return string.Empty;
+    }
+
+    private static string PrintUIStructure(this IEntity entity, int tab = 2, int indentAmount = 2, char tabChar = '-')
+    {
+      var sb = new StringBuilder();
+      var la = entity.GetAddon<LineageAddon>();
+      var ta = entity.GetAddon<TextAddon>();
+
+      sb.Append(tabChar.Explode(tab));
+      sb.Append(' ');
+      sb.AppendLine(entity.Contains<TextAddon>() ? $"Text: {ta.Text}" : "Container");
+
+      foreach (var child in la.Children)
+        sb.AppendLine(child.PrintUIStructure(tab + indentAmount, indentAmount, tabChar));
+      return sb.ToString().Trim();
+    }
+
+    private static string Explode(this char ch, int amount)
+    {
+      var sb = new StringBuilder();
+      for (var i = 0; i < amount; i++)
+        sb.Append(ch);
+      return sb.ToString();
     }
   }
 }

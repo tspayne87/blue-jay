@@ -11,6 +11,7 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\BlueJay.Component.System\BlueJay.Component.System.csproj" />
+    <ProjectReference Include="..\..\lib\BlueJay.Moq\BlueJay.Moq.csproj" />
     <ProjectReference Include="..\..\lib\BlueJay.UI.Component\BlueJay.UI.Component.csproj" />
   </ItemGroup>
 

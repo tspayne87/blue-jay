@@ -14,7 +14,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// Text input to give inputs for string input
     /// </summary>
     [View(@"
-<Container Style=""TextAlign: Left"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"">
+<Container Style=""TextAlign: Left"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"" ref=""Root"">
   <Container Style=""Height: {{ContainerHeight}}"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"">{{Model}}</Container>
   <Container if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60; TopOffset: {{CursorTopOffset}}; LeftOffset: {{CursorLeftOffset}}; Height: {{CursorHeight}}"" />
 </Container>
@@ -66,6 +66,11 @@ namespace BlueJay.UI.Component.Interactivity
     /// The current height of the container
     /// </summary>
     public NullableReactiveProperty<int> ContainerHeight;
+
+    /// <summary>
+    /// The root entity found when this compnent is created
+    /// </summary>
+    public IEntity? Root;
 
     /// <summary>
     /// Constructor is meant to build out the defaults for the text input
@@ -127,12 +132,8 @@ namespace BlueJay.UI.Component.Interactivity
     /// </summary>
     public override void Mounted()
     {
-      _eventQueue.Timeout(() =>
-      {
-        var root = Root?.First();
-        if (root != null)
-          CursorHeight.Value = (int)root.MeasureString(" ", _fonts).Y;
-      });
+      if (Root != null)
+        CursorHeight.Value = (int)Root.MeasureString(" ", _fonts).Y;
     }
 
     /// <summary>
@@ -163,9 +164,8 @@ namespace BlueJay.UI.Component.Interactivity
     [Watch(nameof(Model))]
     public void OnModelUpdate(string model)
     {
-      var root = Root?.First();
-      if (root != null)
-        ContainerHeight.Value = string.IsNullOrWhiteSpace(model) ? (int?)root.MeasureString(" ", _fonts).Y : null;
+      if (Root != null)
+        ContainerHeight.Value = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
 
       if (Model.Value.Length < _position)
       {
@@ -179,18 +179,17 @@ namespace BlueJay.UI.Component.Interactivity
     /// <param name="newPosition">The new position we need to process for</param>
     private void UpdatePosition(int newPosition)
     {
-      var root = Root?.First();
-      if (root != null)
+      if (Root != null)
       {
-        var la = root.GetAddon<LineageAddon>();
+        var la = Root.GetAddon<LineageAddon>();
         var sa = la.Children[0].GetAddon<BoundsAddon>();
-        var fitString = root.FitString(Model.Value.Substring(0, newPosition), sa.Bounds.Width, _fonts);
-        var yOffset = root.MeasureString(fitString, _fonts);
-        var spaceOffset = root.MeasureString(" ", _fonts);
+        var fitString = Root.FitString(Model.Value.Substring(0, newPosition), sa.Bounds.Width, _fonts);
+        var yOffset = Root.MeasureString(fitString, _fonts);
+        var spaceOffset = Root.MeasureString(" ", _fonts);
         CursorTopOffset.Value = (int)(yOffset.Y - spaceOffset.Y);
 
         var split = fitString.Split('\n');
-        var xOffset = root.MeasureString(split[split.Length - 1], _fonts);
+        var xOffset = Root.MeasureString(split[split.Length - 1], _fonts);
         CursorLeftOffset.Value = (int)xOffset.X;
 
         _position = newPosition;

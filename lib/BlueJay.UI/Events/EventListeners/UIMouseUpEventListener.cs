@@ -3,6 +3,7 @@ using BlueJay.Common.Events.Mouse;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
+using BlueJay.UI.Addons;
 using BlueJay.UI.Services;
 using Microsoft.Xna.Framework;
 
@@ -94,6 +95,9 @@ namespace BlueJay.UI.Events.EventListeners
     /// <returns>Will return true if the position is in the bounds of the entity</returns>
     private bool Contains(IEntity entity, Point position)
     {
+      if (entity.Contains<TextAddon>())
+        return false;
+
       var ba = entity.GetAddon<BoundsAddon>();
       var pa = entity.GetAddon<PositionAddon>();
 

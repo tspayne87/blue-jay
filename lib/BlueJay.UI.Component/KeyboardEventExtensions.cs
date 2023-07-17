@@ -6,7 +6,7 @@ namespace BlueJay.UI.Component
   /// <summary>
   /// Extension methods to add method so the <see cref="KeyboardEvent" />
   /// </summary>
-  public static class KeyboardEventExtensions
+  internal static class KeyboardEventExtensions
   {
     /// <summary>
     /// Helper method will try and get a character out of the keyboard event and give the correct character based on the keys

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BlueJay.UI.Component.Reactivity
+﻿namespace BlueJay.UI.Component.Reactivity
 {
   /// <summary>
   /// The property unsubscriber to remove the observer from the subscription

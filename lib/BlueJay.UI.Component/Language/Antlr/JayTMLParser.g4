@@ -17,7 +17,7 @@ element
  ;
 attribute
  : IF expr=scopeExpression EXPCLOSE                                                                       #ifattribute
- | FOR scope=forScope FORIN id=forIdentifier+ FORCLOSE                                                    #forattribute
+ | FOR scope=forScope FORIN exp=forInExpression FORCLOSE                                                  #forattribute
  | REF ref=REFNAME REFCLOSE                                                                               #refattribute
  | STYLEATTR syl=style STYLECLOSE                                                                         #styleattribute
  | name=EXPRESSIONATTR expr=scopeExpression EXPCLOSE                                                      #exprattribute
@@ -27,11 +27,13 @@ attribute
 forScope
  : FORHASH FORIDENTIFIER
  ;
-forIdentifier
- : id=FORIDENTIFIER                                                                                       #simpleForIdentifier
- | id=FORIDENTIFIER FOROPENSQUAREBRACKET expr=scopeExpression FORCLOSESQUAREBRACKET                       #simpleForArrayIdentifier
- | FORDOT id=FORIDENTIFIER                                                                                #dotForIdentifier
- | FORDOT id=FORIDENTIFIER FOROPENSQUAREBRACKET expr=scopeExpression FOROPENSQUAREBRACKET                 #arrayForIdentifier
+forInExpression
+ : left=forConstant FORDOUBLEDOT right=forConstant                                                       #forRangeExpression
+ | forConstant                                                                                            #forConstantExpression
+ ;
+forConstant
+ : FORINTEGER                                                                                             #forInteger
+ | FOROPENEXPRESSION expr=scopeExpression CLOSEBRACKETS                                                   #forExpression
  ;
 chardata
  : (TEXT | contentExpression)+ ;

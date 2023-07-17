@@ -35,7 +35,7 @@ namespace BlueJay.UI.Events.EventListeners
     /// <returns>Will return a boolean determining if we should process the event listener</returns>
     public override bool ShouldProcess(IEvent evt)
     {
-      return _service.FocusedEntity != null;
+      return evt.Target == null && _service.FocusedEntity != null;
     }
 
     /// <summary>

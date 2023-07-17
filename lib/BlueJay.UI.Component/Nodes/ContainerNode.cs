@@ -1,18 +1,25 @@
-﻿using BlueJay.Component.System.Interfaces;
-using BlueJay.UI.Component.Nodes.Elements;
+﻿using BlueJay.UI.Component.Elements.Attributes;
 using BlueJay.UI.Factories;
-using Attribute = BlueJay.UI.Component.Nodes.Attributes.Attribute;
 
 namespace BlueJay.UI.Component.Nodes
 {
+  /// <summary>
+  /// The container node meant to create a basic container element to wrap other elements in
+  /// </summary>
   internal class ContainerNode : Node
   {
-    public ContainerNode(string name, UIComponent uiComponent, List<Attribute> attributes, IServiceProvider provider)
-      : base(name, uiComponent, attributes, provider) { }
+    /// <summary>
+    /// Constructor to create the container node
+    /// </summary>
+    /// <param name="scope">The current node scope this container node exists in</param>
+    /// <param name="attributes">The attributes that should be attached to this component</param>
+    public ContainerNode(NodeScope scope, List<UIElementAttribute> attributes)
+      : base(scope, attributes) { }
 
-    protected override List<UIElement>? AddEntity(Style style, UIElement? parent, Dictionary<string, object>? scope)
+    /// <inheritdoc />
+    protected override List<UIEntity>? AddEntity(Style style, UIEntity? parent, Dictionary<string, object>? scope)
     {
-      return new List<UIElement>() { CreateUIElement(_provider.AddContainer(style, null, parent?.Entity)) };
+      return new List<UIEntity>() { CreateUIElement(Scope.ServiceProvider.AddContainer(style, null, parent?.Entity)) };
     }
   }
 }

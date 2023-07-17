@@ -7,7 +7,7 @@ namespace BlueJay.UI.Component.Interactivity.Dropdown
   /// UI component meant to help dropdown components render the items they have
   /// </summary>
   [View(@"
-    <Container @Select=""SelectItem()"">{{GetText()}}</Container>
+    <Container @Select=""SelectItem()"">Test: {{GetText()}}</Container>
   ")]
   public class DropdownItem : UIComponent
   {
