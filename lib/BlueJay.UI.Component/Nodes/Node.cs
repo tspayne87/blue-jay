@@ -214,6 +214,8 @@ namespace BlueJay.UI.Component.Nodes
               var entities = BuildAndAddEntity(style, parent, newScope);
               items.AddRange(entities);
             }
+
+            TriggerUIUpdate();
           });
         }
         return;

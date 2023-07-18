@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
 using Antlr4.Runtime.Misc;
 using BlueJay.Core;
 using BlueJay.UI.Component.Elements;
@@ -839,8 +840,19 @@ namespace BlueJay.UI.Component.Language
     /// <returns>Will return an identifier result</returns>
     public override object VisitScopeIdentifierExpression([NotNull] JayTMLParser.ScopeIdentifierExpressionContext context)
     {
-      // TODO: Figure out how to handle multiple properties here
-      return new JayExpression(Expression.Property(_scopeParam, "Item", Expression.Constant(context.identifier.Text)), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
+      var str = context.GetText();
+
+      var path = new List<string>();
+      for (var i = 3; i < context.ChildCount; i += 2)
+        path.Add(context.GetChild(i).GetText());
+
+      var scopeItem = Expression.Property(_scopeParam, "Item", Expression.Constant(context.identifier.Text));
+      var listConstant = Expression.Constant(path);
+
+      var method = typeof(Utils).GetMethod(nameof(Utils.GetValue), BindingFlags.Public | BindingFlags.Static);
+      if (method == null)
+        throw new ArgumentNullException("Method not found");
+      return new JayExpression(Expression.Call(null, method, scopeItem, listConstant), new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>());
     }
 
     /// <summary>

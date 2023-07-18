@@ -30,7 +30,10 @@ namespace BlueJay.UI.Component.Nodes
         BindProps(parent.ScopeKey.Value, scopeKey, scope);
 
       var eventQueue = Scope.ServiceProvider.GetRequiredService<IEventQueue>();
-      eventQueue.Timeout(() => Scope[scopeKey].Mounted());
+      eventQueue.Timeout(() => {
+        if (Scope.ContainsKey(scopeKey))
+          Scope[scopeKey].Mounted();
+      });
 
       var entityScope = new UIEntityScope(parent?.EntityScope);
       entityScope.AttachProviders(Scope[scopeKey]);
@@ -42,9 +45,21 @@ namespace BlueJay.UI.Component.Nodes
     /// <inheritdoc />
     protected override void RemoveElement(UIEntity element)
     {
+      base.RemoveElement(element);
+      RemoveScopeKey(element);
+    }
+
+    /// <summary>
+    /// Helper method meant to remove a scope key and all its children scope keys
+    /// </summary>
+    /// <param name="element">The element we want to remove the scope key from as well as the children of the element</param>
+    private void RemoveScopeKey(UIEntity element)
+    {
+      foreach (var child in element.Children)
+        RemoveScopeKey(child);
+
       if (element.ScopeKey != null)
         Scope.RemoveScopeKey(element.ScopeKey.Value);
-      base.RemoveElement(element);
     }
 
     /// <summary>

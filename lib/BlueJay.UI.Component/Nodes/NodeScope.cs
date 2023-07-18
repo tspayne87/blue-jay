@@ -130,8 +130,21 @@ namespace BlueJay.UI.Component.Nodes
     /// <param name="scopeKey">The scope key to be removed</param>
     public void RemoveScopeKey(Guid scopeKey)
     {
-      _uiComponents[scopeKey].Parent = null;
-      _uiComponents.Remove(scopeKey);
+      if (_uiComponents.ContainsKey(scopeKey))
+      {
+        _uiComponents[scopeKey].Parent = null;
+        _uiComponents.Remove(scopeKey);
+      }
+    }
+
+    /// <summary>
+    /// Checks to see if the underlining components contains the specific key
+    /// </summary>
+    /// <param name="scopeKey">The scope key we are trying to find</param>
+    /// <returns>Will return the generated scope key</returns>
+    public bool ContainsKey(Guid scopeKey)
+    {
+      return _uiComponents.ContainsKey(scopeKey);
     }
   }
 }

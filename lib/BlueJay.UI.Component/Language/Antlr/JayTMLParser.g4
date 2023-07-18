@@ -54,7 +54,7 @@ expression
  | expr=bool                                                                                              #boolExpression
  | method=IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN                                      #invokeMethodExpression
  | DOLLAR IDENTIFIER                                                                                      #eventIdentifierExpression
- | HASH identifier=IDENTIFIER                                                                             #scopeIdentifierExpression
+ | HASH identifier=IDENTIFIER (DOT IDENTIFIER)*                                                           #scopeIdentifierExpression
  | identifier+                                                                                            #identifierExpression
  | num=NUMERIC                                                                                            #numericExpression
  | STARTSTRING stringDetails+ CLOSESTRING                                                                 #stringExpression

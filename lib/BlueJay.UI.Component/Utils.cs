@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace BlueJay.UI.Component
 {
@@ -45,11 +47,54 @@ namespace BlueJay.UI.Component
       return ++ScopeIdentifier;
     }
 
-    public static Type ToFuncType(this List<Type> types)
+    /// <summary>
+    /// Helper method meant to get the function types based on the arguments
+    /// </summary>
+    /// <param name="args">The argument types that this function will need to create for</param>
+    /// <returns>Will return the type of callback function that matches the current arguments</returns>
+    /// <exception cref="ArgumentOutOfRangeException">If number of argument do not exist in the amount of callback types</exception>
+    public static Type ToFuncType(this List<Type> args)
     {
-      if (FuncTypes.Count < types.Count)
-        throw new ArgumentOutOfRangeException(nameof(types));
-      return FuncTypes[types.Count - 1].MakeGenericType(types.ToArray());
+      if (FuncTypes.Count < args.Count)
+        throw new ArgumentOutOfRangeException(nameof(args));
+      return FuncTypes[args.Count - 1].MakeGenericType(args.ToArray());
+    }
+
+    /// <summary>
+    /// Helper method meant to reflectively get a object based on its path
+    /// </summary>
+    /// <param name="value">The current object value</param>
+    /// <param name="path">The current path of the object we need to go down too</param>
+    /// <returns>Will return null if the object could not be found or the object based on the path</returns>
+    public static object? GetValue(object? value, List<string> path)
+    {
+      foreach (var item in path)
+      {
+        if (value == null)
+          return null;
+
+        var members = value.GetType().GetMember(item);
+        if (members.Length == 0)
+          return null;
+
+        foreach (var member in members)
+        {
+          switch (member.MemberType)
+          {
+            case MemberTypes.Field:
+              var field = member as FieldInfo;
+              if (field != null)
+                value = field.GetValue(value);
+              continue;
+            case MemberTypes.Property:
+              var prop = member as PropertyInfo;
+              if (prop != null)
+                value = prop.GetValue(value);
+              continue;
+          }
+        }
+      }
+      return value;
     }
   }
 }

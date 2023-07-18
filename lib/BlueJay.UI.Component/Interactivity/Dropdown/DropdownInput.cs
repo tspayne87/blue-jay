@@ -1,5 +1,6 @@
 ﻿using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
+using BlueJay.UI.Events;
 
 namespace BlueJay.UI.Component.Interactivity.Dropdown
 {
@@ -7,7 +8,7 @@ namespace BlueJay.UI.Component.Interactivity.Dropdown
   /// The dropdown input component
   /// </summary>
   [View(@"
-<Container @Select=""OpenMenu()"">
+<Container @Select=""ToggleMenu()"">
   {{Text}}
   <Slot />
 </Container>
@@ -52,9 +53,9 @@ namespace BlueJay.UI.Component.Interactivity.Dropdown
     /// Opens the menu for the dropdown
     /// </summary>
     /// <returns>Returns true to keep propegating</returns>
-    public bool OpenMenu()
+    public bool ToggleMenu()
     {
-      ShowMenu.Value = true;
+      ShowMenu.Value = !ShowMenu.Value;
       return true;
     }
 
