@@ -13,7 +13,7 @@ using System.Text;
 
 namespace BlueJay.UI.Systems
 {
-  public class DebugBoundingBoxSystem : IDrawSystem, IDrawEntitySystem, IDrawEndSystem
+  internal class DebugBoundingBoxSystem : IDrawSystem, IDrawEntitySystem, IDrawEndSystem
   {
     /// <summary>
     /// The sprite batch to draw to the screen

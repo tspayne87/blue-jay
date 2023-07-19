@@ -35,10 +35,13 @@ namespace BlueJay.UI.Component
     /// </summary>
     /// <typeparam name="T">The type that we are looking for</typeparam>
     /// <returns>Will return null or the first of the type found</returns>
-    public T GetItem<T>()
+    public T? GetItem<T>()
       where T : UIComponent
     {
-      return (T)_components.FirstOrDefault(x => x.GetType() == typeof(T));
+      var item = _components.FirstOrDefault(x => x.GetType() == typeof(T));
+      if (item == null)
+        return null;
+      return (T)item;
     }
   }
 }

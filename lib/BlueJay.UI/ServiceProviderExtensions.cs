@@ -6,14 +6,19 @@ using BlueJay.Common.Events.Mouse;
 using BlueJay.Common.Events.Touch;
 using BlueJay.Common.Systems;
 using BlueJay.UI.Addons;
-using BlueJay.UI.EventListeners;
-using BlueJay.UI.EventListeners.UIUpdate;
+using BlueJay.UI.Events.EventListeners;
+using BlueJay.UI.Events.EventListeners.UIUpdate;
 using BlueJay.UI.Systems;
-using System;
 using BlueJay.Common.Events;
+using BlueJay.UI.Events;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text;
 
 namespace BlueJay.UI
 {
+  /// <summary>
+  /// Service provider extensions to add in extra functionallity to the provider to add in entities and systems
+  /// </summary>
   public static class ServiceProviderExtensions
   {
     /// <summary>
@@ -22,7 +27,7 @@ namespace BlueJay.UI
     /// </summary>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <returns>Will return the entity that was created and added to the collection</returns>
-    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity parent = null)
+    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity? parent = null)
     {
       var entity = provider.AddEntity(UIStatic.LayerName, 15);
 
@@ -45,7 +50,7 @@ namespace BlueJay.UI
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <param name="entity">The current created entity we need to add</param>
     /// <returns></returns>
-    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity entity, IEntity parent = null)
+    public static IEntity AddUIEntity(this IServiceProvider provider, IEntity entity, IEntity? parent = null)
     {
       provider.AddEntity(entity, UIStatic.LayerName, 15);
 
@@ -110,7 +115,7 @@ namespace BlueJay.UI
     /// </summary>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
     /// <returns>Will return the entity that was created and added to the collection</returns>
-    public static IServiceProvider AddKeyboardSupport(this IServiceProvider provider)
+    public static IServiceProvider AddUIKeyboardSupport(this IServiceProvider provider)
     {
       // Add the keyboard system if it has not been added
       provider.AddSystem<KeyboardSystem>();
@@ -133,6 +138,63 @@ namespace BlueJay.UI
       // Add the event listener
       provider.AddEventListener<UITouchDownEventListener, TouchDownEvent>();
       return provider;
+    }
+
+    /// <summary>
+    /// Method is meant to add in the UI Rendering systems
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="addDebugRendering">If we want to include the debug rendering systems</param>
+    /// <returns>Will return the service provider for chaining</returns>
+    public static IServiceProvider AddUIRenderSystems(this IServiceProvider provider, bool addDebugRendering = false)
+    {
+      provider.AddSystem<UIRenderingSystem>();
+
+      if (addDebugRendering)
+        provider.AddSystem<DebugBoundingBoxSystem>();
+      return provider;
+    }
+
+    public static string GetUIDebugStructureString(this IServiceProvider provider)
+    {
+      var layers = provider.GetRequiredService<ILayerCollection>();
+      var sb = new StringBuilder();
+
+      var uiLayer = layers[UIStatic.LayerName];
+      if (uiLayer != null)
+      {
+        foreach (var item in uiLayer.GetByKey(KeyHelper.Create<LineageAddon>()))
+        {
+          var la = item.GetAddon<LineageAddon>();
+          if (la.Parent == null)
+            sb.AppendLine(item.PrintUIStructure());
+        }
+        return sb.ToString().Trim();
+      }
+      return string.Empty;
+    }
+
+    private static string PrintUIStructure(this IEntity entity, int tab = 2, int indentAmount = 2, char tabChar = '-')
+    {
+      var sb = new StringBuilder();
+      var la = entity.GetAddon<LineageAddon>();
+      var ta = entity.GetAddon<TextAddon>();
+
+      sb.Append(tabChar.Explode(tab));
+      sb.Append(' ');
+      sb.AppendLine(entity.Contains<TextAddon>() ? $"Text: {ta.Text}" : "Container");
+
+      foreach (var child in la.Children)
+        sb.AppendLine(child.PrintUIStructure(tab + indentAmount, indentAmount, tabChar));
+      return sb.ToString().Trim();
+    }
+
+    private static string Explode(this char ch, int amount)
+    {
+      var sb = new StringBuilder();
+      for (var i = 0; i < amount; i++)
+        sb.Append(ch);
+      return sb.ToString();
     }
   }
 }

@@ -35,22 +35,22 @@ namespace BlueJay.Shared.Components
     /// <summary>
     /// The breakout title we should be using for breakout
     /// </summary>
-    public readonly ReactiveProperty<string> BreakoutTitle;
+    public readonly ReactiveProperty<Text> BreakoutTitle;
 
     /// <summary>
     /// The Tetris title we are using for this component
     /// </summary>
-    public readonly ReactiveProperty<string> TetrisTitle;
+    public readonly ReactiveProperty<Text> TetrisTitle;
 
     /// <summary>
     /// The UI Component title
     /// </summary>
-    public readonly ReactiveProperty<string> UIComponentTitle;
+    public readonly ReactiveProperty<Text> UIComponentTitle;
 
     /// <summary>
     /// The layout component title
     /// </summary>
-    private readonly ReactiveProperty<string> LayoutTitle;
+    private readonly ReactiveProperty<Text> LayoutTitle;
 
     /// <summary>
     /// Constructor is meant to bootstrap the component
@@ -60,10 +60,10 @@ namespace BlueJay.Shared.Components
     {
       _views = views;
 
-      BreakoutTitle = new ReactiveProperty<string>("Breakout");
-      TetrisTitle = new ReactiveProperty<string>("Tetris");
-      UIComponentTitle = new ReactiveProperty<string>("UI Components");
-      LayoutTitle = new ReactiveProperty<string>("Layout");
+      BreakoutTitle = new ReactiveProperty<Text>("Breakout");
+      TetrisTitle = new ReactiveProperty<Text>("Tetris");
+      UIComponentTitle = new ReactiveProperty<Text>("UI Components");
+      LayoutTitle = new ReactiveProperty<Text>("Layout");
     }
 
     /// <summary>

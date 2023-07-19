@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BlueJay.UI.Component.Attributes
+﻿namespace BlueJay.UI.Component.Attributes
 {
   /// <summary>
   /// Attribute is meant to watch on reactive properties on the component and trigger a call when a change is made to

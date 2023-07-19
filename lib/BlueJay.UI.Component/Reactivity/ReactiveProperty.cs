@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BlueJay.UI.Component.Reactivity
+﻿namespace BlueJay.UI.Component.Reactivity
 {
   /// <summary>
   /// Reactive property that will handle when props change on the component
   /// </summary>
   /// <typeparam name="T">The type of property this is</typeparam>
-  public class ReactiveProperty<T> : IReactiveProperty
+  public class ReactiveProperty<T> : IReactiveProperty<T>
+    where T : struct
   {
     /// <summary>
     /// The observers that are watching changes on this style
@@ -27,37 +25,13 @@ namespace BlueJay.UI.Component.Reactivity
       get => _value;
       set
       {
-        if ((_value == null && value != null) || (_value != null && !_value.Equals(value)))
+        if (!_value.Equals(value))
         {
           _value = value;
           Next(_value);
-          BindValue();
         }
       }
     }
-
-    /// <summary>
-    /// The value getter for IValue interface
-    /// </summary>
-    object IReactiveProperty.Value
-    {
-      get => _value;
-      set
-      {
-        if ((_value == null && value != null) || (_value != null && !_value.Equals(value)))
-        {
-          if (value.GetType() == typeof(T) || !(value is IConvertible))
-            _value = (T)value;
-          else
-            _value = (T)Convert.ChangeType(value, typeof(T));
-          Next(_value);
-          BindValue();
-        }
-      }
-    }
-
-    /// <inheritdoc />
-    public IReactiveParentProperty ReactiveParent { get; set; }
 
     /// <summary>
     /// Constructor to build out a reactive property starting with a value
@@ -67,7 +41,6 @@ namespace BlueJay.UI.Component.Reactivity
     {
       _value = value;
       _observers = new List<IObserver<ReactiveEvent>>();
-      BindValue();
     }
 
     /// <summary>
@@ -80,63 +53,28 @@ namespace BlueJay.UI.Component.Reactivity
       if (!_observers.Contains(observer))
       {
         _observers.Add(observer);
-
-        var propObserver = observer as ReactivePropertyObserver;
-        if (propObserver != null)
-        {
-          observer.OnNext(new ReactiveEvent() { Path = propObserver.Path, Data = Utils.GetObject(this, propObserver.Path), Type = ReactiveEvent.EventType.Update });
-        }
-        else
-        {
-          observer.OnNext(new ReactiveEvent() { Data = _value, Type = ReactiveEvent.EventType.Update });
-        }
+        observer.OnNext(new ReactiveEvent() { Data = _value, Type = ReactiveEvent.EventType.Update });
       }
       return new ReactivePropertyUnsubscriber(_observers, observer);
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, string path = null)
+    public IDisposable Subscribe(Action<ReactiveEvent> nextAction)
     {
-      return Subscribe(new ReactivePropertyObserver(nextAction, path));
+      return Subscribe(nextAction, ReactiveEvent.EventType.Add | ReactiveEvent.EventType.Update | ReactiveEvent.EventType.Remove);
     }
 
     /// <inheritdoc />
-    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, ReactiveEvent.EventType type, string path = null)
+    public IDisposable Subscribe(Action<ReactiveEvent> nextAction, ReactiveEvent.EventType type)
     {
-      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type, path));
+      return Subscribe(new ReactivePropertyTypeObserver(nextAction, type));
     }
 
     /// <inheritdoc />
-    public void Next(object value, string path = "", ReactiveEvent.EventType type = ReactiveEvent.EventType.Update)
+    public void Next(T value, ReactiveEvent.EventType type = ReactiveEvent.EventType.Update)
     {
       foreach (var observer in _observers.ToArray())
-        observer.OnNext(new ReactiveEvent() { Path = path, Data = value, Type = type });
-
-      if (ReactiveParent != null)
-        ReactiveParent.Value.Next(value, string.IsNullOrWhiteSpace(path) ? ReactiveParent.Name : $"{ReactiveParent.Name}.{path}", type);
-    }
-
-    /// <summary>
-    /// Bind value to setup the parent properly
-    /// </summary>
-    private void BindValue()
-    {
-      if (_value != null)
-      {
-        var fields = _value.GetType().GetFields();
-        foreach(var field in fields)
-        {
-          if (field.IsInitOnly && typeof(IReactiveProperty).IsAssignableFrom(field.FieldType))
-          {
-            var reactive = field.GetValue(_value) as IReactiveProperty;
-            if (reactive != null)
-            {
-              reactive.ReactiveParent = new ReactiveParentProperty(this, field.Name);
-              reactive.Next(reactive.Value);
-            }
-          }
-        }
-      }
+        observer.OnNext(new ReactiveEvent() { Data = value, Type = type });
     }
   }
 }

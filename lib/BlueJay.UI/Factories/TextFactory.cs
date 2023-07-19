@@ -16,7 +16,7 @@ namespace BlueJay.UI.Factories
     /// <param name="text">The text that should be used to render for this node</param>
     /// <param name="style">The styles that should be included on this text node</param>
     /// <param name="parent">The parent this text node should have</param>
-    public static IEntity AddText(this IServiceProvider provider, string text, Style style = default, IEntity parent = default)
+    public static IEntity AddText(this IServiceProvider provider, string text, Style? style = null, IEntity? parent = null)
     {
       var entity = provider.AddUIEntity(parent);
       entity.Active = parent?.Active ?? true;
@@ -38,7 +38,7 @@ namespace BlueJay.UI.Factories
     /// <param name="text">The text that should be used to render for this node</param>
     /// <param name="style">The styles that should be included on this text node</param>
     /// <param name="parent">The parent this text node should have</param>
-    public static IEntity AddText(this IServiceProvider provider, IEntity entity, string text, Style style = default, IEntity parent = default)
+    public static IEntity AddText(this IServiceProvider provider, IEntity entity, string text, Style? style = null, IEntity? parent = null)
     {
       provider.AddUIEntity(entity, parent);
       entity.Active = parent?.Active ?? true;

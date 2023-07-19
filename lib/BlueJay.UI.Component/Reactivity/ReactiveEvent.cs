@@ -6,14 +6,9 @@
   public class ReactiveEvent
   {
     /// <summary>
-    /// The current path that was updated for this event
-    /// </summary>
-    public string Path { get; set; }
-
-    /// <summary>
     /// The data that was updated for this event
     /// </summary>
-    public object Data { get; set; }
+    public object? Data { get; set; }
 
     /// <summary>
     /// The type of event that is being triggered
@@ -23,22 +18,23 @@
     /// <summary>
     /// The event type enumeration
     /// </summary>
+    [Flags]
     public enum EventType
     {
       /// <summary>
-      /// Update event
-      /// </summary>
-      Update,
-      
-      /// <summary>
       /// Add event
       /// </summary>
-      Add,
-      
+      Add = 1,
+
+      /// <summary>
+      /// Update event
+      /// </summary>
+      Update = 2,
+
       /// <summary>
       /// Remove event
       /// </summary>
-      Remove
+      Remove = 4
     }
   }
 }

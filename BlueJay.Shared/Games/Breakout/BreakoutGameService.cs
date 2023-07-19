@@ -12,7 +12,7 @@ namespace BlueJay.Shared.Games.Breakout
     /// <summary>
     /// The UI component that has all the data needed to update on the component
     /// </summary>
-    private BreakoutViewComponent _uiComponent;
+    private BreakoutViewComponent? _uiComponent;
 
     /// <summary>
     /// The current score the player has

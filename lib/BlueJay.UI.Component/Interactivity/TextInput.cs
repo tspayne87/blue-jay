@@ -5,17 +5,18 @@ using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Attributes;
 using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
-using System;
+using BlueJay.UI.Events;
+using BlueJay.Events.Interfaces;
 
 namespace BlueJay.UI.Component.Interactivity
 {
-  /// <summary>
-  /// Text input to give inputs for string input
-  /// </summary>
-  [View(@"
-<Container Style=""TextAlign: Left"" @Focus=""OnFocus(evt)"" @Blur=""OnBlur(evt)"" @KeyboardUp=""OnKeyboardUp(evt)"">
-  <Container :Style=""ContainerStyle"" @Focus=""OnFocus(evt)"" @Blur=""OnBlur(evt)"" @KeyboardUp=""OnKeyboardUp(evt)"">{{Model}}</Container>
-  <Container :if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60"" :Style=""CursorStyle"" />
+    /// <summary>
+    /// Text input to give inputs for string input
+    /// </summary>
+    [View(@"
+<Container Style=""TextAlign: Left"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"" ref=""Root"">
+  <Container Style=""Height: {{ContainerHeight}}"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"">{{Model}}</Container>
+  <Container if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60; TopOffset: {{CursorTopOffset}}; LeftOffset: {{CursorLeftOffset}}; Height: {{CursorHeight}}"" />
 </Container>
     ")]
   public class TextInput : UIComponent
@@ -26,6 +27,11 @@ namespace BlueJay.UI.Component.Interactivity
     private readonly IFontCollection _fonts;
 
     /// <summary>
+    /// The event queue that needs to trigger events on the queue
+    /// </summary>
+    private readonly IEventQueue _eventQueue;
+
+    /// <summary>
     /// The current position of the cursor in the string
     /// </summary>
     private int _position;
@@ -34,18 +40,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// The model that pushes out the data to the parent component
     /// </summary>
     [Prop(PropBinding.TwoWay)]
-    public readonly ReactiveProperty<string> Model;
-
-    /// <summary>
-    /// The style of the cursor
-    /// </summary>
-    [Prop]
-    public readonly ReactiveStyle CursorStyle;
-
-    /// <summary>
-    /// The container style
-    /// </summary>
-    public readonly ReactiveStyle ContainerStyle;
+    public readonly ReactiveProperty<Text> Model;
 
     /// <summary>
     /// If the cursor should be shown
@@ -53,20 +48,46 @@ namespace BlueJay.UI.Component.Interactivity
     public readonly ReactiveProperty<bool> ShowCursor;
 
     /// <summary>
+    /// The top offset for the cursor
+    /// </summary>
+    public ReactiveProperty<int> CursorTopOffset;
+
+    /// <summary>
+    /// The left offset for the cursor
+    /// </summary>
+    public ReactiveProperty<int> CursorLeftOffset;
+
+    /// <summary>
+    /// The height of the cursor
+    /// </summary>
+    public ReactiveProperty<int> CursorHeight;
+
+    /// <summary>
+    /// The current height of the container
+    /// </summary>
+    public NullableReactiveProperty<int> ContainerHeight;
+
+    /// <summary>
+    /// The root entity found when this compnent is created
+    /// </summary>
+    public IEntity? Root;
+
+    /// <summary>
     /// Constructor is meant to build out the defaults for the text input
     /// </summary>
     /// <param name="fonts">The collection of fonts that are used to calculate the minimum height</param>
-    public TextInput(IFontCollection fonts)
+    /// <param name="eventQueue">The event queue that needs to trigger events on the queue</param>
+    public TextInput(IFontCollection fonts, IEventQueue eventQueue)
     {
-      Model = new ReactiveProperty<string>("");
+      Model = new ReactiveProperty<Text>("");
       ShowCursor = new ReactiveProperty<bool>(false);
-      CursorStyle = new ReactiveStyle();
-      ContainerStyle = new ReactiveStyle();
-      CursorStyle.Height = 0;
-      CursorStyle.TopOffset = 0;
-      CursorStyle.LeftOffset = 0;
+      CursorHeight = new ReactiveProperty<int>(0);
+      CursorLeftOffset = new ReactiveProperty<int>(0);
+      CursorTopOffset = new ReactiveProperty<int>(0);
+      ContainerHeight = new NullableReactiveProperty<int>(null);
 
       _fonts = fonts;
+      _eventQueue = eventQueue;
       _position = 0;
     }
 
@@ -77,7 +98,6 @@ namespace BlueJay.UI.Component.Interactivity
     /// <returns>Will return true to continue propegation</returns>
     public bool OnKeyboardUp(KeyboardUpEvent evt)
     {
-      Emit("KeyboardUp", evt);
       switch (evt.Key)
       {
         case Keys.Back:
@@ -112,7 +132,8 @@ namespace BlueJay.UI.Component.Interactivity
     /// </summary>
     public override void Mounted()
     {
-      CursorStyle.Height = (int)Root.MeasureString(" ", _fonts).Y;
+      if (Root != null)
+        CursorHeight.Value = (int)Root.MeasureString(" ", _fonts).Y;
     }
 
     /// <summary>
@@ -121,7 +142,6 @@ namespace BlueJay.UI.Component.Interactivity
     /// <returns>Will return true to continue propegation</returns>
     public bool OnFocus(FocusEvent evt)
     {
-      Emit("Focus", evt);
       UpdatePosition(Model.Value.Length);
       ShowCursor.Value = true;
       return true;
@@ -133,7 +153,6 @@ namespace BlueJay.UI.Component.Interactivity
     /// <returns>Will return true to continue propegation</returns>
     public bool OnBlur(BlurEvent evt)
     {
-      Emit("Blur", evt);
       ShowCursor.Value = false;
       return true;
     }
@@ -145,7 +164,8 @@ namespace BlueJay.UI.Component.Interactivity
     [Watch(nameof(Model))]
     public void OnModelUpdate(string model)
     {
-      ContainerStyle.Height = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
+      if (Root != null)
+        ContainerHeight.Value = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
 
       if (Model.Value.Length < _position)
       {
@@ -159,18 +179,21 @@ namespace BlueJay.UI.Component.Interactivity
     /// <param name="newPosition">The new position we need to process for</param>
     private void UpdatePosition(int newPosition)
     {
-      var la = Root.GetAddon<LineageAddon>();
-      var sa = la.Children[0].GetAddon<BoundsAddon>();
-      var fitString = Root.FitString(Model.Value.Substring(0, newPosition), sa.Bounds.Width, _fonts);
-      var yOffset = Root.MeasureString(fitString, _fonts);
-      var spaceOffset = Root.MeasureString(" ", _fonts);
-      CursorStyle.TopOffset = (int)(yOffset.Y - spaceOffset.Y);
+      if (Root != null)
+      {
+        var la = Root.GetAddon<LineageAddon>();
+        var sa = la.Children[0].GetAddon<BoundsAddon>();
+        var fitString = Root.FitString(Model.Value.Substring(0, newPosition), sa.Bounds.Width, _fonts);
+        var yOffset = Root.MeasureString(fitString, _fonts);
+        var spaceOffset = Root.MeasureString(" ", _fonts);
+        CursorTopOffset.Value = (int)(yOffset.Y - spaceOffset.Y);
 
-      var split = fitString.Split('\n');
-      var xOffset = Root.MeasureString(split[split.Length - 1], _fonts);
-      CursorStyle.LeftOffset = (int)xOffset.X;
+        var split = fitString.Split('\n');
+        var xOffset = Root.MeasureString(split[split.Length - 1], _fonts);
+        CursorLeftOffset.Value = (int)xOffset.X;
 
-      _position = newPosition;
+        _position = newPosition;
+      }
     }
   }
 }

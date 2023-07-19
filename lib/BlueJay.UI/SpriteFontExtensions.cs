@@ -1,14 +1,20 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace BlueJay.UI
 {
+  /// <summary>
+  /// Extension methods to help with dealing with sprite fonts
+  /// </summary>
   public static class SpriteFontExtensions
   {
+    /// <summary>
+    /// Will fit a string into a sprite font
+    /// </summary>
+    /// <param name="font">The sprite font we need to use to measure the string</param>
+    /// <param name="str">The current string we want to fit in the width space</param>
+    /// <param name="width">The width space we are fitting the string into</param>
+    /// <returns>Will return the fitted string for the space it is in</returns>
     public static string FitString(this SpriteFont font, string str, int width)
     {
       var lines = new List<string>();

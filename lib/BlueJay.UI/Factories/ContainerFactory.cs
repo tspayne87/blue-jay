@@ -15,7 +15,7 @@ namespace BlueJay.UI.Factories
     /// <param name="hoverStyle">The style that should be used when the style addon is in the hover state</param>
     /// <param name="parent">The parent that should be attached to this parent</param>
     /// <returns>Will return the entity so it can be used as a parent down the line</returns>
-    public static IEntity AddContainer(this IServiceProvider provider, Style style = default, Style hoverStyle = default, IEntity parent = null)
+    public static IEntity AddContainer(this IServiceProvider provider, Style? style = null, ChildStyle? hoverStyle = null, IEntity? parent = null)
     {
       var entity = provider.AddUIEntity(parent);
       entity.Active = parent?.Active ?? true;
@@ -36,7 +36,7 @@ namespace BlueJay.UI.Factories
     /// <param name="hoverStyle">The style that should be used when the style addon is in the hover state</param>
     /// <param name="parent">The parent that should be attached to this parent</param>
     /// <returns>Will return the entity so it can be used as a parent down the line</returns>
-    public static IEntity AddContainer(this IServiceProvider provider, IEntity entity, Style style = default, Style hoverStyle = default, IEntity parent = null)
+    public static IEntity AddContainer(this IServiceProvider provider, IEntity entity, Style? style = null, ChildStyle? hoverStyle = null, IEntity? parent = null)
     {
       provider.AddUIEntity(entity, parent);
       entity.Active = parent?.Active ?? true;
