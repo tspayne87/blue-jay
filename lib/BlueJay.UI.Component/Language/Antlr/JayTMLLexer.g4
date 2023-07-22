@@ -132,12 +132,13 @@ STYLEWS                     : [ \t\r\n]+ -> skip ;
 HOVER                       : 'Hover' ;
 
 // --- Final Word to deal with strings ---
-WORD                         : (StyleNameChar | Underscore)+ ;
+WORD                         : (StyleNameChar | Underscore | BackSlash)+ ;
 
 // --- Fragments ---
 fragment Minus              : '-' ;
 fragment Dot                : '.' ;
 fragment Underscore         : '_' ;
+fragment BackSlash          : '/' ;
 fragment StyleDigit         : [0-9] ;
 fragment Upper              : [A-Z] ;
 fragment Lower              : [a-z] ;
