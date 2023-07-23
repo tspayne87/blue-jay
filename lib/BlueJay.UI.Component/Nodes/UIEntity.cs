@@ -146,6 +146,16 @@ namespace BlueJay.UI.Component.Nodes
       Children = new List<UIEntity>();
     }
 
+    /// <summary>
+    /// Determines if this entity is using the same key as a parent
+    /// </summary>
+    /// <param name="scopeKey">The scope key to check if a parent is using</param>
+    /// <returns>Will return true/false if a parent is using the scope key given</returns>
+    public bool IsParentUsingScopeKey(Guid scopeKey)
+    {
+      return (_parent != null && _parent.ScopeKey == ScopeKey) || (_parent?.IsParentUsingScopeKey(scopeKey) ?? false);
+    }
+
     /// <inheritdoc />
     protected virtual void Dispose(bool disposing)
     {

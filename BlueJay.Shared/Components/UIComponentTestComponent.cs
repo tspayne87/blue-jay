@@ -17,17 +17,17 @@ namespace BlueJay.Shared.Components
 <Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default; Padding: 10"">
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
-  <TextInput Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
+  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
   <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 
-  <SwitchInput Style=""Height: 25"" Model=""Switch"" />
+  <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
   <Container if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
 
-  <SliderInput Model=""Slider"" Max=""20"" Style=""ColumnSpan: 3"" />
+  <SliderInput :Model=""Slider"" :Max=""20"" Style=""ColumnSpan: 3"" />
   <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
 
-  <DropdownInput Style=""ColumnSpan: 2; NinePatch: Sample_NinePatch; Padding: 13; WidthPercentage: 1; NinePatch::Hover: Sample_Hover_NinePatch"" Model=""Dropdown"">
+  <DropdownInput Style=""ColumnSpan: 2; NinePatch: Sample_NinePatch; Padding: 13; WidthPercentage: 1; NinePatch::Hover: Sample_Hover_NinePatch"" :Model=""Dropdown"">
     <DropdownMenu Style=""NinePatch: Dropdown_Background_Ninepatch; Padding: 13"">
       <DropdownItem for=""#item in {{DropdownItems}}"" Style=""BackgroundColor: 217, 87, 99"" :Value=""#item.Id"" :Text=""#item.Name"" />
     </DropdownMenu>

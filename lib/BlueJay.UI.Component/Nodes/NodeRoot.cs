@@ -58,7 +58,7 @@ namespace BlueJay.UI.Component.Nodes
       foreach (var child in element.Children)
         RemoveScopeKey(child);
 
-      if (element.ScopeKey != null)
+      if (element.ScopeKey != null && !element.IsParentUsingScopeKey(element.ScopeKey.Value))
         Scope.RemoveScopeKey(element.ScopeKey.Value);
     }
 
@@ -152,23 +152,7 @@ namespace BlueJay.UI.Component.Nodes
         return expAttr;
 
       if (attr is StringAttribute strAttr)
-      {
-        var prop = component?.GetType().GetField(strAttr.Value);
-        if (prop != null)
-        {
-          var reactives = new List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>();
-          if (typeof(IReactiveProperty).IsAssignableFrom(prop.FieldType))
-            reactives.Add((c, i, s) => prop.GetValue(c) as IReactiveProperty);
-
-          return new ExpressionAttribute(name, (c, e, s) =>
-          {
-            var obj = prop.GetValue(c);
-            if (obj is IReactiveProperty)
-              return obj.GetType().GetProperty("Value")?.GetValue(obj);
-            return obj;
-          }, reactives);
-        }
-      }
+        return new ExpressionAttribute(name, (c, e, s) => new Text(strAttr.Value));
 
       return null;
     }
