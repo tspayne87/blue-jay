@@ -20,7 +20,8 @@ namespace BlueJay.UI.Component.Elements
     /// <inheritdoc />
     protected override Node? CreateNode()
     {
-      return new ContainerNode(Scope, Attributes);
+      return Name.Equals("Texture", StringComparison.OrdinalIgnoreCase) ?
+        new TextureNode(Scope, Attributes) : new ContainerNode(Scope, Attributes);
     }
   }
 }

@@ -57,6 +57,7 @@
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\Bitmap-Font-export.png" />
     <Content Include="$(MSBuildThisFileDirectory)Content\Bitmap-Font.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Content\BlueJay_Logo.png" />
     <Content Include="$(MSBuildThisFileDirectory)Content\Circle.png" />
     <Content Include="$(MSBuildThisFileDirectory)Content\Sample_Hover_NinePatch.png" />
     <Content Include="$(MSBuildThisFileDirectory)Content\Sample_NinePatch.png" />
