@@ -10,6 +10,14 @@ namespace BlueJay.UI.Factories
 {
   public static class TextureFactory
   {
+    /// <summary>
+    /// Creates a UI Texture to be bound in the UI system
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="assetName">The current asset name needed to be loaded</param>
+    /// <param name="style">The styles that will configure where the texture is</param>
+    /// <param name="parent">The current parent this texture should be bound too</param>
+    /// <returns>Will return the configured ui texture entity</returns>
     public static IEntity AddUITexture(this IServiceProvider provider, string assetName, Style? style = null, IEntity? parent = null)
     {
       var content = provider.GetRequiredService<IContentManagerContainer>();
