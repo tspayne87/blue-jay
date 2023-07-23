@@ -37,6 +37,18 @@
 /processorParam:TextureFormat=Color
 /build:Bitmap-Font-export.png
 
+#begin BlueJay_Logo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:BlueJay_Logo.png
+
 #begin Circle.png
 /importer:TextureImporter
 /processor:TextureProcessor

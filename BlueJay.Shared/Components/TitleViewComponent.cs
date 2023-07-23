@@ -14,7 +14,7 @@ namespace BlueJay.Shared.Components
 <Container Style=""WidthPercentage: 0.66; HeightPercentage: 0.75; Padding: 20; VerticalAlign: Center; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; TextureFont: Default"">
   <Container Style=""ColumnSpan: 3; TextureFontSize: 2; HeightTemplate: Stretch; TextBaseline: Center"">
     <Container Style=""HeightPercentage: 1; Padding: 15; NinePatch: Sample_NinePatch"">
-      BlueJay Component System
+      <Texture AssetName=""BlueJay_Logo"" Style=""VerticalAlign: Center; HorizontalAlign: Center"" />
     </Container>
   </Container>
 

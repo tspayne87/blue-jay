@@ -28,7 +28,7 @@ forScope
  : FORHASH FORIDENTIFIER
  ;
 forInExpression
- : left=forConstant FORDOUBLEDOT right=forConstant                                                       #forRangeExpression
+ : left=forConstant FORDOUBLEDOT right=forConstant                                                        #forRangeExpression
  | forConstant                                                                                            #forConstantExpression
  ;
 forConstant

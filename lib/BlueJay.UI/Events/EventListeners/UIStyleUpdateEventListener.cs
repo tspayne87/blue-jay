@@ -54,34 +54,37 @@ namespace BlueJay.UI.Events.EventListeners
         var ba = evt.Data.Entity.GetAddon<BoundsAddon>();
         var ta = evt.Data.Entity.GetAddon<TextureAddon>();
 
-        if (ta.Texture != null)
-          ta.Texture.Dispose();
-
-        if (ba.Bounds.Width > 0 && ba.Bounds.Height > 0)
+        if (sa.CurrentStyle.NinePatch != null || sa.CurrentStyle.BackgroundColor != null)
         {
-          // Create a render target and generate the ninepatch texture so we do not have todo this expensive operation
-          // each frame of the game
-          var target = new RenderTarget2D(_graphics, ba.Bounds.Width, ba.Bounds.Height);
-          _graphics.SetRenderTarget(target);
-          _graphics.Clear(Color.Transparent);
-          _batch.Begin();
-          if (sa.CurrentStyle.NinePatch != null)
-          {
-            _batch.DrawNinePatch(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
-          }
-          else if (sa.CurrentStyle.BackgroundColor != null)
-          {
-            _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, sa.CurrentStyle.BackgroundColor.Value);
-          }
-          _batch.End();
-          _graphics.SetRenderTarget(null);
+          if (ta.Texture != null)
+            ta.Texture.Dispose();
 
-          sa.StyleUpdates++;
-          ta.Texture = target;
+          if (ba.Bounds.Width > 0 && ba.Bounds.Height > 0)
+          {
+            // Create a render target and generate the ninepatch texture so we do not have todo this expensive operation
+            // each frame of the game
+            var target = new RenderTarget2D(_graphics, ba.Bounds.Width, ba.Bounds.Height);
+            _graphics.SetRenderTarget(target);
+            _graphics.Clear(Color.Transparent);
+            _batch.Begin();
+            if (sa.CurrentStyle.NinePatch != null)
+            {
+              _batch.DrawNinePatch(sa.CurrentStyle.NinePatch, ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, Color.White);
+            }
+            else if (sa.CurrentStyle.BackgroundColor != null)
+            {
+              _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, sa.CurrentStyle.BackgroundColor.Value);
+            }
+            _batch.End();
+            _graphics.SetRenderTarget(null);
+
+            sa.StyleUpdates++;
+            ta.Texture = target;
+          }
+
+          evt.Data.Entity.Update(sa);
+          evt.Data.Entity.Update(ta);
         }
-
-        evt.Data.Entity.Update(sa);
-        evt.Data.Entity.Update(ta);
       }
     }
   }
