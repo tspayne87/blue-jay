@@ -20,11 +20,11 @@ namespace BlueJay.UI.Component.Elements.Attributes
     /// <param name="name">The name of the attribute being created</param>
     /// <param name="value">The callback method meant to get the object configured for this attribute</param>
     /// <param name="reactiveProperties">All the reactive properties found while creating the callback value</param>
-    public ExpressionAttribute(string name, Func<UIComponent, object?, Dictionary<string, object>?, object?> value, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>> reactiveProperties)
+    public ExpressionAttribute(string name, Func<UIComponent, object?, Dictionary<string, object>?, object?> value, List<Func<UIComponent, object?, Dictionary<string, object>?, IReactiveProperty?>>? reactiveProperties = null)
       : base(name)
     {
       Callback = value;
-      ReactiveProperties = (component, evt, scope) => reactiveProperties.Select(x => x(component, evt, scope)).ToList();
+      ReactiveProperties = (component, evt, scope) => reactiveProperties?.Select(x => x(component, evt, scope)).ToList() ?? new List<IReactiveProperty?>();
     }
   }
 }

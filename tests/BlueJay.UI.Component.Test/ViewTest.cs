@@ -85,6 +85,19 @@ namespace BlueJay.UI.Component.Test
     }
 
     [Fact]
+    public void WithTextInputComponent()
+    {
+      var node = _game.Provider.ParseJayTML("<TextPropComponent Text=\"Hello World\" />", typeof(BaseComponent));
+      node.GenerateUI();
+
+      AssertHelper.UIEqual(
+        "-- Container",
+        "---- Text:  Hello World",
+        _game.Provider.GetUIDebugStructureString()
+      );
+    }
+
+    [Fact]
     public void NoneBindingProp()
     {
       var node = _game.Provider.ParseJayTML("<PropComponent :None=\"2\">Hello World {{Count}}</PropComponent>", typeof(BaseComponent));

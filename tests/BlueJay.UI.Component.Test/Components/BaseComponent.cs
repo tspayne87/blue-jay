@@ -3,7 +3,7 @@ using BlueJay.UI.Component.Reactivity;
 
 namespace BlueJay.UI.Component.Test.Components
 {
-  [Component(typeof(ChildComponent), typeof(PropComponent), typeof(ProvideComponent), typeof(InjectComponent))]
+  [Component(typeof(ChildComponent), typeof(PropComponent), typeof(ProvideComponent), typeof(InjectComponent), typeof(TextPropComponent))]
   public class BaseComponent : UIComponent
   {
     public readonly ReactiveProperty<int> Count;
