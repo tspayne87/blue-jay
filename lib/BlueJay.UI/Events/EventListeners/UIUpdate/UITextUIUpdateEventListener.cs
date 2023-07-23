@@ -111,7 +111,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
               var target = new RenderTarget2D(_graphics, sa.CalculatedBounds.Width, sa.CalculatedBounds.Height);
               _graphics.SetRenderTarget(target);
               _graphics.Clear(Color.Transparent);
-              _batch.Begin();
+              _batch.Begin(samplerState: SamplerState.PointClamp);
 
               if (entity.TryGetStyle(x => x.Font, out var font) && font != null)
                 _batch.DrawString(_fonts.SpriteFonts[font], result, pos, entity.GetStyle(x => x.TextColor) ?? Color.Black);
