@@ -51,11 +51,11 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
       if (sa.CalculatedBounds.Height == 0)
       {
         var la = entity.GetAddon<LineageAddon>();
-        var extra = (sa.CurrentStyle.Padding ?? 0) * 2;
+        var extraHeight = sa.CurrentStyle.Padding?.TopBottom ?? 0;
 
         if (la.Children.Count == 0)
         {
-          sa.CalculatedBounds.Height = extra;
+          sa.CalculatedBounds.Height = extraHeight;
           return;
         }
 
@@ -77,7 +77,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
         }
         height += maxHeight;
 
-        sa.CalculatedBounds.Height = height + ((sa.CurrentStyle.Padding ?? 0) * 2) + (pos * sa.CurrentStyle.ColumnGap.X);
+        sa.CalculatedBounds.Height = height + (sa.CurrentStyle.Padding?.TopBottom ?? 0) + (pos * sa.CurrentStyle.ColumnGap.X);
         entity.Update(sa);
       }
     }
