@@ -63,10 +63,10 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
       var span = Math.Min(sa.CurrentStyle.ColumnSpan, pGridColumn);
 
       /// The width of the current box this item is bound to
-      var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+      var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - (psa?.CurrentStyle.Padding?.LeftRight ?? 0);
 
       /// The height of the current box this item is bound to
-      var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+      var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - (psa?.CurrentStyle.Padding?.TopBottom ?? 0);
 
       /// The current width of each box based on each column in the parents grid
       var cWidth = (pWidth - ((pGridColumn - 1) * pGap.X)) / pGridColumn;

@@ -104,7 +104,7 @@ namespace BlueJay.UI
     /// <summary>
     /// The padding this element should have around the contents of it
     /// </summary>
-    public virtual int? Padding { get; set; }
+    public virtual Padding? Padding { get; set; }
 
     /// <summary>
     /// The horizontal alignment of where this element should exist

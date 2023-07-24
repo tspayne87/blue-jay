@@ -102,7 +102,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
             // Calculate the text height based on the bounds of the generate text
             if (sa.CalculatedBounds.Height == 0)
             {
-              sa.CalculatedBounds.Height = (int)Math.Ceiling(finalBounds.Y) + ((sa.CurrentStyle.Padding ?? 0) * 2);
+              sa.CalculatedBounds.Height = (int)Math.Ceiling(finalBounds.Y) + (sa.CurrentStyle.Padding?.TopBottom ?? 0);
             }
 
             if (sa.CalculatedBounds.Width != 0 && sa.CalculatedBounds.Height != 0)

@@ -56,7 +56,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
         var pla = la.Parent?.GetAddon<LineageAddon>();
         if (psa != null && pla != null)
         {
-          var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+          var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - (psa?.CurrentStyle.Padding?.TopBottom ?? 0);
 
           var diviser = 0;
           var maxHeight = 0;

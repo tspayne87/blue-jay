@@ -54,7 +54,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
       var psa = la.Parent?.GetAddon<StyleAddon>();
 
       /// Calculate the parents width/height
-      var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+      var pHeight = (psa?.CalculatedBounds.Height ?? evt.Size.Height) - (psa?.CurrentStyle.Padding?.TopBottom ?? 0);
 
       // Process Height Properties
       if (sa.CurrentStyle.Height != null) sa.CalculatedBounds.Height = sa.CurrentStyle.Height.Value;

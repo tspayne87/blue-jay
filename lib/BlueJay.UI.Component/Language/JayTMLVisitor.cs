@@ -433,7 +433,7 @@ namespace BlueJay.UI.Component.Language
       if (prop == null)
         throw new ArgumentNullException($"Style {name} does not exist as a style");
 
-      var to = Nullable.GetUnderlyingType(prop.PropertyType);
+      Type toProp = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
       var callback = (UIComponent c, object? evt, Dictionary<string, object>? r) =>
       {
         if (typeof(NinePatch) == prop.PropertyType)
@@ -443,18 +443,29 @@ namespace BlueJay.UI.Component.Language
             throw new ArgumentNullException(nameof(assetName));
           return new NinePatch(_content.Load<Texture2D>(assetName));
         }
-        if ((to ?? prop.PropertyType).IsEnum)
+        if (toProp.IsEnum)
         {
           var value = expression.Callback(c, evt, r);
           if (value != null && value.GetType() == typeof(string))
-            return Enum.Parse(to ?? prop.PropertyType, (string)value);
+            return Enum.Parse(toProp, (string)value);
           return value;
         }
 
         var obj = expression.Callback(c, evt, r);
-        if (obj == null && to != null)
+        if (obj == null)
           return obj;
-        return Convert.ChangeType(obj, to ?? prop.PropertyType);
+
+        if (obj != null)
+        {
+          if (toProp == typeof(Color))
+            obj = ColorHelper.ConvertObj(obj);
+
+          var newable = toProp.GetConstructor(new Type[] { obj.GetType() });
+          if (newable != null)
+            return newable.Invoke(new object[] { obj });
+        }
+
+        return Convert.ChangeType(obj, toProp);
       };
       return new StyleAttribute.StyleItem(name, type ?? StyleAttribute.StyleItemType.Basic, callback, expression.ReactiveProperties);
     }
@@ -500,16 +511,18 @@ namespace BlueJay.UI.Component.Language
         .Concat(g.ReactiveProperties)
         .Concat(b.ReactiveProperties)
         .ToList();
-      var a = (UIComponent c, object? e, Dictionary<string, object>? r) => (object)255;
+
+      Func<UIComponent, object?, Dictionary<string, object>?, object> expr = (c, e, s) => new Vector3((int)r.Callback(c, e, s), (int)g.Callback(c, e, s), (int)b.Callback(c, e, s));
       if (context.a != null)
       {
-        var aContext = Visit(context.a) as CallbackExpression;
-        if (aContext == null)
+        var a = Visit(context.a) as CallbackExpression;
+        if (a == null)
           throw new ArgumentNullException("Could not create a on color");
-        a = aContext.Callback;
-        reactive = reactive.Concat(aContext.ReactiveProperties).ToList();
+
+        expr = (c, e, s) => new Vector4((int)r.Callback(c, e, s), (int)g.Callback(c, e, s), (int)b.Callback(c, e, s), (int)a.Callback(c, e, s));
+        reactive = reactive.Concat(a.ReactiveProperties).ToList();
       }
-      return new CallbackExpression((c, e, _) => new Color((int)r.Callback(c, e, _), (int)g.Callback(c, e, _), (int)b.Callback(c, e, _), (int)a(c, e, _)), reactive);
+      return new CallbackExpression(expr, reactive);
     }
 
     public override object VisitStylePoint([NotNull] JayTMLParser.StylePointContext context)

@@ -66,7 +66,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
         var span = Math.Min(sa.CurrentStyle.ColumnSpan, pGridColumn);
 
         /// Calculate the parents width
-        var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - ((psa?.CurrentStyle.Padding ?? 0) * 2);
+        var pWidth = (psa?.CalculatedBounds.Width ?? evt.Size.Width) - (psa?.CurrentStyle.Padding?.LeftRight ?? 0);
 
         /// Take the parent width and grid columns to determine the width we should start with
         /// Next we want to get the gaps between the spaces so we have even grid columns between each other

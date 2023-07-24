@@ -24,7 +24,7 @@ namespace BlueJay.UI
     public override int? LeftOffset { get => base.LeftOffset ?? Parent?.LeftOffset; set => base.LeftOffset = value; }
 
     /// <inheritdoc />
-    public override int? Padding { get => base.Padding ?? Parent?.Padding; set => base.Padding = value; }
+    public override Padding? Padding { get => base.Padding ?? Parent?.Padding; set => base.Padding = value; }
 
     /// <inheritdoc />
     public override HorizontalAlign? HorizontalAlign { get => base.HorizontalAlign ?? Parent?.HorizontalAlign; set => base.HorizontalAlign = value; }

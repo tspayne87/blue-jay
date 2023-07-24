@@ -174,6 +174,23 @@ namespace BlueJay.UI
       return string.Empty;
     }
 
+    public static IEntity? GetFirstUIRootEntity(this IServiceProvider provider)
+    {
+      var layers = provider.GetRequiredService<ILayerCollection>();
+
+      var uiLayer = layers[UIStatic.LayerName];
+      if (uiLayer != null)
+      {
+        foreach (var item in uiLayer.GetByKey(KeyHelper.Create<LineageAddon>()))
+        {
+          var la = item.GetAddon<LineageAddon>();
+          if (la.Parent == null)
+            return item;
+        }
+      }
+      return null;
+    }
+
     private static string PrintUIStructure(this IEntity entity, int tab = 2, int indentAmount = 2, char tabChar = '-')
     {
       var sb = new StringBuilder();
