@@ -74,7 +74,9 @@ namespace BlueJay.UI
     public static IServiceProvider AddUISystems(this IServiceProvider provider)
     {
       // Add Component systems
+      provider.AddSystem<ViewportSystem>();
       provider.AddSystem<UIPositionSystem>();
+      provider.AddSystem<FrameUpdateSystem>();
 
       // Add event listeners
       provider.AddEventListener<UIGridCalculationUIUpdateEventListener, UIUpdateEvent>();

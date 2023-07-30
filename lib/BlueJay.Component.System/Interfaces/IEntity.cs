@@ -66,6 +66,14 @@ namespace BlueJay.Component.System.Interfaces
     T GetAddon<T>() where T : struct, IAddon;
 
     /// <summary>
+    /// Helper method meant to get an addon that may not exist on the entity
+    /// </summary>
+    /// <typeparam name="T">The type of addon that is needed</typeparam>
+    /// <param name="addon">The addon found</param>
+    /// <returns>Will return true if an addon of the type exists on the entity</returns>
+    bool TryGetAddon<T>(out T addon) where T : struct, IAddon;
+
+    /// <summary>
     /// Helper method to get a list of addons that represent the key given
     /// </summary>
     /// <param name="key">The key that determines the list of addons we are looking for</param>

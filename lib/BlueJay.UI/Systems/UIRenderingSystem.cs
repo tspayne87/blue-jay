@@ -1,6 +1,7 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -46,7 +47,11 @@ namespace BlueJay.UI.Systems
 
       if (tc.Texture != null)
       {
-        _batch.Draw(tc.Texture, pc.Position, Color.White);
+        var color = entity.TryGetAddon<ColorAddon>(out var ca) ? ca.Color : Color.White;
+        if (entity.TryGetAddon<FrameAddon>(out var fa) && entity.TryGetAddon<SpriteSheetAddon>(out var ssa))
+          _batch.DrawFrame(tc.Texture, pc.Position, ssa.Rows, ssa.Cols, fa.Frame, color);
+        else
+          _batch.Draw(tc.Texture, pc.Position, color);
       }
     }
 
