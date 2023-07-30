@@ -1,6 +1,7 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Addons;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace BlueJay.UI.Factories
@@ -22,7 +23,7 @@ namespace BlueJay.UI.Factories
       entity.Add(new StyleAddon(style, hoverStyle));
       entity.Add(new TextureAddon());
       entity.Add(new PositionAddon());
-      entity.Add(new ColorAddon());
+      entity.Add(new ColorAddon(Color.White));
       entity.Add(new BoundsAddon());
       return entity;
     }

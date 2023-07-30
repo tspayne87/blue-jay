@@ -24,7 +24,7 @@ namespace BlueJay.UI.Factories
       entity.Add(new TextAddon(text));
       entity.Add(new TextureAddon());
       entity.Add(new PositionAddon());
-      entity.Add(new ColorAddon(Color.Black));
+      entity.Add(new ColorAddon(Color.White));
       entity.Add(new BoundsAddon());
 
       return entity;

@@ -164,6 +164,19 @@ namespace BlueJay.Component.System
       }
       return default(T);
     }
+
+    /// <inheritdoc />
+    public bool TryGetAddon<T>(out T addon)
+      where T : struct, IAddon
+    {
+      addon = default(T);
+      if (Contains<T>())
+      {
+        addon = GetAddon<T>();
+        return true;
+      }
+      return false;
+    }
     #endregion
 
     /// <inheritdoc />
