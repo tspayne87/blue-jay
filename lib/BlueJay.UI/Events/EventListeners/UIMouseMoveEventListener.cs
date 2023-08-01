@@ -70,7 +70,11 @@ namespace BlueJay.UI.Events.EventListeners
           if (hoverEntity == null || (!IsParent(hoverEntity.GetAddon<LineageAddon>(), entity) && entity != hoverEntity))
           {
             if (sa.Hovering)
+            {
               _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
+              _eventQueue.DispatchEvent(new MouseLeaveEvent() { Button = evt.Data.Button, Position = evt.Data.Position }, entity);
+            }
+
             sa.Hovering = false;
             entity.Update(sa);
           }
@@ -88,7 +92,10 @@ namespace BlueJay.UI.Events.EventListeners
         {
           _eventQueue.DispatchEvent(new HoverEvent(evt.Data.Position), hoverEntity);
           if (!sa.Hovering)
+          {
             _eventQueue.DispatchEvent(new StyleUpdateEvent(hoverEntity));
+            _eventQueue.DispatchEvent(new MouseEnterEvent() { Button = evt.Data.Button, Position = evt.Data.Position }, hoverEntity);
+          }
 
           sa.Hovering = true;
           hoverEntity.Update(sa);
