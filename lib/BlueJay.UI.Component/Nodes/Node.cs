@@ -276,6 +276,12 @@ namespace BlueJay.UI.Component.Nodes
             case "Hover":
               result.Add(Scope.ServiceProvider.AddEventListener<HoverEvent>(x => InvokeEvent(element, evt, scope, x), evt.IsGlobal ? null : element.Entity));
               break;
+            case "MouseEnter":
+              result.Add(Scope.ServiceProvider.AddEventListener<MouseEnterEvent>(x => InvokeEvent(element, evt, scope, x), evt.IsGlobal ? null : element.Entity));
+              break;
+            case "MouseLeave":
+              result.Add(Scope.ServiceProvider.AddEventListener<MouseLeaveEvent>(x => InvokeEvent(element, evt, scope, x), evt.IsGlobal ? null : element.Entity));
+              break;
           }
         }
       }
