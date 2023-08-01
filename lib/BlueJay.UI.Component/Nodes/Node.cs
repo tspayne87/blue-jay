@@ -273,6 +273,9 @@ namespace BlueJay.UI.Component.Nodes
             case "MouseUp":
               result.Add(Scope.ServiceProvider.AddEventListener<MouseUpEvent>(x => InvokeEvent(element, evt, scope, x), evt.IsGlobal ? null : element.Entity));
               break;
+            case "Hover":
+              result.Add(Scope.ServiceProvider.AddEventListener<HoverEvent>(x => InvokeEvent(element, evt, scope, x), evt.IsGlobal ? null : element.Entity));
+              break;
           }
         }
       }
