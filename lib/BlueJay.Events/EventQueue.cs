@@ -46,25 +46,20 @@ namespace BlueJay.Events
       _delta = delta;
     }
 
-    /// <summary>
-    /// Helper method is meant to dispatch events, this will defer them to the next frame for the event queue and will not be processed
-    /// in the same frame it is triggered
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="evt">The event that is being triggered</param>
-    /// <param name="target">The target we want to filter this event too</param>
+    /// <inheritdoc />
     public void DispatchEvent<T>(T evt, object? target = null)
     {
       DispatchDelayedEvent(evt, 0, target);
     }
 
-    /// <summary>
-    /// Helper method meant to dispatch events, this will defer them based on the timeout given
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="evt">The event that is being triggered</param>
-    /// <param name="timeout">The timeout this event should take before triggering in milliseconds</param>
-    /// <param name="target">The target we want to filter this event too</param>
+    /// <inheritdoc />
+    public void DispatchEventOnce<T>(T evt)
+    {
+      if (!_next.Any(x => x is IEvent<T>))
+        DispatchDelayedEvent(evt, 0, null);
+    }
+
+    /// <inheritdoc />
     public IDisposable DispatchDelayedEvent<T>(T evt, int timeout, object? target = null)
     {
       if (evt != null)
@@ -111,11 +106,7 @@ namespace BlueJay.Events
       return new ZipDisposable(listener, DispatchDelayedEvent(new TimeoutEvent(), timeout, listener));
     }
 
-    /// <summary>
-    /// Helper method is meant to add on event listeners into the system so they can interact with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="handler">The handler when the event is fired</param>
+    /// <inheritdoc />
     public IDisposable AddEventListener<T>(IEventListener<T> handler, int? weight = null)
     {
       var name = typeof(T).Name;
@@ -126,55 +117,31 @@ namespace BlueJay.Events
       return new Unsubscriber(_handlers, handler, name);
     }
 
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <inheritdoc />
     public IDisposable AddEventListener<T>(Func<T, bool> callback, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>((x, t) => callback(x), null, false), weight);
     }
 
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
+    /// <inheritdoc />
     public IDisposable AddEventListener<T>(Func<T, object?, bool> callback, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>(callback, null, false), weight);
     }
 
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    /// <param name="target">The target this callback should be attached to</param>
+    /// <inheritdoc />
     public IDisposable AddEventListener<T>(Func<T, bool> callback, object? target, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>((x, t) => callback(x), target, true), weight);
     }
 
-    /// <summary>
-    /// Helper method is meant to add basic event listeners based on a callback into the system so they can interact
-    /// with events that get dispatched
-    /// </summary>
-    /// <typeparam name="T">The type of event we are working with</typeparam>
-    /// <param name="callback">The callback that should be called when the event listener is processed</param>
-    /// <param name="target">The target this callback should be attached to</param>
+    /// <inheritdoc />
     public IDisposable AddEventListener<T>(Func<T, object?, bool> callback, object? target, int? weight = null)
     {
       return AddEventListener(new CallbackListener<T>(callback, target, true), weight);
     }
 
-    /// <summary>
-    /// Helper method to process the current queue
-    /// </summary>
+    /// <inheritdoc />
     public void Update()
     {
       while (_current.Count > 0)
@@ -183,33 +150,25 @@ namespace BlueJay.Events
       }
     }
 
-    /// <summary>
-    /// Handle the draw event for the event queue
-    /// </summary>
+    /// <inheritdoc />
     public void Draw()
     {
       ProcessEvent(new Event<DrawEvent>(new DrawEvent()));
     }
 
-    /// <summary>
-    /// Handle the activate event for the event queue
-    /// </summary>
+    /// <inheritdoc />
     public void Activate()
     {
       ProcessEvent(new Event<ActivateEvent>(new ActivateEvent()));
     }
 
-    /// <summary>
-    /// Handle the deactivate event for the event queue
-    /// </summary>
+    /// <inheritdoc />
     public void Deactivate()
     {
       ProcessEvent(new Event<DeactivateEvent>(new DeactivateEvent()));
     }
 
-    /// <summary>
-    /// Handle the exit event for the event queue
-    /// </summary>
+    /// <inheritdoc />
     public void Exit()
     {
       ProcessEvent(new Event<ExitEvent>(new ExitEvent()));
@@ -217,9 +176,7 @@ namespace BlueJay.Events
       Update();
     }
 
-    /// <summary>
-    /// Helper method to push whatever is in the defered queue into the current queue
-    /// </summary>
+    /// <inheritdoc />
     public void Tick(bool excludeUpdate = false)
     {
       if (!excludeUpdate)

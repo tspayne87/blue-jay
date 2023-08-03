@@ -24,6 +24,11 @@ namespace BlueJay.Component.System.Interfaces
     string Layer { get; set; }
 
     /// <summary>
+    /// The weight that this entity should exist in based on the other entities in the layer
+    /// </summary>
+    int Weight { get; set; }
+
+    /// <summary>
     /// Method is meant to add an addon when the object has already been generated
     /// </summary>
     /// <typeparam name="T">The type of addon</typeparam>

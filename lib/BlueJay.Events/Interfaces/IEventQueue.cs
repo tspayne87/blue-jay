@@ -14,6 +14,14 @@ namespace BlueJay.Events.Interfaces
     void DispatchEvent<T>(T evt, object? target = null);
 
     /// <summary>
+    /// Helper method is meant to dispatch events, this will defer them to the next frame for the event queue and will not be processed
+    /// in the same frame it is triggered.  However it will only keep one instance of the dispatched event
+    /// </summary>
+    /// <typeparam name="T">The type of event we are working with</typeparam>
+    /// <param name="evt">The event that is being triggered</param>
+    void DispatchEventOnce<T>(T evt);
+
+    /// <summary>
     /// Helper method is meant to dispatched events, this will defer them till the timeout from the arguments
     /// </summary>
     /// <typeparam name="T">The type of event we are working with</typeparam>

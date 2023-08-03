@@ -38,6 +38,7 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddUITouchSupport();
       serviceProvider.AddUIKeyboardSupport();
       serviceProvider.AddUIMouseSupport();
+      serviceProvider.AddUIComponentSystems();
       serviceProvider.AddSystem<ClampPositionSystem>();
       serviceProvider.AddSystem<BallSystem>();
 

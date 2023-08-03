@@ -38,5 +38,10 @@ namespace BlueJay.Component.System.Interfaces
     /// </summary>
     /// <param name="item">The entity that has changed</param>
     internal void UpdateAddonTree(IEntity item);
+
+    /// <summary>
+    /// Helper method meant to sort this layers entities based on their weight from lowest to highest
+    /// </summary>
+    internal void SortEntities();
   }
 }
