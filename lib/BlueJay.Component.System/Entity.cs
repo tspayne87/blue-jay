@@ -29,6 +29,11 @@ namespace BlueJay.Component.System
     /// </summary>
     private long _addonsId;
 
+    /// <summary>
+    /// The internal weight of this entity in the layer that it is currently in
+    /// </summary>
+    private int _weight;
+
     /// <inheritdoc />
     public long Id { get; set; }
 
@@ -37,6 +42,16 @@ namespace BlueJay.Component.System
 
     /// <inheritdoc />
     public string Layer { get; set; }
+
+    public int Weight
+    {
+      get => _weight;
+      set
+      {
+        _weight = value;
+        _layerCollection[Layer]?.SortEntities();
+      }
+    }
 
     /// <summary>
     /// Constructor to build out this entity through DI

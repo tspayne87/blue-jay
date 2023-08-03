@@ -54,6 +54,7 @@ namespace BlueJay.Component.System.Collections
       }
 
       item.Add(entity);
+      item.SortEntities();
     }
 
     /// <inheritdoc />

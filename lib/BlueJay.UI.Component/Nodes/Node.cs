@@ -6,6 +6,7 @@ using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
 using BlueJay.UI.Component.Elements.Attributes;
+using BlueJay.UI.Component.Events;
 using BlueJay.UI.Events;
 using BlueJay.Utils;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +47,11 @@ namespace BlueJay.UI.Component.Nodes
     /// The children that exist for this node
     /// </summary>
     public List<Node> Children { get; private set; }
+
+    /// <summary>
+    /// The list of UIEntities that exist for this node
+    /// </summary>
+    public List<UIEntity>? UIEntities { get; private set; }
 
     /// <summary>
     /// Helper method to get all the event attributes found in the attributes
@@ -90,6 +96,7 @@ namespace BlueJay.UI.Component.Nodes
       _screen = Scope.ServiceProvider.GetRequiredService<IScreenViewport>();
       _eventQueue = Scope.ServiceProvider.GetRequiredService<IEventQueue>();
 
+      UIEntities = null;
       Attributes = attributes;
       Children = new List<Node>();
     }
@@ -143,7 +150,7 @@ namespace BlueJay.UI.Component.Nodes
       if (ifAttribute != null && forAttribute != null)
         throw new ArgumentException("Both if and for attributes cannot be on same element"); // TODO: Figure out a good way to have both for and if attributes working
 
-      List<UIEntity>? items = null;
+      UIEntities = null;
       if (ifAttribute != null)
       {
         if (parent?.ScopeKey == null)
@@ -161,26 +168,29 @@ namespace BlueJay.UI.Component.Nodes
             {
               if (boolValue)
               {
-                if (items == null)
+                if (UIEntities == null)
                 {
-                  items = BuildAndAddEntity(style, parent, scope);
+                  UIEntities = BuildAndAddEntity(style, parent, scope);
                   hasUpdate = true;
                 }
               }
               else
               {
-                if (items != null)
+                if (UIEntities != null)
                 {
-                  foreach (var item in items)
+                  foreach (var item in UIEntities)
                     if (item != null)
                       RemoveElement(item);
                   hasUpdate = true;
-                  items = null;
+                  UIEntities = null;
                 }
               }
 
               if (hasUpdate)
+              {
+                parent?.OrderChildren();
                 TriggerUIUpdate();
+              }
             }
           });
         }
@@ -199,12 +209,12 @@ namespace BlueJay.UI.Component.Nodes
 
           reactiveProp.Subscribe(x =>
           {
-            if (items != null)
-              foreach (var item in items)
+            if (UIEntities != null)
+              foreach (var item in UIEntities)
                 if (item != null)
                   RemoveElement(item);
 
-            items = new List<UIEntity>();
+            UIEntities = new List<UIEntity>();
             var list = forAttribute.GetValue(Scope, parent, null, scope) as IEnumerable;
             if (list == null)
               throw new ArgumentNullException("Could not create for loop since value is not an IEnumerable");
@@ -214,16 +224,18 @@ namespace BlueJay.UI.Component.Nodes
               var newScope = new Dictionary<string, object>(scope ?? new Dictionary<string, object>());
               newScope[forAttribute.ScopeName] = item;
               var entities = BuildAndAddEntity(style, parent, newScope);
-              items.AddRange(entities);
+              UIEntities.AddRange(entities);
             }
 
+            parent?.OrderChildren();
             TriggerUIUpdate();
           });
         }
         return;
       }
 
-      items = BuildAndAddEntity(style, parent, scope);
+      UIEntities = BuildAndAddEntity(style, parent, scope);
+      parent?.OrderChildren();
     }
 
     /// <summary>
@@ -311,6 +323,8 @@ namespace BlueJay.UI.Component.Nodes
 
       if (parent?.ScopeKey != null)
         BindRefs(Scope[parent.ScopeKey.Value], entities);
+
+      _eventQueue.DispatchEventOnce(new UpdateNodeWeight(this));
       return entities;
     }
 

@@ -22,6 +22,7 @@ namespace BlueJay.Shared.Views
       serviceProvider.AddUIMouseSupport();
       serviceProvider.AddUIKeyboardSupport();
       serviceProvider.AddUITouchSupport();
+      serviceProvider.AddUIComponentSystems();
 
       serviceProvider.AddSystem<ClearSystem>(Color.White);
       serviceProvider.AddSystem<TopRectangleDrawSystem>();

@@ -29,7 +29,9 @@ namespace BlueJay.Shared.Components
 
   <DropdownInput Style=""ColumnSpan: 2; NinePatch: Sample_NinePatch; Padding: 13; WidthPercentage: 1; NinePatch::Hover: Sample_Hover_NinePatch"" :Model=""Dropdown"">
     <DropdownMenu Style=""NinePatch: Dropdown_Background_Ninepatch; Padding: 13"">
+      <DropdownItem Style=""BackgroundColor: 217, 87, 99"" :Value=""-1"" Text=""Before"" />
       <DropdownItem for=""#item in {{DropdownItems}}"" Style=""BackgroundColor: 217, 87, 99"" :Value=""#item.Id"" :Text=""#item.Name"" />
+      <DropdownItem Style=""BackgroundColor: 217, 87, 99"" :Value=""-2"" Text=""After"" />
     </DropdownMenu>
   </DropdownInput>
 

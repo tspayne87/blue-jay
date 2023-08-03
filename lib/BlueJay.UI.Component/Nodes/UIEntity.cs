@@ -1,9 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BlueJay.UI.Addons;
 
 namespace BlueJay.UI.Component.Nodes
 {
@@ -156,6 +152,20 @@ namespace BlueJay.UI.Component.Nodes
       return (_parent != null && _parent.ScopeKey == ScopeKey) || (_parent?.IsParentUsingScopeKey(scopeKey) ?? false);
     }
 
+    /// <summary>
+    /// Helper method meant to reorder the children to determine where in the list they should reside, so that
+    /// the tree structure is in tack for the children
+    /// </summary>
+    public void OrderChildren()
+    {
+      if (Children != null && Children.Count > 1)
+      {
+        Children = Children
+          .OrderBy(x => x.Node.Parent?.Children.IndexOf(x.Node) ?? -1)
+          .ToList();
+      }
+    }
+
     /// <inheritdoc />
     protected virtual void Dispose(bool disposing)
     {
@@ -167,7 +177,17 @@ namespace BlueJay.UI.Component.Nodes
             child.Dispose();
 
           if (_layers != null && Entity != null)
+          {
+            var la = Entity.GetAddon<LineageAddon>();
+            if (la.Parent != null)
+            {
+              var pla = la.Parent.GetAddon<LineageAddon>();
+              pla.Children.Remove(Entity);
+              la.Parent.Update(pla);
+            }
+
             _layers.Remove(Entity);
+          }
 
           foreach (var item in Disposables)
             item.Dispose();
