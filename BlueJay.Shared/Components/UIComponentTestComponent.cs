@@ -18,7 +18,7 @@ namespace BlueJay.Shared.Components
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
   <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
-  <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
+  <Container Style=""ColumnSpan: 2"">{{ComputedExpression}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
@@ -35,11 +35,13 @@ namespace BlueJay.Shared.Components
     </DropdownMenu>
   </DropdownInput>
 
-  <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5"">
+  <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 5"">
     <Button @Select=""AddItem()"">Add Item</Button>
     <Button @Select=""InsertItem()"">Insert Item</Button>
     <Button @Select=""SwitchItem()"">Switch Item</Button>
     <Button @Select=""RemoveRandomItem()"">Remove Random</Button>
+
+    <Button for=""#item in {{DropdownItems}}"">{{#item.Name}}</Button>
   </Container>
   <Container Style=""TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
@@ -82,6 +84,8 @@ namespace BlueJay.Shared.Components
     /// </summary>
     public readonly ReactiveCollection<SelectableItem> DropdownItems;
 
+    public readonly ComputedProperty<Text> ComputedExpression;
+
     /// <summary>
     /// Constructor to build out the breakcout UI Component
     /// </summary>
@@ -100,6 +104,7 @@ namespace BlueJay.Shared.Components
         new SelectableItem() { Name = "Item 4", Id = 4 },
         new SelectableItem() { Name = "Item 5", Id = 5 }
       });
+      ComputedExpression = new ComputedProperty<Text>(() => TextInput.Value + ": Computed", TextInput);
 
       _views = views;
       _rand = new Random();
