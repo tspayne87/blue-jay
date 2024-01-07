@@ -18,7 +18,7 @@ namespace BlueJay.Shared.Components
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
 
   <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
-  <Container Style=""ColumnSpan: 2"">{{TextInput}}</Container>
+  <Container Style=""ColumnSpan: 2"">{{ComputedExpression}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
@@ -35,11 +35,16 @@ namespace BlueJay.Shared.Components
     </DropdownMenu>
   </DropdownInput>
 
-  <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5"">
+  <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 5"">
     <Button @Select=""AddItem()"">Add Item</Button>
     <Button @Select=""InsertItem()"">Insert Item</Button>
     <Button @Select=""SwitchItem()"">Switch Item</Button>
     <Button @Select=""RemoveRandomItem()"">Remove Random</Button>
+
+    <Button for=""#item in {{DropdownItems}}"" Style=""GridColumns: 2; ColumnGap: 5, 5"" @Select=""ToggleItem(#item)"">
+      <Container @Select=""ToggleItem(#item)"">{{#item.Name}}</Container>
+      <Container if=""#item.Toggled"" @Select=""ToggleItem(#item)"">Toggled</Container>
+    </Button>
   </Container>
   <Container Style=""TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
@@ -82,6 +87,8 @@ namespace BlueJay.Shared.Components
     /// </summary>
     public readonly ReactiveCollection<SelectableItem> DropdownItems;
 
+    public readonly ComputedProperty<Text> ComputedExpression;
+
     /// <summary>
     /// Constructor to build out the breakcout UI Component
     /// </summary>
@@ -94,12 +101,13 @@ namespace BlueJay.Shared.Components
       TextInput = new ReactiveProperty<Text>("");
       DropdownItems = new ReactiveCollection<SelectableItem>(new List<SelectableItem>()
       {
-        new SelectableItem() { Name = "Item 1", Id = 1 },
-        new SelectableItem() { Name = "Item 2", Id = 2 },
-        new SelectableItem() { Name = "Item 3", Id = 3 },
-        new SelectableItem() { Name = "Item 4", Id = 4 },
-        new SelectableItem() { Name = "Item 5", Id = 5 }
+        new SelectableItem() { Name = "Item 1", Id = 1, Toggled = false },
+        new SelectableItem() { Name = "Item 2", Id = 2, Toggled = false },
+        new SelectableItem() { Name = "Item 3", Id = 3, Toggled = false },
+        new SelectableItem() { Name = "Item 4", Id = 4, Toggled = false },
+        new SelectableItem() { Name = "Item 5", Id = 5, Toggled = false }
       });
+      ComputedExpression = new ComputedProperty<Text>(() => TextInput.Value + ": Computed", TextInput);
 
       _views = views;
       _rand = new Random();
@@ -152,6 +160,21 @@ namespace BlueJay.Shared.Components
       return true;
     }
 
+    public bool ToggleItem(SelectableItem item)
+    {
+      var index = DropdownItems.FindIndex(x => x.Id == item.Id);
+      if (index != -1)
+      {
+        DropdownItems[index] = new SelectableItem()
+        {
+          Id = DropdownItems[index].Id,
+          Name = DropdownItems[index].Name,
+          Toggled = !DropdownItems[index].Toggled
+        };
+      }
+      return true;
+    }
+
     public string ShowDropdownItem(int? item)
     {
       SelectableItem? selected = null;
@@ -183,6 +206,11 @@ namespace BlueJay.Shared.Components
       /// The id of the dropdown item
       /// </summary>
       public int Id { get; set; }
+
+      /// <summary>
+      /// If this selectable item is toggled or not
+      /// </summary>
+      public bool Toggled { get; set; }
     }
   }
 }
