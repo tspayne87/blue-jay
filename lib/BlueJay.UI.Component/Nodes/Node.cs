@@ -155,45 +155,53 @@ namespace BlueJay.UI.Component.Nodes
       {
         if (parent?.ScopeKey == null)
           throw new ArgumentNullException("Component");
-        foreach (var reactiveProp in ifAttribute.GetReactiveProperties(Scope, parent, null, scope))
+
+        /// Helper callback to process the if attribute based on if it has a reactive element or not
+        var process = () =>
+        {
+          var updated = ifAttribute.GetValue(Scope, parent, null, scope);
+          var hasUpdate = false;
+          if (updated is bool boolValue)
+          {
+            if (boolValue)
+            {
+              if (UIEntities == null)
+              {
+                UIEntities = BuildAndAddEntity(style, parent, scope);
+                hasUpdate = true;
+              }
+            }
+            else
+            {
+              if (UIEntities != null)
+              {
+                foreach (var item in UIEntities)
+                  if (item != null)
+                    RemoveElement(item);
+                hasUpdate = true;
+                UIEntities = null;
+              }
+            }
+
+            if (hasUpdate)
+            {
+              parent?.OrderChildren();
+              TriggerUIUpdate();
+            }
+          }
+        };
+
+        var reactiveProps = ifAttribute.GetReactiveProperties(Scope, parent, null, scope);
+
+        foreach (var reactiveProp in reactiveProps)
         {
           if (reactiveProp == null)
             continue;
-
-          reactiveProp.Subscribe(x =>
-          {
-            var updated = ifAttribute.GetValue(Scope, parent, null, scope);
-            var hasUpdate = false;
-            if (updated is bool boolValue)
-            {
-              if (boolValue)
-              {
-                if (UIEntities == null)
-                {
-                  UIEntities = BuildAndAddEntity(style, parent, scope);
-                  hasUpdate = true;
-                }
-              }
-              else
-              {
-                if (UIEntities != null)
-                {
-                  foreach (var item in UIEntities)
-                    if (item != null)
-                      RemoveElement(item);
-                  hasUpdate = true;
-                  UIEntities = null;
-                }
-              }
-
-              if (hasUpdate)
-              {
-                parent?.OrderChildren();
-                TriggerUIUpdate();
-              }
-            }
-          });
+          reactiveProp.Subscribe(x => process());
         }
+
+        if (reactiveProps.Count == 0)
+          process();
         return;
       }
 
@@ -202,35 +210,41 @@ namespace BlueJay.UI.Component.Nodes
         if (parent?.ScopeKey == null)
           throw new ArgumentNullException("Component");
 
-        foreach (var reactiveProp in forAttribute.GetReactiveProperties(Scope, parent, null, scope))
+        var process = () =>
+        {
+          if (UIEntities != null)
+            foreach (var item in UIEntities)
+              if (item != null)
+                RemoveElement(item);
+
+          UIEntities = new List<UIEntity>();
+          var list = forAttribute.GetValue(Scope, parent, null, scope) as IEnumerable;
+          if (list == null)
+            throw new ArgumentNullException("Could not create for loop since value is not an IEnumerable");
+
+          foreach (var item in list)
+          {
+            var newScope = new Dictionary<string, object>(scope ?? new Dictionary<string, object>());
+            newScope[forAttribute.ScopeName] = item;
+            var entities = BuildAndAddEntity(style, parent, newScope);
+            UIEntities.AddRange(entities);
+          }
+
+          parent?.OrderChildren();
+          TriggerUIUpdate();
+        };
+
+        var reactiveProps = forAttribute.GetReactiveProperties(Scope, parent, null, scope);
+
+        foreach (var reactiveProp in reactiveProps)
         {
           if (reactiveProp == null)
             continue;
-
-          reactiveProp.Subscribe(x =>
-          {
-            if (UIEntities != null)
-              foreach (var item in UIEntities)
-                if (item != null)
-                  RemoveElement(item);
-
-            UIEntities = new List<UIEntity>();
-            var list = forAttribute.GetValue(Scope, parent, null, scope) as IEnumerable;
-            if (list == null)
-              throw new ArgumentNullException("Could not create for loop since value is not an IEnumerable");
-
-            foreach (var item in list)
-            {
-              var newScope = new Dictionary<string, object>(scope ?? new Dictionary<string, object>());
-              newScope[forAttribute.ScopeName] = item;
-              var entities = BuildAndAddEntity(style, parent, newScope);
-              UIEntities.AddRange(entities);
-            }
-
-            parent?.OrderChildren();
-            TriggerUIUpdate();
-          });
+          reactiveProp.Subscribe(x => process());
         }
+
+        if (reactiveProps.Count == 0)
+          process();
         return;
       }
 
