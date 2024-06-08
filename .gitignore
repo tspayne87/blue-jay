@@ -69,3 +69,6 @@ dist
 
 # Build Processes
 VersionScript
+
+PackNuget.ps1
+ReleaseNuget.ps1
