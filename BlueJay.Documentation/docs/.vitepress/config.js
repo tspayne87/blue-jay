@@ -30,7 +30,7 @@ const config = {
   ],
   description: 'Documentation for using the BlueJay Framework',
   themeConfig: {
-    repo: '',
+    repo: 'https://github.com/tspayne87/blue-jay',
     editLinks: false,
     docsDir: '',
     editLinkText: '',

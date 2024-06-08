@@ -15,7 +15,7 @@ determine which entities will be processed by the system.  The following is an e
 
     /// The addon helper is used to create the bitmask for the combined
     /// addons needed by this system
-    public long Key => KeyHelper.Identifier<PositionAddon, TextureAddon>();
+    public AddonKey Key => KeyHelper.Create<PositionAddon, TextureAddon>();
 
     /// The layers that this system will work on, if nothing is given it
     /// will work on all layers
@@ -58,7 +58,7 @@ determine which entities will be processed by the system.  The following is an e
 ```
 ## Key
 The key is the main way the system knows what entities it should be processing, meaning it is a type of filter.  Using the
-KeyHelper.Identifier<...> will help with merging addons together to create a key to filter out entities that should not
+KeyHelper.Create<...> will help with merging addons together to create a key to filter out entities that should not
 be processed by this system.
 
 ## Layers

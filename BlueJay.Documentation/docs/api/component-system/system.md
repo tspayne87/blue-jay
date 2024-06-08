@@ -7,7 +7,7 @@ The system interface is the based interface that all other systems will implemen
 
 ### Key
 The key is the main way the system knows what entities it should be processing, meaning it is a type of filter.  Using the
-[KeyHelper.Identifier<...>](/api/component-system/key-helper) will help with merging addons together to create a key to filter
+[KeyHelper.Create<...>](/api/component-system/key-helper) will help with merging addons together to create a key to filter
 out entities that should not be processed by this system.
 ### Layers
 The [layers](/api/component-system/layer) act as a way to filter the system out even further based on the layer this system
