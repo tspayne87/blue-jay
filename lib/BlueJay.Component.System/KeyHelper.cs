@@ -1,5 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using System.Collections.Concurrent;
+using System.Numerics;
 
 namespace BlueJay.Component.System
 {
@@ -13,7 +14,7 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <typeparam name="T1">The first addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1>() where T1 : IAddon => Create(typeof(T1));
+    public static AddonKey Create<T1>() where T1 : IAddon => Create(typeof(T1));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -21,7 +22,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T1">The first addon</typeparam>
     /// <typeparam name="T2">The second addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2>() where T1 : IAddon where T2 : IAddon => Create(typeof(T1), typeof(T2));
+    public static AddonKey Create<T1, T2>() where T1 : IAddon where T2 : IAddon => Create(typeof(T1), typeof(T2));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -30,7 +31,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T2">The second addon</typeparam>
     /// <typeparam name="T3">The third addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3>() where T1 : IAddon where T2 : IAddon where T3 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3));
+    public static AddonKey Create<T1, T2, T3>() where T1 : IAddon where T2 : IAddon where T3 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -40,7 +41,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T3">The third addon</typeparam>
     /// <typeparam name="T4">The forth addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
+    public static AddonKey Create<T1, T2, T3, T4>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -51,7 +52,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T4">The forth addon</typeparam>
     /// <typeparam name="T5">The fifth addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4, T5>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
+    public static AddonKey Create<T1, T2, T3, T4, T5>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -63,7 +64,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T5">The fifth addon</typeparam>
     /// <typeparam name="T6">The sixth addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4, T5, T6>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6));
+    public static AddonKey Create<T1, T2, T3, T4, T5, T6>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -76,7 +77,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T6">The sixth addon</typeparam>
     /// <typeparam name="T7">The seventh addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4, T5, T6, T7>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7));
+    public static AddonKey Create<T1, T2, T3, T4, T5, T6, T7>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -90,7 +91,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T7">The seventh addon</typeparam>
     /// <typeparam name="T8">The eighth addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4, T5, T6, T7, T8>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon where T8 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8));
+    public static AddonKey Create<T1, T2, T3, T4, T5, T6, T7, T8>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon where T8 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -105,7 +106,7 @@ namespace BlueJay.Component.System
     /// <typeparam name="T8">The eighth addon</typeparam>
     /// <typeparam name="T9">the nineth addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4, T5, T6, T7, T8, T9>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon where T8 : IAddon where T9 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9));
+    public static AddonKey Create<T1, T2, T3, T4, T5, T6, T7, T8, T9>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon where T8 : IAddon where T9 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9));
 
     /// <summary>
     /// Creates an identifier based on the generics
@@ -121,16 +122,16 @@ namespace BlueJay.Component.System
     /// <typeparam name="T9">the nineth addon</typeparam>
     /// <typeparam name="T10">The tenth addon</typeparam>
     /// <returns>Will return a generated key based on the addon generics</returns>
-    public static long Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon where T8 : IAddon where T9 : IAddon where T10 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10));
+    public static AddonKey Create<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>() where T1 : IAddon where T2 : IAddon where T3 : IAddon where T4 : IAddon where T5 : IAddon where T6 : IAddon where T7 : IAddon where T8 : IAddon where T9 : IAddon where T10 : IAddon => Create(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10));
 
     /// <summary>
     /// Creates an identifier based on the types given, only counts IAddon items
     /// </summary>
     /// <param name="types">The addons we need to process</param>
     /// <returns>Will return a bit mask identifier for finding entities</returns>
-    public static long Create(params Type[] types)
+    public static AddonKey Create(params Type[] types)
     {
-      var id = 0L;
+      AddonKey id = AddonKey.None;
       for (var i = 0; i < types.Length; ++i)
         if (typeof(IAddon).IsAssignableFrom(types[i]))
           id |= GetIdentifier(types[i]);
@@ -141,19 +142,19 @@ namespace BlueJay.Component.System
     /// <summary>
     /// The current next key we should make for an addon
     /// </summary>
-    private static long _nextKey = 1;
+    private static AddonKey _nextKey = AddonKey.One;
 
     /// <summary>
     /// The cache of keys based on the type of object given
     /// </summary>
-    private static ConcurrentDictionary<Type, long> _cache = new ConcurrentDictionary<Type, long>();
+    private static ConcurrentDictionary<Type, AddonKey> _cache = new ConcurrentDictionary<Type, AddonKey>();
 
     /// <summary>
     /// Helper method is meant to create an identifier if one does not exist and return either the cached or the created one
     /// </summary>
     /// <param name="key">The object we are working with when building out the identifier</param>
     /// <returns>Will return the identifier for the specific obj/type</returns>
-    private static long GetIdentifier(Type key)
+    private static AddonKey GetIdentifier(Type key)
     {
       if (!_cache.ContainsKey(key))
         _cache[key] = NextKey();
@@ -165,10 +166,9 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <param name="type">The type we are working with</param>
     /// <returns>Will return the next bit for the type</returns>
-    private static long NextKey()
+    private static AddonKey NextKey()
     {
-      if (_nextKey == 0) throw new OverflowException("Cannot generate more than 64 keys in the system");
-      _nextKey = _nextKey << 1;
+      _nextKey = _nextKey.IncrementKey();
       return _nextKey;
     }
   }

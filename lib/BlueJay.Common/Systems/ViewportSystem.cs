@@ -1,4 +1,5 @@
 ﻿using BlueJay.Common.Events;
+using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Events.Interfaces;
@@ -28,7 +29,7 @@ namespace BlueJay.Common.Systems
     private Size _previous;
 
     /// <inheritdoc />
-    public long Key => 0;
+    public AddonKey Key => AddonKey.None;
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

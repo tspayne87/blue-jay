@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
@@ -42,7 +43,7 @@ namespace BlueJay.EventListeners
         ((IUpdateSystem)_system).OnUpdate();
 
       // If we are dealing with a system that needs to update the entities
-      if (_system.Key != 0 && _system is IUpdateEntitySystem)
+      if (_system.Key != AddonKey.None && _system is IUpdateEntitySystem)
       {
         for (var j = 0; j < _layerCollection.Count; ++j)
         {

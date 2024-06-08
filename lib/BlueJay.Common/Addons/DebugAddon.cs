@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 
 namespace BlueJay.Common.Addons
 {
@@ -10,13 +11,13 @@ namespace BlueJay.Common.Addons
     /// <summary>
     /// The key identifier used to track down the correct addons
     /// </summary>
-    public long KeyIdentifier;
+    public AddonKey KeyIdentifier;
 
     /// <summary>
     /// Constructor build out what other addons this debug addon should watch
     /// </summary>
     /// <param name="keyIdentifier">The key identifier to debug</param>
-    public DebugAddon(long keyIdentifier)
+    public DebugAddon(AddonKey keyIdentifier)
     {
       KeyIdentifier = keyIdentifier;
     }

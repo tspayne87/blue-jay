@@ -16,7 +16,7 @@ namespace BlueJay.Common.Systems
     private readonly IDeltaService _delta;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<FrameAddon>();
+    public AddonKey Key => KeyHelper.Create<FrameAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

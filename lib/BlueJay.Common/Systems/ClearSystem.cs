@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace BlueJay.Common.Systems
     private readonly Color _color;
 
     /// <inheritdoc />
-    public long Key => 0;
+    public AddonKey Key => AddonKey.None;
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

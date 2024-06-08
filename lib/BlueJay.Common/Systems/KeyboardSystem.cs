@@ -4,6 +4,7 @@ using BlueJay.Common.Events.Keyboard;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Linq;
+using BlueJay.Component.System;
 
 namespace BlueJay.Common.Systems
 {
@@ -23,7 +24,7 @@ namespace BlueJay.Common.Systems
     private readonly Dictionary<Keys, bool> _pressed;
 
     /// <inheritdoc />
-    public long Key => 0;
+    public AddonKey Key => AddonKey.None;
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>() { string.Empty };

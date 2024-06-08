@@ -19,7 +19,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     private readonly GraphicsDevice _graphics;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<BoundsAddon>();
+    public AddonKey Key => KeyHelper.Create<BoundsAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>() { LayerNames.PaddleLayer };

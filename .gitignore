@@ -66,3 +66,6 @@ TODOs.md
 packages/@vuepress/shared-utils/lib/
 packages/@vuepress/shared-utils/types/
 dist
+
+# Build Processes
+VersionScript
