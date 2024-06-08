@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace BlueJay.Component.System
@@ -21,7 +22,7 @@ namespace BlueJay.Component.System
     /// <summary>
     /// The current cache for entities so w
     /// </summary>
-    private Dictionary<long, List<IEntity>> _entityQueryCache = new Dictionary<long, List<IEntity>>();
+    private Dictionary<AddonKey, List<IEntity>> _entityQueryCache = new Dictionary<AddonKey, List<IEntity>>();
 
     /// <summary>
     /// The current entity count this is mainly used as a way to store ids for the entities
@@ -74,7 +75,7 @@ namespace BlueJay.Component.System
     }
 
     /// <inheritdoc />
-    public ReadOnlySpan<IEntity> GetByKey(long key)
+    public ReadOnlySpan<IEntity> GetByKey(AddonKey key)
     {
       SortLayer();
       if (!_entityQueryCache.ContainsKey(key))

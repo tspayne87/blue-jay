@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace BlueJay.Component.System.Interfaces
 {
@@ -15,7 +16,7 @@ namespace BlueJay.Component.System.Interfaces
     /// </summary>
     /// <param name="key">The key we want to find entities on</param>
     /// <returns>Will return a list of entities matching the key given</returns>
-    ReadOnlySpan<IEntity> GetByKey(long key);
+    ReadOnlySpan<IEntity> GetByKey(AddonKey key);
 
     /// <summary>
     /// The current id of the layer

@@ -18,7 +18,7 @@ namespace BlueJay.UI.Systems
     private readonly SpriteBatch _batch;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<PositionAddon, TextureAddon>();
+    public AddonKey Key => KeyHelper.Create<PositionAddon, TextureAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>() { UIStatic.LayerName };

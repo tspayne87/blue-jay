@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Events.Lifecycle;
@@ -58,7 +59,7 @@ namespace BlueJay.EventListeners
           {
             if (system is IDrawSystem)
               ((IDrawSystem)system).OnDraw();
-            if (system.Key != 0 && (system.Layers.Count == 0 || system.Layers.Contains(layer.Id)))
+            if (system.Key != AddonKey.None && (system.Layers.Count == 0 || system.Layers.Contains(layer.Id)))
             {
               foreach (var entity in layer.GetByKey(system.Key))
               {

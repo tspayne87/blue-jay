@@ -4,6 +4,7 @@ using BlueJay.Common.Events.Mouse;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using static BlueJay.Common.Events.Mouse.MouseEvent;
+using BlueJay.Component.System;
 
 namespace BlueJay.Common.Systems
 {
@@ -33,7 +34,7 @@ namespace BlueJay.Common.Systems
     private int PreviousScrollWheelValue { get; set; }
 
     /// <inheritdoc />
-    public long Key => 0;
+    public AddonKey Key => AddonKey.None;
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

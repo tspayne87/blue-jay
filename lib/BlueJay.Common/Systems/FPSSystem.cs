@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Collections;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Interfaces;
 using Microsoft.Xna.Framework;
@@ -50,7 +51,7 @@ namespace BlueJay.Common.Systems
     /// <summary>
     /// Do not specify an entity and just use the based draw and update steps
     /// </summary>
-    public long Key => 0;
+    public AddonKey Key => AddonKey.None;
 
     /// <summary>
     /// The current layers that this system should be attached to

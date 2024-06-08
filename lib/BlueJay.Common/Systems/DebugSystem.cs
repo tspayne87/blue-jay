@@ -1,10 +1,8 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System;
-using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace BlueJay.Common.Systems
 {
@@ -35,7 +33,7 @@ namespace BlueJay.Common.Systems
     private int _y;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<DebugAddon>();
+    public AddonKey Key => KeyHelper.Create<DebugAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

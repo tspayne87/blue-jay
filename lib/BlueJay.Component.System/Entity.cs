@@ -1,6 +1,7 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Component.System.Events;
 using BlueJay.Events.Interfaces;
+using System.Numerics;
 
 namespace BlueJay.Component.System
 {
@@ -25,9 +26,14 @@ namespace BlueJay.Component.System
     private IAddon[] _addons;
 
     /// <summary>
+    /// The list of addon keys meant to be a quick lookup for the addons
+    /// </summary>
+    private AddonKey[] _addonKeys;
+
+    /// <summary>
     /// The id based on the addons in this entity
     /// </summary>
-    private long _addonsId;
+    private AddonKey _addonsId;
 
     /// <summary>
     /// The internal weight of this entity in the layer that it is currently in
@@ -43,6 +49,7 @@ namespace BlueJay.Component.System
     /// <inheritdoc />
     public string Layer { get; set; }
 
+    /// <inheritdoc />
     public int Weight
     {
       get => _weight;
@@ -63,8 +70,9 @@ namespace BlueJay.Component.System
       _layerCollection = layerCollection;
       _eventQueue = eventQueue;
 
-      _addonsId = 0;
+      _addonsId = AddonKey.None;
       _addons = new IAddon[0];
+      _addonKeys = new AddonKey[0];
       Active = true;
       Layer = string.Empty;
     }
@@ -74,7 +82,7 @@ namespace BlueJay.Component.System
     public bool Add<T>(T addon)
       where T : struct, IAddon
     {
-      if ((KeyHelper.Create<T>() & _addonsId) == 0)
+      if ((KeyHelper.Create<T>() & _addonsId) == AddonKey.None)
       {
         Array.Resize(ref _addons, _addons.Length + 1);
         _addons[_addons.Length - 1] = addon;
@@ -111,7 +119,10 @@ namespace BlueJay.Component.System
     public bool Remove<T>()
       where T : struct, IAddon
     {
-      if (!Contains<T>()) return false;
+      if (!Contains<T>())
+      {
+        return false;
+      }
       return Remove((T)_addons.First(x => x is T));
     }
 
@@ -121,6 +132,7 @@ namespace BlueJay.Component.System
     {
       for (var i = 0; i < _addons.Length; ++i)
       {
+        /// TODO: Make Faster
         if (_addons[i].GetType() == typeof(T))
         {
           _addons[i] = addon;
@@ -145,24 +157,22 @@ namespace BlueJay.Component.System
 
     #region Getter Methods
     /// <inheritdoc />
-    public bool MatchKey(long key)
+    public bool MatchKey(AddonKey key)
     {
       return (_addonsId & key) == key;
     }
 
     /// <inheritdoc />
-    public IEnumerable<IAddon> GetAddons(long key)
+    public IEnumerable<IAddon> GetAddons(AddonKey key)
     {
-      var addons = new List<IAddon>();
       foreach (var addon in _addons)
       {
         var addonKey = KeyHelper.Create(addon.GetType());
         if ((key & addonKey) == addonKey)
         {
-          addons.Add(addon);
+          yield return addon;
         }
       }
-      return addons;
     }
 
     /// <inheritdoc />

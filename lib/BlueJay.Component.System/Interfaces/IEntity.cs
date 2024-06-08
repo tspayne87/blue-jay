@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace BlueJay.Component.System.Interfaces
 {
@@ -83,14 +84,14 @@ namespace BlueJay.Component.System.Interfaces
     /// </summary>
     /// <param name="key">The key that determines the list of addons we are looking for</param>
     /// <returns>A list of addons based on the key given</returns>
-    IEnumerable<IAddon> GetAddons(long key);
+    IEnumerable<IAddon> GetAddons(AddonKey key);
 
     /// <summary>
     /// Helper method is meant to match if the key given is able to be sloted into the key
     /// </summary>
     /// <param name="key">The key that is meant to be a bitwise flag to determine the possible addons that exist on this entity</param>
     /// <returns>Will return true if the key matches the list of addons in this entity</returns>
-    bool MatchKey(long key);
+    bool MatchKey(AddonKey key);
 
     /// <summary>
     /// Helper method to determine if this entity has a specific addon

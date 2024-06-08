@@ -2,6 +2,7 @@
 using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace BlueJay.Common.Systems
 {
@@ -11,7 +12,7 @@ namespace BlueJay.Common.Systems
   public class VelocitySystem : IUpdateEntitySystem
   {
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<PositionAddon, VelocityAddon>();
+    public AddonKey Key => KeyHelper.Create<PositionAddon, VelocityAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

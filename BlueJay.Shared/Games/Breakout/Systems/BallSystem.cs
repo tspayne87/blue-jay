@@ -39,7 +39,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     private readonly BreakoutGameService _service;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<BoundsAddon, VelocityAddon, BallActiveAddon>();
+    public AddonKey Key => KeyHelper.Create<BoundsAddon, VelocityAddon, BallActiveAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>() { LayerNames.BallLayer };

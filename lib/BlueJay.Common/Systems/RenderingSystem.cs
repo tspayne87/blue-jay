@@ -5,6 +5,7 @@ using BlueJay.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace BlueJay.Common.Systems
 {
@@ -19,7 +20,7 @@ namespace BlueJay.Common.Systems
     private readonly SpriteBatch _batch;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<PositionAddon, TextureAddon>();
+    public AddonKey Key => KeyHelper.Create<PositionAddon, TextureAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

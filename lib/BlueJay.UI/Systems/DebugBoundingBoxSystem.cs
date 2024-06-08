@@ -1,15 +1,10 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System;
-using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace BlueJay.UI.Systems
 {
@@ -31,7 +26,7 @@ namespace BlueJay.UI.Systems
     private readonly IFontCollection _fonts;
 
     /// <inheritdoc />
-    public long Key => KeyHelper.Create<PositionAddon, BoundsAddon>();
+    public AddonKey Key => KeyHelper.Create<PositionAddon, BoundsAddon>();
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();

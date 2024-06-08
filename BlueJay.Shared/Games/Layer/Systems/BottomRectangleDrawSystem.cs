@@ -13,7 +13,7 @@ namespace BlueJay.Shared.Games.Layer.Systems
     private readonly SpriteBatch _batch;
     private readonly SpriteBatchExtension _batchExtension;
 
-    public long Key => KeyHelper.Create<SizeAddon, PositionAddon, ColorAddon, BottomAddon>();
+    public AddonKey Key => KeyHelper.Create<SizeAddon, PositionAddon, ColorAddon, BottomAddon>();
 
     public List<string> Layers => new List<string>();
 

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using BlueJay.Common.Events.Touch;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Interfaces;
+using BlueJay.Component.System;
 
 namespace BlueJay.Common.Systems
 {
@@ -17,7 +18,7 @@ namespace BlueJay.Common.Systems
     private readonly IEventQueue _queue;
 
     /// <inheritdoc />
-    public long Key => 0;
+    public AddonKey Key => AddonKey.None;
 
     /// <inheritdoc />
     public List<string> Layers => new List<string>();
