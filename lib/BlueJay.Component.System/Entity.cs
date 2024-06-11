@@ -85,8 +85,10 @@ namespace BlueJay.Component.System
       if ((KeyHelper.Create<T>() & _addonsId) == AddonKey.None)
       {
         Array.Resize(ref _addons, _addons.Length + 1);
+        Array.Resize(ref _addonKeys, _addonKeys.Length + 1);
         _addons[_addons.Length - 1] = addon;
-        _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
+        _addonKeys[_addons.Length - 1] = KeyHelper.Create(addon.GetType());
+        _addonsId |= _addonKeys[_addons.Length - 1];
         _layerCollection[Layer]?.UpdateAddonTree(this);
 
         _eventQueue.DispatchEvent(new AddAddonEvent(addon), this);
@@ -97,16 +99,24 @@ namespace BlueJay.Component.System
 
     /// <inheritdoc />
     public bool Remove<T>(T addon)
+      where T : struct, IAddon => Remove<T>();
+
+    /// <inheritdoc />
+    public bool Remove<T>()
       where T : struct, IAddon
     {
-      var index = Array.IndexOf(_addons, addon);
+      var key = KeyHelper.Create<T>();
+      var index = Array.IndexOf(_addonKeys, key);
       if (index != -1)
       {
+        var addon = _addons[index];
         for (var i = index + 1; i < _addons.Length; ++i)
         {
           _addons[i - 1] = _addons[i];
+          _addonKeys[i - 1] = _addonKeys[i];
         }
         Array.Resize(ref _addons, _addons.Length - 1);
+        Array.Resize(ref _addonKeys, _addonKeys.Length - 1);
         _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
         _layerCollection[Layer]?.UpdateAddonTree(this);
         _eventQueue.DispatchEvent(new RemoveAddonEvent(addon), this);
@@ -116,29 +126,16 @@ namespace BlueJay.Component.System
     }
 
     /// <inheritdoc />
-    public bool Remove<T>()
-      where T : struct, IAddon
-    {
-      if (!Contains<T>())
-      {
-        return false;
-      }
-      return Remove((T)_addons.First(x => x is T));
-    }
-
-    /// <inheritdoc />
     public bool Update<T>(T addon)
       where T : struct, IAddon
     {
-      for (var i = 0; i < _addons.Length; ++i)
+      var key = KeyHelper.Create<T>();
+      var index = Array.IndexOf(_addonKeys, key);
+      if (index != -1)
       {
-        /// TODO: Make Faster
-        if (_addons[i].GetType() == typeof(T))
-        {
-          _addons[i] = addon;
-          _eventQueue.DispatchEvent(new UpdateAddonEvent(addon), this);
-          return true;
-        }
+        _addons[index] = addon;
+        _eventQueue.DispatchEvent(new UpdateAddonEvent(addon), this);
+        return true;
       }
       return false;
     }
@@ -194,7 +191,7 @@ namespace BlueJay.Component.System
     public bool TryGetAddon<T>(out T addon)
       where T : struct, IAddon
     {
-      addon = default(T);
+      addon = default;
       if (Contains<T>())
       {
         addon = GetAddon<T>();

@@ -1,4 +1,4 @@
- <Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,6 +11,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://bluejaycs.org/</PackageProjectUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="BlueJay.Component.System.Test" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <ProjectReference Include="..\BlueJay.Core\BlueJay.Core.csproj" />
