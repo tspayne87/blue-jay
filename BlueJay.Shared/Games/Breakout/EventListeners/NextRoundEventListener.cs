@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Container;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -82,7 +83,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
 
       // Start the new game with the blocks and ball added
       _service.Round++;
-      _provider.AddBall(_contentManager.Load<Texture2D>("Circle"));
+      _provider.AddBall(_contentManager.Load<ITexture2DContainer>("Circle"));
       for (var i = 0; i < 20; ++i)
       {
         _provider.AddBlock(i);

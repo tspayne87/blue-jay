@@ -72,3 +72,7 @@ VersionScript
 
 PackNuget.ps1
 ReleaseNuget.ps1
+TestNuget.ps1
+TestResults
+CoverageReport
+CoverageHistory

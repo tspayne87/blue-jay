@@ -59,9 +59,23 @@ namespace BlueJay.Component.System
     /// <returns>Results in true if the left and right are the same key</returns>
     public static bool operator ==(AddonKey left, AddonKey right)
     {
+      /// Special case since none could have multiple lengths and we want to make sure it is found
+      if (left.IsNone() && right.IsNone()) return true;
       if (left._key.Length != right._key.Length) return false;
       for (var i = 0; i < left._key.Length; ++i)
         if (left._key[i] != right._key[i]) return false;
+      return true;
+    }
+
+    /// <summary>
+    /// Helper method meant to determine if the addon key is none
+    /// </summary>
+    /// <returns>Helper method to check if the addon keys are none</returns>
+    public bool IsNone()
+    {
+      for (var i = 0; i < _key.Length; ++i)
+        if (_key[i] != 0)
+          return false;
       return true;
     }
 

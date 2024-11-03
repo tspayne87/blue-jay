@@ -5,6 +5,7 @@ using BlueJay.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using BlueJay.Core.Container;
 
 namespace BlueJay.UI.Factories
 {
@@ -26,7 +27,7 @@ namespace BlueJay.UI.Factories
     public static IEntity AddUISprite(this IServiceProvider provider, string assetName, int frameCount, int frameTickAmount, int cols, int rows = 1, int frame = 0, Style? style = null, IEntity? parent = null)
     {
       var content = provider.GetRequiredService<IContentManagerContainer>();
-      var texture = content.Load<Texture2D>(assetName);
+      var texture = content.Load<ITexture2DContainer>(assetName);
       style = style ?? new Style();
       style.Width = texture.Width / cols;
       style.Height = texture.Height / rows;

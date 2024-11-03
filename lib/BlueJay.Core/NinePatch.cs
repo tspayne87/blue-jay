@@ -1,6 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using BlueJay.Core.Container;
+using Microsoft.Xna.Framework;
 
 namespace BlueJay.Core
 {
@@ -12,7 +11,7 @@ namespace BlueJay.Core
     /// <summary>
     /// The texture that will be used in the nine patch
     /// </summary>
-    public Texture2D Texture { get; private set; }
+    public ITexture2DContainer Texture { get; private set; }
 
     /// <summary>
     /// The breaks for the nine patch texture so we can determine where to draw from
@@ -68,7 +67,7 @@ namespace BlueJay.Core
     /// Constructor to build a nine patch texture
     /// </summary>
     /// <param name="texture">The texture we are building from</param>
-    public NinePatch(Texture2D texture)
+    public NinePatch(ITexture2DContainer texture)
     {
       if (texture.Width % 3 != 0) throw new ArgumentException("Width value needs to be a multiple of 3", nameof(texture));
       if (texture.Height % 3 != 0) throw new ArgumentException("Height value needs to be a multiple of 3", nameof(texture));

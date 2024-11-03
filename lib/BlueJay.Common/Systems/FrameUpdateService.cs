@@ -45,7 +45,7 @@ namespace BlueJay.Common.Systems
           fa.FrameTick += fa.FrameTickAmount;
           fa.Frame++;
           if (fa.Frame >= fa.FrameCount)
-            fa.Frame = 0;
+            fa.Frame = fa.StartingFrame;
         }
         entity.Update(fa);
       }

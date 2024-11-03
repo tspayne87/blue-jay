@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using BlueJay.Component.System;
 using System;
+using BlueJay.Core.Container;
+using BlueJay.Core.Containers;
+using BlueJay.Utils;
 
 namespace BlueJay.Shared
 {
@@ -33,11 +36,11 @@ namespace BlueJay.Shared
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       // Load Content Manager
-      var contentManager = serviceProvider.GetRequiredService<ContentManager>();
+      var contentManager = serviceProvider.GetRequiredService<IContentManagerContainer>();
 
       // Add Fonts
-      serviceProvider.AddSpriteFont("Default", contentManager.Load<SpriteFont>("TestFont"));
-      var fontTexture = contentManager.Load<Texture2D>("Bitmap-Font");
+      serviceProvider.AddSpriteFont("Default", contentManager.Load<ISpriteFontContainer>("TestFont"));
+      var fontTexture = contentManager.Load<ITexture2DContainer>("Bitmap-Font");
       serviceProvider.AddTextureFont("Default", new TextureFont(fontTexture, 3, 24));
 
       // Add Views

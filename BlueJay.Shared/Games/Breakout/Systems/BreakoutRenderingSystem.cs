@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using BlueJay.Core;
 using BlueJay.Common.Addons;
 using BlueJay.Component.System;
+using BlueJay.Core.Containers;
 
 namespace BlueJay.Shared.Games.Breakout.Systems
 {
@@ -18,7 +19,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// The sprite batch to draw to the screen extensions
@@ -60,7 +61,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="layers">The layers we are working with</param>
     /// <param name="service">The current service that represents the game</param>
     /// <param name="batchExtension">The sprite batch to draw to the screen extensions</param>
-    public BreakoutRenderingSystem(SpriteBatch batch, ILayerCollection layers, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension)
+    public BreakoutRenderingSystem(ISpriteBatchContainer batch, ILayerCollection layers, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension)
     {
       _batch = batch;
       _layers = layers;

@@ -2,6 +2,7 @@
 using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
+using BlueJay.Core.Containers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace BlueJay.Common.Systems
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <inheritdoc />
     public AddonKey Key => KeyHelper.Create<PositionAddon, TextureAddon>();
@@ -30,7 +31,7 @@ namespace BlueJay.Common.Systems
     /// the renderer for drawing
     /// </summary>
     /// <param name="batch">The sprite batch to draw to the screen</param>
-    public RenderingSystem(SpriteBatch batch)
+    public RenderingSystem(ISpriteBatchContainer batch)
     {
       _batch = batch;
     }

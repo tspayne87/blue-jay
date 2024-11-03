@@ -1,4 +1,5 @@
 ﻿using BlueJay.Core;
+using BlueJay.Core.Containers;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ namespace BlueJay.Component.System.Interfaces
     /// <summary>
     /// The global list of sprite fonts
     /// </summary>
-    Dictionary<string, SpriteFont> SpriteFonts { get; }
+    Dictionary<string, ISpriteFontContainer> SpriteFonts { get; }
 
     /// <summary>
     /// The global list of texture fonts

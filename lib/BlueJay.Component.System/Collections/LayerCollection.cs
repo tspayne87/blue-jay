@@ -86,7 +86,11 @@ namespace BlueJay.Component.System.Collections
     public int IndexOf(ILayer item) => _collection.IndexOf(item);
 
     /// <inheritdoc />
-    public void Insert(int index, ILayer item) => _collection.Insert(index, item);
+    public void Insert(int index, ILayer item)
+    {
+      _collection.Insert(index, item);
+      Sort();
+    }
 
     /// <inheritdoc />
     public void RemoveAt(int index) => _collection.RemoveAt(index);

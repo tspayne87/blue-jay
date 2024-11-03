@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Xunit;
 
 namespace BlueJay.Core.Test
@@ -51,6 +52,15 @@ namespace BlueJay.Core.Test
       var square = new Size(10);
       Assert.Equal(new Size(10), square);
       Assert.NotEqual(new Size(10, 5), square);
+
+      Assert.True(new Size(10) == square);
+      Assert.True(new Size(10, 5) != square);
+
+      Assert.True(square.Equals(new Size(10)));
+      Assert.True(square.Equals((object)new Size(10)));
+      Assert.False(square.Equals(5));
+
+      Assert.Equal(square.Width.GetHashCode() + square.Height.GetHashCode(), square.GetHashCode());
     }
 
     [Fact]
@@ -69,6 +79,9 @@ namespace BlueJay.Core.Test
       Assert.Equal(new Size(100, 50), square * new Size(10, 5));
       Assert.Equal(new Size(1, 2), square / new Size(10, 5));
       Assert.Equal(new Size(1, 2), square % new Size(3, 4));
+
+      Assert.Throws<DivideByZeroException>(() => square / Size.Empty);
+      Assert.Throws<DivideByZeroException>(() => square % Size.Empty);
     }
 
     [Fact]

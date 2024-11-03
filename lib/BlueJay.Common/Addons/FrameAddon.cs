@@ -13,6 +13,12 @@ namespace BlueJay.Common.Addons
     public int Frame { get; set; }
 
     /// <summary>
+    /// The current starting frame that is used when loop occurs, this is needed for if multiple animations
+    /// exist in the same file
+    /// </summary>
+    public int StartingFrame { get; set; }
+
+    /// <summary>
     /// The countdown till the next frame tick
     /// </summary>
     public int FrameTick { get; set; }
@@ -33,11 +39,13 @@ namespace BlueJay.Common.Addons
     /// <param name="frameCount">The amount of frames that exist for this entity</param>
     /// <param name="frameTickAmount">The amount of time in milliseconds to switch between frames</param>
     /// <param name="frame">The current frame to start on</param>
-    public FrameAddon(int frameCount, int frameTickAmount, int frame = 0)
+    /// <param name="startingFrame">The frame where we should start when looping occurs</param>
+    public FrameAddon(int frameCount, int frameTickAmount, int frame = 0, int? startingFrame = null)
     {
       Frame = frame;
+      StartingFrame = startingFrame ?? frame;
       FrameTick = frameTickAmount;
-      FrameCount = frameCount;
+      FrameCount = StartingFrame + frameCount;
       FrameTickAmount = frameTickAmount;
     }
 

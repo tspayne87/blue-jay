@@ -23,6 +23,17 @@ namespace BlueJay.Core.Test
 
       Assert.Equal(RectangleSide.Right, RectangleHelper.SideIntersection(new Rectangle(50, 6, 10, 10), wall));
       Assert.Equal(RectangleSide.Right, RectangleHelper.SideIntersection(new Rectangle(50, 44, 10, 10), wall));
+
+      Assert.Equal(RectangleSide.None, RectangleHelper.SideIntersection(new Rectangle(0, 0, 1, 1), wall));
+    }
+
+    [Fact]
+    public void SideIntersectionOutput()
+    {
+      var wall = new Rectangle(5, 5, 50, 50);
+
+      Assert.Equal(RectangleSide.Top, RectangleHelper.SideIntersection(new Rectangle(0, 0, 10, 10), wall, out var intersection));
+      Assert.Equal(new Rectangle(5, 5, 5, 5), intersection);
     }
 
     [Fact]

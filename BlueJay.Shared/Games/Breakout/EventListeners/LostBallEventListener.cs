@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using BlueJay.Common.Addons;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Container;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -72,7 +73,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
 
         if (_service.Balls >= 0)
         {
-          _provider.AddBall(_contentManager.Load<Texture2D>("Circle"));
+          _provider.AddBall(_contentManager.Load<ITexture2DContainer>("Circle"));
         }
       }
     }

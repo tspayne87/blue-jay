@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using BlueJay.Common.Addons;
+using BlueJay.Core.Container;
 
 namespace BlueJay.Shared.Games.Breakout.Factories
 {
@@ -17,7 +18,7 @@ namespace BlueJay.Shared.Games.Breakout.Factories
     /// <param name="provider">The service provider we need to add the entities and systems to</param>
     /// <param name="texture">The ball texture that should be used</param>
     /// <returns>The entity that was created</returns>
-    public static IEntity AddBall(this IServiceProvider provider, Texture2D texture)
+    public static IEntity AddBall(this IServiceProvider provider, ITexture2DContainer texture)
     {
       var entity = provider.AddEntity(LayerNames.BallLayer);
       entity.Add(new BoundsAddon(0, 0, 9, 9));

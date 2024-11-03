@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BlueJay.Core.Container;
+using BlueJay.Core.Containers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -12,22 +14,22 @@ namespace BlueJay.Core
     /// <summary>
     /// The current pixel that should be used to render rectangles
     /// </summary>
-    private readonly Texture2D _pixel;
+    private readonly ITexture2DContainer _pixel;
 
     /// <summary>
     /// The current sprit batch we are rendering too
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// Constructor method to build out the renderer
     /// </summary>
     /// <param name="graphics">The graphics device to create a rectangle from</param>
     /// <param name="batch">The sprite batch that will be used to render stuff to the screen</param>
-    public SpriteBatchExtension(GraphicsDevice graphics, SpriteBatch batch)
+    public SpriteBatchExtension(IGraphicsDeviceContainer graphicsContainer, ISpriteBatchContainer batch)
     {
       _batch = batch;
-      _pixel = graphics.CreateRectangle(1, 1, Color.White);
+      _pixel = graphicsContainer.CreateRectangle(1, 1, Color.White);
     }
 
     /// <summary>

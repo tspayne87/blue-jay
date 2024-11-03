@@ -66,7 +66,7 @@ namespace BlueJay.Component.System
     /// </summary>
     /// <param name="id">The id for the layer</param>
     /// <param name="weight">The current weight of the layer</param>
-    public Layer(string id, int weight, IServiceProvider provider)
+    public Layer(string id, int weight)
     {
       Id = id;
       Weight = weight;

@@ -1,6 +1,7 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Containers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,7 +16,7 @@ namespace BlueJay.Common.Systems
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// The global fonts that will be used to render on the screen
@@ -44,7 +45,7 @@ namespace BlueJay.Common.Systems
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="fonts">The font collection</param>
     /// <param name="fontKey">The font key we need to use</param>
-    public DebugSystem(SpriteBatch batch, IFontCollection fonts, string fontKey)
+    public DebugSystem(ISpriteBatchContainer batch, IFontCollection fonts, string fontKey)
     {
       _batch = batch;
       _fontKey = fontKey;

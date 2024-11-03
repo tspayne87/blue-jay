@@ -168,8 +168,19 @@ namespace BlueJay.Component.System
     /// <returns>Will return the next bit for the type</returns>
     private static AddonKey NextKey()
     {
+      var result = _nextKey;
       _nextKey = _nextKey.IncrementKey();
-      return _nextKey;
+      return result;
+    }
+
+    /// <summary>
+    /// Internal method meant to be used by unit tests to set key values so that edge cases can be tests
+    /// </summary>
+    /// <param name="key">The current key to be set as</param>
+    internal static void SetNext(AddonKey key)
+    {
+      _nextKey = key;
+      _cache.Clear();
     }
   }
 }
