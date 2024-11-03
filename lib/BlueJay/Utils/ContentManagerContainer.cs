@@ -1,4 +1,8 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using BlueJay.Core;
+using BlueJay.Core.Container;
+using BlueJay.Core.Containers;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +22,12 @@ namespace BlueJay.Utils
 
     /// <inheritdoc />
     public T Load<T>(string assetName)
-      => _content.Load<T>(assetName);
+    {
+      if (typeof(T) == typeof(ITexture2DContainer))
+        return (T)_content.Load<Texture2D>(assetName).AsContainer();
+      if (typeof(T) == typeof(ISpriteFontContainer))
+        return (T)_content.Load<SpriteFont>(assetName).AsContainer();
+      return _content.Load<T>(assetName);
+    }
   }
 }

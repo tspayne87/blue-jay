@@ -3,6 +3,7 @@ using BlueJay.Component.System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
+using BlueJay.Core.Containers;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
@@ -26,7 +27,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// The global sprite font that should be used
@@ -40,7 +41,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="fonts">The global sprite font that should be used</param>
-    public UITextUIUpdateEventListener(ILayerCollection layers, GraphicsDevice graphics, SpriteBatch batch, IFontCollection fonts)
+    public UITextUIUpdateEventListener(ILayerCollection layers, GraphicsDevice graphics, ISpriteBatchContainer batch, IFontCollection fonts)
     {
       _layers = layers;
       _batch = batch;
@@ -120,7 +121,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
               _batch.End();
               _graphics.SetRenderTarget(null);
 
-              ta.Texture = target;
+              ta.Texture = target.AsContainer();
             }
 
             entity.Update(sa);

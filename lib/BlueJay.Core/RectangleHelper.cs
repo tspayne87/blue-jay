@@ -15,14 +15,7 @@ namespace BlueJay.Core
     /// <returns>Will return a side that was hit or none if nothing was hit or if we are inside the rectangle</returns>
     public static RectangleSide SideIntersection(Rectangle self, Rectangle target)
     {
-      var check = Rectangle.Intersect(self, target);
-
-      if (check == Rectangle.Empty) return RectangleSide.None;
-      if (check.Y == target.Y) return RectangleSide.Top;
-      else if (check.Y + check.Height == target.Y + target.Height) return RectangleSide.Bottom;
-      else if (check.X == target.X) return RectangleSide.Left;
-      else if (check.X + check.Width == target.X + target.Width) return RectangleSide.Right;
-      return RectangleSide.None;
+      return SideIntersection(self, target, out var _);
     }
 
     /// <summary>

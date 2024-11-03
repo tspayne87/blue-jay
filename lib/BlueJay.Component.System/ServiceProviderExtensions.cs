@@ -1,5 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
+using BlueJay.Core.Containers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -43,7 +44,7 @@ namespace BlueJay.Component.System
     /// <param name="provider">The view provider we will use to find the collection and build out the object with</param>
     /// <param name="key">The key to use for this font lookup</param>
     /// <param name="font">The font we are anting to save globally</param>
-    public static void AddSpriteFont(this IServiceProvider provider, string key, SpriteFont font)
+    public static void AddSpriteFont(this IServiceProvider provider, string key, ISpriteFontContainer font)
     {
       provider.GetRequiredService<IFontCollection>()
         .SpriteFonts[key] = font;

@@ -83,6 +83,7 @@ namespace BlueJay
       _serviceCollection.AddSingleton<IContentManagerContainer, ContentManagerContainer>();
       _serviceCollection.AddBlueJayEvents();
       _serviceCollection.AddBlueJaySystem();
+      _serviceCollection.AddBlueJayCore();
       _serviceCollection.AddBlueJay();
 
       // Add scoped collection that is meant to track what happens in views
@@ -139,7 +140,7 @@ namespace BlueJay
     }
 
     /// <inheritdoc />
-    protected override void OnExiting(object sender, EventArgs args)
+    protected override void OnExiting(object sender, ExitingEventArgs args)
     {
       _serviceProvider?.GetRequiredService<IViewCollection>()
         .Current?.Exit();

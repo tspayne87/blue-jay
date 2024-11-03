@@ -1,6 +1,7 @@
 ﻿using BlueJay.Component.System;
 using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
+using BlueJay.Core.Containers;
 using BlueJay.Core.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +17,7 @@ namespace BlueJay.Common.Systems
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// The delta service that is meant to be updated every frame
@@ -65,7 +66,7 @@ namespace BlueJay.Common.Systems
     /// <param name="deltaService">The current delta that gets updated every frame</param>
     /// <param name="fontKey">The key for creating the font key</param>
     /// <param name="fonts">The fonts collection that we should look up sprite fonts</param>
-    public FPSSystem(SpriteBatch batch, IDeltaService deltaService, IFontCollection fonts, string fontKey)
+    public FPSSystem(ISpriteBatchContainer batch, IDeltaService deltaService, IFontCollection fonts, string fontKey)
     {
       _batch = batch;
       _deltaService = deltaService;

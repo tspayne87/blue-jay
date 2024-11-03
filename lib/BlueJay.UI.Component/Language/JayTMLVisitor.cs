@@ -2,6 +2,7 @@
 using System.Reflection;
 using Antlr4.Runtime.Misc;
 using BlueJay.Core;
+using BlueJay.Core.Container;
 using BlueJay.UI.Component.Elements;
 using BlueJay.UI.Component.Elements.Attributes;
 using BlueJay.UI.Component.Nodes;
@@ -441,7 +442,7 @@ namespace BlueJay.UI.Component.Language
           var assetName = expression.Callback(c, evt, r) as string;
           if (assetName == null)
             throw new ArgumentNullException(nameof(assetName));
-          return new NinePatch(_content.Load<Texture2D>(assetName));
+          return new NinePatch(_content.Load<ITexture2DContainer>(assetName));
         }
         if (toProp.IsEnum)
         {

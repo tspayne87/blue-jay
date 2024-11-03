@@ -1,6 +1,7 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System;
 using BlueJay.Core;
+using BlueJay.Core.Containers;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
@@ -22,7 +23,7 @@ namespace BlueJay.UI.Events.EventListeners
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// Extensions for the sprite batch
@@ -35,7 +36,7 @@ namespace BlueJay.UI.Events.EventListeners
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="batchExtension">Extensions for the sprite batch</param>
-    public UIStyleUpdateEventListener(GraphicsDevice graphics, SpriteBatch batch, SpriteBatchExtension batchExtension)
+    public UIStyleUpdateEventListener(GraphicsDevice graphics, ISpriteBatchContainer batch, SpriteBatchExtension batchExtension)
     {
       _graphics = graphics;
       _batch = batch;
@@ -79,7 +80,7 @@ namespace BlueJay.UI.Events.EventListeners
             _graphics.SetRenderTarget(null);
 
             sa.StyleUpdates++;
-            ta.Texture = target;
+            ta.Texture = target.AsContainer();
           }
 
           evt.Data.Entity.Update(sa);

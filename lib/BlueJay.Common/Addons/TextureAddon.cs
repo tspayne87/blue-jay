@@ -1,5 +1,5 @@
 ﻿using BlueJay.Component.System.Interfaces;
-using Microsoft.Xna.Framework.Graphics;
+using BlueJay.Core.Container;
 
 namespace BlueJay.Common.Addons
 {
@@ -11,13 +11,13 @@ namespace BlueJay.Common.Addons
     /// <summary>
     /// The current texture that has been loaded for the manager
     /// </summary>
-    public Texture2D Texture { get; set; }
+    public ITexture2DContainer Texture { get; set; }
 
     /// <summary>
     /// Constructor meant to set the texture for this addon
     /// </summary>
     /// <param name="texture">The texture that should be set</param>
-    public TextureAddon(Texture2D texture)
+    public TextureAddon(ITexture2DContainer texture)
     {
       Texture = texture;
     }
@@ -29,7 +29,7 @@ namespace BlueJay.Common.Addons
     /// <returns>Will return a debug string</returns>
     public override string ToString()
     {
-      return $"Texture | {Texture.Name}";
+      return $"Texture | {Texture.Current?.Name}";
     }
   }
 }

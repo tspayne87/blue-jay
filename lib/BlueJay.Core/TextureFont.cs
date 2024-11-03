@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BlueJay.Core.Container;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,7 +16,7 @@ namespace BlueJay.Core
     /// <summary>
     /// The texture of the font face
     /// </summary>
-    private readonly Texture2D _texture;
+    private readonly ITexture2DContainer _container;
 
     /// <summary>
     /// The rows that exist in the texture for the font face
@@ -35,17 +36,17 @@ namespace BlueJay.Core
     /// <summary>
     /// The current width of the font face
     /// </summary>
-    public int Width => _texture.Width / _cols;
+    public int Width => _container.Width / _cols;
 
     /// <summary>
     /// The current height of the font face
     /// </summary>
-    public int Height => _texture.Height / _rows;
+    public int Height => _container.Height / _rows;
 
     /// <summary>
     /// The texture for the font face
     /// </summary>
-    public Texture2D Texture => _texture;
+    public ITexture2DContainer Texture => _container;
 
     /// <summary>
     /// Constructor of the sprite font to build out a way to render a sprite as a font
@@ -54,9 +55,9 @@ namespace BlueJay.Core
     /// <param name="rows">The rows that exist in the texture</param>
     /// <param name="cols">The columns that exist in the texture</param>
     /// <param name="alphabet">The alphabet that exists in the texture</param>
-    public TextureFont(Texture2D texture, int rows, int cols, string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()/.,';\\][=-?><\":|}{+_`")
+    public TextureFont(ITexture2DContainer container, int rows, int cols, string alphabet = "abcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()/.,';\\][=-?><\":|}{+_`")
     {
-      _texture = texture;
+      _container = container;
       _rows = rows;
       _cols = cols;
       _alphabet = alphabet;

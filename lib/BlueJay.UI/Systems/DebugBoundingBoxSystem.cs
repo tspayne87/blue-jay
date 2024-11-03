@@ -2,6 +2,7 @@
 using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
+using BlueJay.Core.Containers;
 using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,7 +14,7 @@ namespace BlueJay.UI.Systems
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
-    private readonly SpriteBatch _batch;
+    private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
     /// Extensions to the sprite batch to draw to the screen basic objects
@@ -38,7 +39,7 @@ namespace BlueJay.UI.Systems
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="batchExtension">Extensions to the sprite batch to draw to the screen basic objects</param>
     /// <param name="fonts">The font collection need to render stuff to the screen</param>
-    public DebugBoundingBoxSystem(SpriteBatch batch, SpriteBatchExtension batchExtension, IFontCollection fonts)
+    public DebugBoundingBoxSystem(ISpriteBatchContainer batch, SpriteBatchExtension batchExtension, IFontCollection fonts)
     {
       _batch = batch;
       _batchExtensions = batchExtension;

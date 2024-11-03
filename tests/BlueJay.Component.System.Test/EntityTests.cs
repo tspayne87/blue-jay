@@ -3,12 +3,19 @@ using BlueJay.Component.System.Events;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events.Interfaces;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Moq;
 
 namespace BlueJay.Component.System.Test
 {
+  [Collection("KeyHelper Tests")]
   public class EntityTests
   {
+    public EntityTests()
+    {
+      KeyHelper.SetNext(AddonKey.One);
+    }
+
     [Fact]
     public void AddAddon()
     {
@@ -30,6 +37,8 @@ namespace BlueJay.Component.System.Test
 
       var pa = entity.GetAddon<PositionAddon>();
       Assert.Equal(vector, pa.Position);
+
+      Assert.False(entity.Add(new PositionAddon(vector)));
     }
 
     [Fact]
@@ -52,6 +61,17 @@ namespace BlueJay.Component.System.Test
       layer.Verify(x => x.UpdateAddonTree(entity));
       events.Verify(x => x.DispatchEvent(It.IsAny<RemoveAddonEvent>(), entity));
       Assert.False(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
+
+      var pa = new PositionAddon(vector);
+      Assert.True(entity.Add(pa));
+      Assert.True(entity.Add(new SizeAddon(10, 10)));
+
+      Assert.True(entity.Remove(pa));
+      Assert.False(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
+      Assert.True(entity.MatchKey(KeyHelper.Create<SizeAddon>()));
+
+      /// Try to remove it again
+      Assert.False(entity.Remove(pa));
     }
 
     [Fact]
@@ -77,6 +97,9 @@ namespace BlueJay.Component.System.Test
 
       pa = entity.GetAddon<PositionAddon>();
       Assert.Equal(vector * 2, pa.Position);
+
+      var sa = new SizeAddon(10, 10);
+      Assert.False(entity.Update(sa));
     }
 
     [Fact]
@@ -107,6 +130,11 @@ namespace BlueJay.Component.System.Test
 
       pa = entity.GetAddon<PositionAddon>();
       Assert.Equal(vector * 2, pa.Position);
+
+      Assert.True(entity.Upsert(new SizeAddon(10, 5)));
+      var sa = entity.GetAddon<SizeAddon>();
+      Assert.Equal(10, sa.Size.Width);
+      Assert.Equal(5, sa.Size.Height);
     }
 
     [Fact]
@@ -154,6 +182,36 @@ namespace BlueJay.Component.System.Test
       Assert.True(entity.TryGetAddon<PositionAddon>(out var pa));
       Assert.Equal(vector, pa.Position);
       Assert.False(entity.TryGetAddon<DebugAddon>(out var da));
+    }
+
+    [Fact]
+    public void Contains()
+    {
+      var layers = new Mock<ILayerCollection>();
+      var events = new Mock<IEventQueue>();
+
+      var entity = new Entity(layers.Object, events.Object);
+
+      Assert.True(entity.Add(new BoundsAddon(10, 10, 10, 10)));
+      Assert.True(entity.Add(new ColorAddon(Color.Red)));
+      Assert.True(entity.Add(new DebugAddon(KeyHelper.Create<BoundsAddon>())));
+      Assert.True(entity.Add(new FrameAddon(1, 1, 1)));
+      Assert.True(entity.Add(new PositionAddon(Vector2.Zero)));
+      Assert.True(entity.Add(new SizeAddon(10, 10)));
+      Assert.True(entity.Add(new SpriteEffectsAddon(SpriteEffects.None)));
+      Assert.True(entity.Add(new SpriteSheetAddon(10, 10)));
+      Assert.True(entity.Add(new VelocityAddon(Vector2.Zero)));
+
+      Assert.True(entity.Contains<BoundsAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon, PositionAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon, PositionAddon, SizeAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon, PositionAddon, SizeAddon, SpriteEffectsAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon, PositionAddon, SizeAddon, SpriteEffectsAddon, SpriteSheetAddon>());
+      Assert.True(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon, PositionAddon, SizeAddon, SpriteEffectsAddon, SpriteSheetAddon, VelocityAddon>());
+      Assert.False(entity.Contains<BoundsAddon, ColorAddon, DebugAddon, FrameAddon, PositionAddon, SizeAddon, SpriteEffectsAddon, SpriteSheetAddon, VelocityAddon, TextureAddon>());
     }
   }
 }

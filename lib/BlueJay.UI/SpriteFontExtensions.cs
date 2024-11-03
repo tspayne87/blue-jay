@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using BlueJay.Core.Containers;
+using Microsoft.Xna.Framework.Graphics;
 using System.Text.RegularExpressions;
 
 namespace BlueJay.UI
@@ -15,14 +16,14 @@ namespace BlueJay.UI
     /// <param name="str">The current string we want to fit in the width space</param>
     /// <param name="width">The width space we are fitting the string into</param>
     /// <returns>Will return the fitted string for the space it is in</returns>
-    public static string FitString(this SpriteFont font, string str, int width)
+    public static string FitString(this ISpriteFontContainer container, string str, int width)
     {
       var lines = new List<string>();
       var result = string.Empty;
       var matches = new Regex(@"([^\s]+)(\s*)").Matches(str);
       foreach(Match match in matches)
       {
-        if (font.MeasureString(result + match.Groups[1].Value).X > width)
+        if (container.MeasureString(result + match.Groups[1].Value).X > width)
         {
           if (!string.IsNullOrEmpty(result))
             lines.Add(result);
@@ -37,7 +38,7 @@ namespace BlueJay.UI
         {
           for (var i = 0; i < match.Groups[2].Value.Length; ++i)
           {
-            if (font.MeasureString(result + match.Groups[2].Value[i]).X > width)
+            if (container.MeasureString(result + match.Groups[2].Value[i]).X > width)
             {
               if (!string.IsNullOrEmpty(result))
                 lines.Add(result);
