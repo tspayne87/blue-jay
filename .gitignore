@@ -70,6 +70,7 @@ dist
 # Build Processes
 VersionScript
 
+documentation.md
 PackNuget.ps1
 ReleaseNuget.ps1
 TestNuget.ps1
