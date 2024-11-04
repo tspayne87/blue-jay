@@ -10,7 +10,8 @@
     <PackageTags>MonoGame</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://bluejaycs.org/</PackageProjectUrl>
-  
+    <RepositoryUrl>https://github.com/tspayne87/blue-jay</RepositoryUrl>
+    <PackageReadmeFile>../../README.md</PackageReadmeFile>
 </PropertyGroup>
 
   <ItemGroup>
