@@ -25,7 +25,7 @@ namespace BlueJay.Component.System.Test.Collections
       var layers = new LayerCollection(serviceMock.Object);
       Assert.Empty(layers);
 
-      layers.Add(new Entity(layers, eventMock.Object));
+      layers.Add(new Entity(eventMock.Object));
       Assert.Single(layers);
       Assert.NotNull(layers[string.Empty]);
       Assert.Single(layers[string.Empty]!);
@@ -60,7 +60,7 @@ namespace BlueJay.Component.System.Test.Collections
         .Returns(serviceMock.Object);
 
       var layers = new LayerCollection(serviceMock.Object);
-      var entity = new Entity(layers, eventMock.Object);
+      var entity = new Entity(eventMock.Object);
       Assert.Empty(layers);
 
       layers.Add(entity);

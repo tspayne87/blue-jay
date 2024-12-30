@@ -1,67 +1,55 @@
 ﻿using BlueJay.Common.Addons;
-using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
-using BlueJay.Core;
 using BlueJay.Core.Containers;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace BlueJay.Common.Systems
 {
   /// <summary>
   /// Basic rendering system to draw a texture at a position
   /// </summary>
-  public class RenderingSystem : IDrawSystem, IDrawEntitySystem, IDrawEndSystem
+  public class RenderingSystem : IDrawSystem
   {
     /// <summary>
     /// The sprite batch to draw to the screen
     /// </summary>
     private readonly ISpriteBatchContainer _batch;
 
-    /// <inheritdoc />
-    public AddonKey Key => KeyHelper.Create<PositionAddon, TextureAddon>();
-
-    /// <inheritdoc />
-    public List<string> Layers => new List<string>();
+    /// <summary>
+    /// The query to get the entities that should be rendered on the screen
+    /// </summary>
+    private readonly IQuery<PositionAddon, TextureAddon> _entities;
 
     /// <summary>
     /// Constructor method is meant to build out the renderer system and inject
     /// the renderer for drawing
     /// </summary>
     /// <param name="batch">The sprite batch to draw to the screen</param>
-    public RenderingSystem(ISpriteBatchContainer batch)
+    public RenderingSystem(ISpriteBatchContainer batch, IQuery<PositionAddon, TextureAddon> entities)
     {
       _batch = batch;
+      _entities = entities;
     }
 
     /// <inheritdoc />
     public void OnDraw()
     {
       _batch.Begin();
-    }
-
-    /// <inheritdoc />
-    public void OnDraw(IEntity entity)
-    {
-      var pc = entity.GetAddon<PositionAddon>();
-      var tc = entity.GetAddon<TextureAddon>();
-
-      if (tc.Texture != null)
+      foreach (var entity in _entities)
       {
-        var color = entity.TryGetAddon<ColorAddon>(out var ca) ? ca.Color : Color.White;
+        var pc = entity.GetAddon<PositionAddon>();
+        var tc = entity.GetAddon<TextureAddon>();
 
-        if (entity.TryGetAddon<FrameAddon>(out var fa) && entity.TryGetAddon<SpriteSheetAddon>(out var ssa))
-          _batch.DrawFrame(tc.Texture, pc.Position, ssa.Rows, ssa.Cols, fa.Frame, color);
-        else
-          _batch.Draw(tc.Texture, pc.Position, color);
+        if (tc.Texture != null)
+        {
+          var color = entity.TryGetAddon<ColorAddon>(out var ca) ? ca.Color : Color.White;
+
+          if (entity.TryGetAddon<FrameAddon>(out var fa) && entity.TryGetAddon<SpriteSheetAddon>(out var ssa))
+            _batch.DrawFrame(tc.Texture, pc.Position, ssa.Rows, ssa.Cols, fa.Frame, color);
+          else
+            _batch.Draw(tc.Texture, pc.Position, color);
+        }
       }
-    }
-
-    /// <inheritdoc />
-    public void OnDrawEnd()
-    {
       _batch.End();
     }
   }

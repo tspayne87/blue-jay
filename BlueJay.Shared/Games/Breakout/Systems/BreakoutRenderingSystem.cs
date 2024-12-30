@@ -1,20 +1,18 @@
 ﻿using BlueJay.Shared.Games.Breakout.Addons;
-using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 using BlueJay.Core;
 using BlueJay.Common.Addons;
-using BlueJay.Component.System;
 using BlueJay.Core.Containers;
+using System.Linq;
 
 namespace BlueJay.Shared.Games.Breakout.Systems
 {
   /// <summary>
   /// Rendering system is meant to render all the elements to the screen every frame
   /// </summary>
-  public class BreakoutRenderingSystem : IDrawSystem, IDrawEntitySystem, IDrawEndSystem
+  public class BreakoutRenderingSystem : IDrawSystem
   {
     /// <summary>
     /// The sprite batch to draw to the screen
@@ -25,11 +23,6 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// The sprite batch to draw to the screen extensions
     /// </summary>
     private readonly SpriteBatchExtension _batchExtension;
-
-    /// <summary>
-    /// The layer collection that has all the entities in the game at the moment
-    /// </summary>
-    private readonly ILayerCollection _layers;
 
     /// <summary>
     /// The game service that is meant to process the different states of the game
@@ -46,11 +39,9 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// </summary>
     private readonly GraphicsDevice _graphics;
 
-    /// <inheritdoc />
-    public AddonKey Key => KeyHelper.Create<TypeAddon, BoundsAddon>();
+    private readonly IQuery<TypeAddon, BoundsAddon> _entities;
 
-    /// <inheritdoc />
-    public List<string> Layers => new List<string>();
+    private readonly IQuery _ballEntities;
 
     /// <summary>
     /// Constructor is meant to inject the renderer into the system for processing
@@ -58,17 +49,20 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="font">The global font</param>
     /// <param name="graphics">The graphics for the screen</param>
-    /// <param name="layers">The layers we are working with</param>
     /// <param name="service">The current service that represents the game</param>
     /// <param name="batchExtension">The sprite batch to draw to the screen extensions</param>
-    public BreakoutRenderingSystem(ISpriteBatchContainer batch, ILayerCollection layers, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension)
+    /// <param name="entities">The entities that we want to process in this system</param>
+    /// <param name="ballEntities">The entities that we want to process in this system</param>
+    public BreakoutRenderingSystem(ISpriteBatchContainer batch, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension, IQuery<TypeAddon, BoundsAddon> entities, IQuery ballEntities)
     {
       _batch = batch;
-      _layers = layers;
       _service = service;
       _font = font;
       _graphics = graphics;
       _batchExtension = batchExtension;
+
+      _entities = entities;
+      _ballEntities = ballEntities.WhereLayer(LayerNames.BallLayer);
     }
 
     /// <inheritdoc />
@@ -77,13 +71,14 @@ namespace BlueJay.Shared.Games.Breakout.Systems
       _batch.Begin();
       // Calculate the text that should exist on the screen
       var txt = string.Empty;
-      if (_layers[LayerNames.BallLayer]?.Count == 0)
+      var balls = _ballEntities.ToList();
+      if (balls.Count == 0)
       {
         txt = $"Game Over\n\nScore: {_service.Score}";
       }
-      else if (_layers[LayerNames.BallLayer]?.Count == 1)
+      else if (balls.Count == 1)
       {
-        var baa = _layers[LayerNames.BallLayer][0].GetAddon<BallActiveAddon>();
+        var baa = balls[0].GetAddon<BallActiveAddon>();
         if (!baa.IsActive)
         {
           txt = $"Round {_service.Round} Start\nPress Space To Start";
@@ -97,38 +92,32 @@ namespace BlueJay.Shared.Games.Breakout.Systems
         var pos = new Vector2((_graphics.Viewport.Width - bounds.X) / 2f, (_graphics.Viewport.Height - bounds.Y) / 2f);
         _batch.DrawString(_font.TextureFonts["Default"], txt, pos, Color.Black);
       }
-    }
 
-    /// <inheritdoc />
-    public void OnDraw(IEntity entity)
-    {
-      var ta = entity.GetAddon<TypeAddon>();
-      var ba = entity.GetAddon<BoundsAddon>();
-
-      switch(ta.Type)
+      foreach (var entity in _entities)
       {
-        case EntityType.Paddle: // Draw the paddle to the screen
-          _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), Color.Blue);
-          break;
-        case EntityType.Ball:
-          { // Load the texture and color of the ball and draw it to the screen
-            var txa = entity.GetAddon<TextureAddon>();
-            var ca = entity.GetAddon<ColorAddon>();
-            _batch.Draw(txa.Texture, new Vector2(ba.Bounds.X, ba.Bounds.Y), ca.Color);
-          }
-          break;
-        case EntityType.Block:
-          { // Load the block index to get the color and draw it to the screen
-            var bia = entity.GetAddon<BlockIndexAddon>();
-            _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), bia.Color);
-          }
-          break;
-      }
-    }
+        var ta = entity.GetAddon<TypeAddon>();
+        var ba = entity.GetAddon<BoundsAddon>();
 
-    /// <inheritdoc />
-    public void OnDrawEnd()
-    {
+        switch (ta.Type)
+        {
+          case EntityType.Paddle: // Draw the paddle to the screen
+            _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), Color.Blue);
+            break;
+          case EntityType.Ball:
+            { // Load the texture and color of the ball and draw it to the screen
+              var txa = entity.GetAddon<TextureAddon>();
+              var ca = entity.GetAddon<ColorAddon>();
+              _batch.Draw(txa.Texture, new Vector2(ba.Bounds.X, ba.Bounds.Y), ca.Color);
+            }
+            break;
+          case EntityType.Block:
+            { // Load the block index to get the color and draw it to the screen
+              var bia = entity.GetAddon<BlockIndexAddon>();
+              _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), bia.Color);
+            }
+            break;
+        }
+      }
       _batch.End();
     }
   }

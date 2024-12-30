@@ -13,23 +13,24 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
   internal class UIBoundsTriggerUIUpdateEventListener : EventListener<UIUpdateEvent>
   {
     /// <summary>
-    /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
-    /// </summary>
-    private readonly ILayerCollection _layers;
-
-    /// <summary>
     /// The current event queue that is being processed
     /// </summary>
     private readonly IEventQueue _eventQueue;
 
     /// <summary>
+    /// The current layer of entities that we are working with
+    /// </summary>
+    private readonly IQuery _query;
+
+    /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
-    /// <param name="layers">The layer collection we are currently working with</param>
-    public UIBoundsTriggerUIUpdateEventListener(ILayerCollection layers, IEventQueue eventQueue)
+    /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
+    /// <param name="query">The current layer of entities that we are working with</param>
+    public UIBoundsTriggerUIUpdateEventListener(IEventQueue eventQueue, IQuery query)
     {
-      _layers = layers;
       _eventQueue = eventQueue;
+      _query = query.WhereLayer(UIStatic.LayerName);
     }
 
     /// <summary>
@@ -38,13 +39,8 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UIUpdateEvent> evt)
     {
-      if (_layers.Contains(UIStatic.LayerName))
-      {
-        var layer = _layers[UIStatic.LayerName];
-        if (layer != null)
-          foreach (var entity in layer.AsSpan())
-            ProcessEntity(entity);
-      }
+      foreach (var entity in _query)
+        ProcessEntity(entity);
     }
 
     /// <summary>

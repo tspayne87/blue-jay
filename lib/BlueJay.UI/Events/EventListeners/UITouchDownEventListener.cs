@@ -11,11 +11,6 @@ namespace BlueJay.UI.Events.EventListeners
   internal class UITouchDownEventListener : EventListener<TouchDownEvent>
   {
     /// <summary>
-    /// The layer collection to grab the UI elements from the screen
-    /// </summary>
-    private readonly ILayerCollection _layers;
-
-    /// <summary>
     /// The event queue that will trigger style update events to rerender the UI entity
     /// </summary>
     private readonly IEventQueue _eventQueue;
@@ -26,16 +21,21 @@ namespace BlueJay.UI.Events.EventListeners
     private readonly UIService _service;
 
     /// <summary>
+    /// The current layer of entities that we are working with
+    /// </summary>
+    private readonly IQuery _query;
+
+    /// <summary>
     /// Constructor to build out the mouse move listener to interact with UI entities
     /// </summary>
-    /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
     /// <param name="service">The UI Service for keeping track of globals</param>
-    public UITouchDownEventListener(ILayerCollection layers, IEventQueue eventQueue, UIService service)
+    /// <param name="query">The current layer of entities that we are working with</param>
+    public UITouchDownEventListener(IEventQueue eventQueue, UIService service, IQuery query)
     {
-      _layers = layers;
       _eventQueue = eventQueue;
       _service = service;
+      _query = query.WhereLayer(UIStatic.LayerName);
     }
 
     /// <summary>
@@ -54,15 +54,10 @@ namespace BlueJay.UI.Events.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<TouchDownEvent> evt)
     {
-      var uiLayer = _layers[UIStatic.LayerName];
-      if (uiLayer == null) return;
-
       // Iterate over all entities so we can find the entity we need to fire the click event on
       IEntity? foundEntity = null;
-      var entities = uiLayer.AsSpan();
-      for (var i = entities.Length - 1; i >= 0; --i)
+      foreach (var entity in _query.Reverse())
       {
-        var entity = entities[i];
         if (entity.Active && Contains(entity, evt.Data.Position))
         {
           foundEntity = entity;

@@ -1,4 +1,5 @@
-﻿using BlueJay.Common.Addons;
+﻿using System.Linq;
+using BlueJay.Common.Addons;
 using BlueJay.Common.Events.Touch;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
@@ -12,17 +13,17 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
   public class TouchMoveEventListener : EventListener<TouchMoveEvent>
   {
     /// <summary>
-    /// The layer collection that has all the entities in the game at the moment
+    /// The current paddles that exist on the system
     /// </summary>
-    private readonly ILayerCollection _layerCollection;
+    private readonly IQuery _query;
 
     /// <summary>
     /// Constructor to inject the scoped items into the listener to handle different process
     /// </summary>
     /// <param name="layerCollection">The layer colllection we are working with</param>
-    public TouchMoveEventListener(ILayerCollection layerCollection)
+    public TouchMoveEventListener(IQuery query)
     {
-      _layerCollection = layerCollection;
+      _query = query.WhereLayer(LayerNames.PaddleLayer);
     }
 
     /// <summary>
@@ -32,9 +33,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<TouchMoveEvent> evt)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
+      var paddle = _query.FirstOrDefault();
+      if (paddle != null)
       {
-        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var ba = paddle.GetAddon<BoundsAddon>();
 
         ba.Bounds.X = (int)evt.Data.Position.X - (ba.Bounds.Width / 2);

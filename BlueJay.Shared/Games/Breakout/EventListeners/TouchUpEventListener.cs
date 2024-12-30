@@ -3,15 +3,16 @@ using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Common.Events.Touch;
+using System.Linq;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
   public class TouchUpEventListener : EventListener<TouchUpEvent>
   {
     /// <summary>
-    /// The layer collection that has all the entities in the game at the moment
+    /// The current ball query to get the ball in the layer
     /// </summary>
-    private readonly ILayerCollection _layerCollection;
+    private readonly IQuery _query;
 
     /// <summary>
     /// The event queue we want to dispatch events too
@@ -23,10 +24,10 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// </summary>
     /// <param name="layerCollection">The layer colllection we are working with</param>
     /// <param name="eventQueue">The entity queue to dispatch events to the game</param>
-    public TouchUpEventListener(ILayerCollection layerCollection, IEventQueue eventQueue)
+    public TouchUpEventListener(IEventQueue eventQueue, IQuery query)
     {
-      _layerCollection = layerCollection;
       _eventQueue = eventQueue;
+      _query = query.WhereLayer(LayerNames.BallLayer);
     }
 
     /// <summary>
@@ -36,9 +37,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<TouchUpEvent> evt)
     {
-      if (_layerCollection[LayerNames.BallLayer].Count == 1)
+      var ball = _query.FirstOrDefault();
+      if (ball != null)
       { // Trigger an event to start the game if the ball is not active
-        var ball = _layerCollection[LayerNames.BallLayer][0];
         var baa = ball.GetAddon<BallActiveAddon>();
         if (!baa.IsActive)
         {

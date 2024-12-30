@@ -11,23 +11,23 @@ namespace BlueJay.UI.Events.EventListeners
   internal class UIMouseDownEventListener : EventListener<MouseDownEvent>
   {
     /// <summary>
-    /// The layer collection to grab the UI elements from the screen
-    /// </summary>
-    private readonly ILayerCollection _layers;
-
-    /// <summary>
     /// The event queue that will trigger style update events to rerender the UI entity
     /// </summary>
     private readonly IEventQueue _eventQueue;
+
+    /// <summary>
+    /// The current query that we are working with
+    /// </summary>
+    private readonly IQuery _query;
 
     /// <summary>
     /// Constructor to build out the mouse move listener to interact with UI entities
     /// </summary>
     /// <param name="layers">The layer collection we are working under</param>
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
-    public UIMouseDownEventListener(ILayerCollection layers, IEventQueue eventQueue)
+    public UIMouseDownEventListener(IEventQueue eventQueue, IQuery query)
     {
-      _layers = layers;
+      _query = query.WhereLayer(UIStatic.LayerName);
       _eventQueue = eventQueue;
     }
 
@@ -47,14 +47,10 @@ namespace BlueJay.UI.Events.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<MouseDownEvent> evt)
     {
-      var uiLayer = _layers[UIStatic.LayerName];
-      if (uiLayer == null) return;
       // Iterate over all entities so we can find the entity we need to fire the click event on
       IEntity? foundEntity = null;
-      var entities = uiLayer.AsSpan();
-      for (var i = entities.Length - 1; i >= 0; --i)
+      foreach (var entity in _query.Reverse())
       {
-        var entity = entities[i];
         if (entity.Active && Contains(entity, evt.Data.Position))
         {
           foundEntity = entity;

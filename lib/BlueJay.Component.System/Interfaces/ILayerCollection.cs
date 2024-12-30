@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BlueJay.Component.System.Interfaces
+﻿namespace BlueJay.Component.System.Interfaces
 {
-  public interface ILayerCollection : IList<ILayer>
+  internal interface ILayerCollection : IList<ILayer>
   {
     /// <summary>
     /// Add an entity to a layer based on the layer type

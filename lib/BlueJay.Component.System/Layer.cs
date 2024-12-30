@@ -1,10 +1,5 @@
-﻿using BlueJay.Component.System.Collections;
-using BlueJay.Component.System.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using BlueJay.Component.System.Interfaces;
 using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace BlueJay.Component.System

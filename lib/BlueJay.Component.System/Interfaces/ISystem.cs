@@ -8,15 +8,5 @@ namespace BlueJay.Component.System.Interfaces
   /// </summary>
   public interface ISystem
   {
-    /// <summary>
-    /// The current addon key that is meant to act as a selector for the Draw/Update
-    /// methods with entities
-    /// </summary>
-    AddonKey Key { get; }
-
-    /// <summary>
-    /// The current layers that this system should be attached to
-    /// </summary>
-    List<string> Layers { get; }
   }
 }

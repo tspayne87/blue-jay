@@ -107,5 +107,14 @@ namespace BlueJay.Core.Containers
     /// <param name="position">The position of the rectangle</param>
     /// <param name="color">The color of the rectangle</param>
     void DrawNinePatch(NinePatch ninePatch, int width, int height, Vector2 position, Color color);
+
+    /// <summary>
+    /// Method is meant to draw a line from point a to point b
+    /// </summary>
+    /// <param name="pointA">The first point to draw a line from</param>
+    /// <param name="pointB">The second point to draw a line to</param>
+    /// <param name="weight">The current weight of the line being drawn</param>
+    /// <param name="color">The color of the line being drawn</param>
+    void DrawLine(Vector2 pointA, Vector2 pointB, int weight, Color color);
   }
 }

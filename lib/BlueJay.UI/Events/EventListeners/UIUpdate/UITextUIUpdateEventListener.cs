@@ -1,6 +1,5 @@
 ﻿using BlueJay.Common.Addons;
 using BlueJay.Component.System;
-using BlueJay.Component.System.Collections;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Core.Containers;
@@ -20,9 +19,9 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     private readonly GraphicsDevice _graphics;
 
     /// <summary>
-    /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
+    /// The current layer of entities that we are working with
     /// </summary>
-    private readonly ILayerCollection _layers;
+    private readonly IQuery _query;
 
     /// <summary>
     /// The sprite batch to draw to the screen
@@ -37,16 +36,16 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
-    /// <param name="layers">The layer collection we are currently working with</param>
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="batch">The sprite batch to draw to the screen</param>
     /// <param name="fonts">The global sprite font that should be used</param>
-    public UITextUIUpdateEventListener(ILayerCollection layers, GraphicsDevice graphics, ISpriteBatchContainer batch, IFontCollection fonts)
+    /// <param name="query">The current layer of entities that we are working with</param>
+    public UITextUIUpdateEventListener(GraphicsDevice graphics, ISpriteBatchContainer batch, IFontCollection fonts, IQuery query)
     {
-      _layers = layers;
       _batch = batch;
       _graphics = graphics;
       _fonts = fonts;
+      _query = query.WhereLayer(UIStatic.LayerName);
     }
 
 
@@ -56,13 +55,8 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UIUpdateEvent> evt)
     {
-      if (_layers.Contains(UIStatic.LayerName))
-      {
-        var layer = _layers[UIStatic.LayerName];
-        if (layer != null)
-          foreach (var entity in layer.AsSpan())
-            ProcessEntity(entity);
-      }
+      foreach (var entity in _query)
+        ProcessEntity(entity);
     }
 
     /// <summary>

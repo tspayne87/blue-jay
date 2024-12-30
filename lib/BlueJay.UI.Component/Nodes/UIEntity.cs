@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.UI.Addons;
 
 namespace BlueJay.UI.Component.Nodes
@@ -11,9 +12,9 @@ namespace BlueJay.UI.Component.Nodes
   internal class UIEntity : IDisposable
   {
     /// <summary>
-    /// The layer collection meant to allow to remove this entity when the ui element is disposed
+    /// The service provider meant to remove entities from the system
     /// </summary>
-    private readonly ILayerCollection? _layers;
+    private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// The stored entity for the UIElement
@@ -128,13 +129,12 @@ namespace BlueJay.UI.Component.Nodes
     /// <summary>
     /// Basic constructor to build out the UI element
     /// </summary>
-    /// <param name="layers">The layer collection meant to allow to remove this entity when the ui element is disposed</param>
     /// <param name="node">The current node this element was generated from</param>
     /// <param name="entity">The current entity owned by this ui element</param>
     /// <param name="disposables">The list of listeners we want to dispose of when this element is disposed, this is mainly connections to reactive properties</param>
-    public UIEntity(ILayerCollection layers, Node node, IEntity entity, List<IDisposable> disposables)
+    public UIEntity(IServiceProvider provider, Node node, IEntity entity, List<IDisposable> disposables)
     {
-      _layers = layers;
+      _serviceProvider = provider;
 
       Node = node;
       _entity = entity;
@@ -176,7 +176,7 @@ namespace BlueJay.UI.Component.Nodes
           foreach (var child in Children)
             child.Dispose();
 
-          if (_layers != null && Entity != null)
+          if (_serviceProvider != null && Entity != null)
           {
             var la = Entity.GetAddon<LineageAddon>();
             if (la.Parent != null)
@@ -185,8 +185,7 @@ namespace BlueJay.UI.Component.Nodes
               pla.Children.Remove(Entity);
               la.Parent.Update(pla);
             }
-
-            _layers.Remove(Entity);
+            _serviceProvider.RemoveEntity(Entity);
           }
 
           foreach (var item in Disposables)

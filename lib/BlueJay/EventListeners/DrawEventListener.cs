@@ -13,11 +13,6 @@ namespace BlueJay.EventListeners
   internal class DrawEventListener : EventListener<DrawEvent>
   {
     /// <summary>
-    /// The current layer collection
-    /// </summary>
-    private readonly ILayerCollection _layerCollection;
-
-    /// <summary>
     /// The list of systems that have been set to be drawable
     /// </summary>
     private readonly DrawableSystemCollection _systems;
@@ -25,11 +20,9 @@ namespace BlueJay.EventListeners
     /// <summary>
     /// Constructor to build out the update event
     /// </summary>
-    /// <param name="layerCollection">The entity collection we are working with</param>
     /// <param name="systems">The list of systems that have been set to be drawable</param>
-    public DrawEventListener(ILayerCollection layerCollection, DrawableSystemCollection systems)
+    public DrawEventListener(DrawableSystemCollection systems)
     {
-      _layerCollection = layerCollection;
       _systems = systems;
     }
 
@@ -40,40 +33,8 @@ namespace BlueJay.EventListeners
     public override void Process(IEvent<DrawEvent> evt)
     {
       foreach (var system in CollectionsMarshal.AsSpan(_systems))
-      {
-        if (!(system is IDrawEntitySystem))
-        {
-          if (system is IDrawSystem)
-            ((IDrawSystem)system).OnDraw();
-
-          if (system is IDrawEndSystem)
-            ((IDrawEndSystem)system).OnDrawEnd();
-        }
-      }
-
-      foreach (var layer in _layerCollection.AsSpan())
-      {
-        foreach (var system in CollectionsMarshal.AsSpan(_systems))
-        {
-          if (system is IDrawEntitySystem)
-          {
-            if (system is IDrawSystem)
-              ((IDrawSystem)system).OnDraw();
-            if (system.Key != AddonKey.None && (system.Layers.Count == 0 || system.Layers.Contains(layer.Id)))
-            {
-              foreach (var entity in layer.GetByKey(system.Key))
-              {
-                if (entity.Active)
-                {
-                  ((IDrawEntitySystem)system).OnDraw(entity);
-                }
-              }
-            }
-            if (system is IDrawEndSystem)
-              ((IDrawEndSystem)system).OnDrawEnd();
-          }
-        }
-      }
+        if (system is IDrawSystem)
+          ((IDrawSystem)system).OnDraw();
     }
   }
 }

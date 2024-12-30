@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BlueJay.Core.Container;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay.Core
 {
@@ -104,7 +100,7 @@ namespace BlueJay.Core
       {
         if (MeasureString(result + match.Groups[1].Value, size).X > width)
         {
-          if (!string.IsNullOrEmpty(result))
+          if (!string.IsNullOrWhiteSpace(result))
             lines.Add(result);
           result = match.Groups[1].Value;
         }
@@ -113,13 +109,13 @@ namespace BlueJay.Core
           result += match.Groups[1].Value;
         }
 
-        if (!string.IsNullOrEmpty(match.Groups[2].Value))
+        if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))
         {
           for (var i = 0; i < match.Groups[2].Value.Length; ++i)
           {
             if (MeasureString(result + match.Groups[2].Value[i], size).X > width)
             {
-              if (!string.IsNullOrEmpty(result))
+              if (!string.IsNullOrWhiteSpace(result))
                 lines.Add(result);
               result = match.Groups[2].Value[i].ToString();
             }
@@ -130,7 +126,7 @@ namespace BlueJay.Core
           }
         }
       }
-      if (result.Length > 0)
+      if (!string.IsNullOrWhiteSpace(result))
         lines.Add(result);
       return string.Join("\n", lines);
     }

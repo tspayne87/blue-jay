@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using BlueJay.Common.Addons;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Common.Events.Keyboard;
+using System.Linq;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -16,9 +17,14 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
   public class KeyboardPressEventListener : EventListener<KeyboardPressEvent>
   {
     /// <summary>
-    /// The layer collection that has all the entities in the game at the moment
+    /// The query to process for each keyboard press
     /// </summary>
-    private readonly ILayerCollection _layerCollection;
+    private readonly IQuery _query;
+
+    /// <summary>
+    /// The current query for the ball in the game
+    /// </summary>
+    private readonly IQuery _ballQuery;
 
     /// <summary>
     /// The event queue we want to dispatch events too
@@ -30,10 +36,11 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// </summary>
     /// <param name="layerCollection">The layer colllection we are working with</param>
     /// <param name="eventQueue">The entity queue to dispatch events to the game</param>
-    public KeyboardPressEventListener(ILayerCollection layerCollection, IEventQueue eventQueue)
+    public KeyboardPressEventListener(IEventQueue eventQueue, IQuery query)
     {
-      _layerCollection = layerCollection;
       _eventQueue = eventQueue;
+      _query = query.WhereLayer(LayerNames.PaddleLayer);
+      _ballQuery = query.WhereLayer(LayerNames.BallLayer);
     }
 
     /// <summary>
@@ -43,9 +50,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<KeyboardPressEvent> evt)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
+      var paddle = _query.FirstOrDefault();
+      if (paddle != null)
       {
-        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var ba = paddle.GetAddon<BoundsAddon>();
 
         switch (evt.Data.Key)
@@ -61,9 +68,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
             paddle.Update(ba);
             break;
           case Keys.Space:
-            if (_layerCollection[LayerNames.BallLayer].Count == 1)
+            var ball = _ballQuery.FirstOrDefault();
+            if (ball != null)
             { // Trigger an event to start the game if the ball is not active 
-              var ball = _layerCollection[LayerNames.BallLayer][0];
               var baa = ball.GetAddon<BallActiveAddon>();
               if (!baa.IsActive)
               {
