@@ -19,7 +19,7 @@ namespace BlueJay.Component.System
         .AddSingleton<IFontCollection, FontCollection>()
 
         // Add Scoped 
-        .AddScoped<ILayerCollection, LayerCollection>()
+        .AddScoped<ILayers, Layers>()
 
         // Add Transient
         .AddTransient<IQuery, AllQuery>()

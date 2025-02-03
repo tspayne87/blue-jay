@@ -17,21 +17,33 @@ public interface IQuery : IEnumerable<IEntity>
   public IQuery ExcludeLayer(params string[] layers);
 }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1> : IQuery
   where A1 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
   where A3 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
@@ -39,6 +51,9 @@ public interface IQuery<A1, A2, A3, A4> : IQuery
   where A4 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4, A5> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
@@ -47,6 +62,9 @@ public interface IQuery<A1, A2, A3, A4, A5> : IQuery
   where A5 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4, A5, A6> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
@@ -56,6 +74,9 @@ public interface IQuery<A1, A2, A3, A4, A5, A6> : IQuery
   where A6 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4, A5, A6, A7> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
@@ -66,6 +87,9 @@ public interface IQuery<A1, A2, A3, A4, A5, A6, A7> : IQuery
   where A7 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4, A5, A6, A7, A8> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
@@ -77,6 +101,9 @@ public interface IQuery<A1, A2, A3, A4, A5, A6, A7, A8> : IQuery
   where A8 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4, A5, A6, A7, A8, A9> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon
@@ -89,6 +116,9 @@ public interface IQuery<A1, A2, A3, A4, A5, A6, A7, A8, A9> : IQuery
   where A9 : struct, IAddon
 { }
 
+/// <summary>
+/// The query interface that will be used to query entities
+/// </summary>
 public interface IQuery<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> : IQuery
   where A1 : struct, IAddon
   where A2 : struct, IAddon

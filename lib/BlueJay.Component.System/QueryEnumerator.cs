@@ -11,7 +11,7 @@ internal class QueryEnumerator : IEnumerator<IEntity>
   /// <summary>
   /// The internal collection of entities
   /// </summary>
-  private readonly ILayerCollection _layers;
+  private readonly ILayers _layers;
 
   /// <summary>
   /// The key we are looking for in the entities
@@ -40,17 +40,17 @@ internal class QueryEnumerator : IEnumerator<IEntity>
   /// <param name="key">The key we are looking for in the entities</param>
   /// <param name="filterOnLayers">The layers we are filtering on</param>
   /// <param name="layersToExclude">The layers we are excluding</param>
-  public QueryEnumerator(ILayerCollection layers, AddonKey key, List<string>? filterOnLayers, List<string>? layersToExclude)
+  public QueryEnumerator(ILayers layers, AddonKey key, List<string>? filterOnLayers, List<string>? layersToExclude)
   {
     _layers = layers;
     _key = key;
     _index = -1;
     _layerIndex = 0;
     _currentLayers = layers
+      .Where(x => filterOnLayers == null || filterOnLayers.Count == 0 || filterOnLayers.Contains(x.Id))
+      .Where(x => layersToExclude == null || !layersToExclude.Contains(x.Id))
       .OrderBy(x => x.Weight)
       .Select(x => x.Id)
-      .Where(x => filterOnLayers == null || filterOnLayers.Count == 0 || filterOnLayers.Contains(x))
-      .Where(x => layersToExclude == null || !layersToExclude.Contains(x))
       .ToList();
   }
 
@@ -77,7 +77,7 @@ internal class QueryEnumerator : IEnumerator<IEntity>
 
       // If we found a match we break out of the loop, and return true
       var layer = _layers[_currentLayers[_layerIndex]]!;
-      if (layer.Count > 0 && layer[_index].MatchKey(_key))
+      if (layer.Count > 0 && layer[_index]!.MatchKey(_key))
         return true;
     }
   }
@@ -91,7 +91,7 @@ internal class QueryEnumerator : IEnumerator<IEntity>
   }
 
   /// <inheritdoc />
-  public IEntity Current => _layers[_currentLayers[_layerIndex]]![_index];
+  public IEntity Current => _layers[_currentLayers[_layerIndex]]![_index]!;
 
   /// <inheritdoc />
   object IEnumerator.Current => Current;

@@ -10,6 +10,7 @@ using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Container;
 using BlueJay.Utils;
 using BlueJay.Component.System;
+using System.Linq;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
@@ -40,6 +41,8 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// </summary>
     private readonly IEventQueue _eventQueue;
 
+    private readonly IQuery _query;
+
     /// <summary>
     /// Constructor is meant to inject various items to be used in this system
     /// </summary>
@@ -55,6 +58,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
       _contentManager = contentManager;
       _graphics = graphics;
       _eventQueue = eventQueue;
+      _query = query;
     }
 
     /// <summary>
@@ -71,9 +75,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
       _service.Round++;
       _provider.AddBall(_contentManager.Load<ITexture2DContainer>("Circle"));
       for (var i = 0; i < 20; ++i)
-      {
         _provider.AddBlock(i);
-      }
 
       // Dispatch event to trigger and a re-render of the blocks
       _eventQueue.DispatchEvent(new UpdateBoundsEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });

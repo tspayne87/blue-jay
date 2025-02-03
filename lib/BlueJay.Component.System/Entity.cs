@@ -162,7 +162,7 @@ namespace BlueJay.Component.System
           return (T)_addons[i];
         }
       }
-      return default(T);
+      return default;
     }
 
     /// <inheritdoc />

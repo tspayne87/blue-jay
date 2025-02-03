@@ -1,7 +1,5 @@
 ﻿using BlueJay.Core;
 using BlueJay.Core.Containers;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace BlueJay.Component.System.Interfaces
 {

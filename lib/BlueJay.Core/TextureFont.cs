@@ -101,12 +101,12 @@ namespace BlueJay.Core
         if (MeasureString(result + match.Groups[1].Value, size).X > width)
         {
           if (!string.IsNullOrWhiteSpace(result))
-            lines.Add(result);
-          result = match.Groups[1].Value;
+            lines.Add(result.Trim());
+          result = match.Groups[0].Value;
         }
         else
         {
-          result += match.Groups[1].Value;
+          result += match.Groups[0].Value;
         }
 
         if (!string.IsNullOrWhiteSpace(match.Groups[2].Value))

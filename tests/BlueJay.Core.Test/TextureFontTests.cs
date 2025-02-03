@@ -98,5 +98,26 @@ namespace BlueJay.Core.Test
       // Assert
       Assert.Equal("abc\nabc", result);
     }
+
+    [Fact]
+    public void FitWithSpaces()
+    {
+      // Arrange
+      var container = new Mock<ITexture2DContainer>();
+      container.SetupGet(c => c.Width).Returns(60);
+      container.SetupGet(c => c.Height).Returns(40);
+
+      var rows = 1;
+      var cols = 3;
+      var alphabet = "abc";
+
+      var font = new TextureFont(container.Object, rows, cols, alphabet);
+
+      // Act
+      var result = font.FitString("abc abc", 140, 1);
+
+      // Assert
+      Assert.Equal("abc abc", result);
+    }
   }
 }
