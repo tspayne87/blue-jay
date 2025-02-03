@@ -9,17 +9,17 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
   internal class UIPositionUIUpdateEventListener : EventListener<UIUpdateEvent>
   {
     /// <summary>
-    /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
+    /// The current layer of entities that we are working with
     /// </summary>
-    private readonly ILayerCollection _layers;
+    private readonly IQuery _query;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
-    /// <param name="layers">The layer collection we are currently working with</param>
-    public UIPositionUIUpdateEventListener(ILayerCollection layers)
+    /// <param name="query">The current layer of entities that we are working with</param>
+    public UIPositionUIUpdateEventListener(IQuery query)
     {
-      _layers = layers;
+      _query = query.WhereLayer(UIStatic.LayerName);
     }
 
     /// <summary>
@@ -28,13 +28,8 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UIUpdateEvent> evt)
     {
-      if (_layers.Contains(UIStatic.LayerName))
-      {
-        var layer = _layers[UIStatic.LayerName];
-        if (layer != null)
-          foreach (var entity in layer.AsSpan())
-            ProcessEntity(entity, evt.Data);
-      }
+      foreach (var entity in _query)
+        ProcessEntity(entity, evt.Data);
     }
 
     /// <summary>

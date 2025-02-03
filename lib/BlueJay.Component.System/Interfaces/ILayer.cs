@@ -1,23 +1,10 @@
-﻿using BlueJay.Component.System.Collections;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-
-namespace BlueJay.Component.System.Interfaces
+﻿namespace BlueJay.Component.System.Interfaces
 {
   /// <summary>
   /// The layer that an set of entities are on
   /// </summary>
-  public interface ILayer : IList<IEntity>
+  public interface ILayer : IEnumerable<IEntity>
   {
-    /// <summary>
-    /// Gets a set of entities by the key
-    /// </summary>
-    /// <param name="key">The key we want to find entities on</param>
-    /// <returns>Will return a list of entities matching the key given</returns>
-    ReadOnlySpan<IEntity> GetByKey(AddonKey key);
-
     /// <summary>
     /// The current id of the layer
     /// </summary>
@@ -29,20 +16,32 @@ namespace BlueJay.Component.System.Interfaces
     int Weight { get; }
 
     /// <summary>
-    /// Helper meant that returns a read only span
+    /// Gets the current count of the entities in the layer
     /// </summary>
-    /// <returns>Will return a read only span for the collection</returns>
-    ReadOnlySpan<IEntity> AsSpan();
+    int Count { get; }
 
     /// <summary>
-    /// Updates the internal cache when an entity changes
+    /// Get an entity based on the index of the collection
     /// </summary>
-    /// <param name="item">The entity that has changed</param>
-    internal void UpdateAddonTree(IEntity item);
+    /// <param name="id">The current id to get the current t</param>
+    /// <returns>Gets the current entity</returns>
+    IEntity? this[int id] { get; }
 
     /// <summary>
-    /// Helper method meant to sort this layers entities based on their weight from lowest to highest
+    /// Adds an entity to the layer
     /// </summary>
-    internal void SortEntities();
+    /// <param name="item">The entity to add to the layer</param>
+    void Add(IEntity item);
+
+    /// <summary>
+    /// Removes an entity from the layer
+    /// </summary>
+    /// <param name="item">The entity to remove from the layer</param>
+    void Remove(IEntity item);
+
+    /// <summary>
+    /// Clears all entities from the layer
+    /// </summary>
+    void Clear();
   }
 }

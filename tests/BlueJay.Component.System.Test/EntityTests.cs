@@ -27,7 +27,7 @@ namespace BlueJay.Component.System.Test
       layers.Setup(x => x[It.IsAny<string>()])
         .Returns(layer.Object);
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
       layer.Verify(x => x.UpdateAddonTree(entity));
@@ -52,7 +52,7 @@ namespace BlueJay.Component.System.Test
       layers.Setup(x => x[It.IsAny<string>()])
         .Returns(layer.Object);
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
       Assert.True(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
@@ -85,7 +85,7 @@ namespace BlueJay.Component.System.Test
       layers.Setup(x => x[It.IsAny<string>()])
         .Returns(layer.Object);
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
       Assert.True(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
@@ -113,7 +113,7 @@ namespace BlueJay.Component.System.Test
       layers.Setup(x => x[It.IsAny<string>()])
         .Returns(layer.Object);
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
       layer.Verify(x => x.UpdateAddonTree(entity));
@@ -144,7 +144,7 @@ namespace BlueJay.Component.System.Test
       var layers = new Mock<ILayerCollection>();
       var events = new Mock<IEventQueue>();
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
       Assert.True(entity.Add(new DebugAddon(KeyHelper.Create<PositionAddon>())));
@@ -175,7 +175,7 @@ namespace BlueJay.Component.System.Test
       var layers = new Mock<ILayerCollection>();
       var events = new Mock<IEventQueue>();
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
 
@@ -190,7 +190,7 @@ namespace BlueJay.Component.System.Test
       var layers = new Mock<ILayerCollection>();
       var events = new Mock<IEventQueue>();
 
-      var entity = new Entity(layers.Object, events.Object);
+      var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new BoundsAddon(10, 10, 10, 10)));
       Assert.True(entity.Add(new ColorAddon(Color.Red)));

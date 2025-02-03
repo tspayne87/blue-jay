@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BlueJay.Component.System.Interfaces
+﻿namespace BlueJay.Component.System.Interfaces
 {
-  public interface ILayerCollection : IList<ILayer>
+  internal interface ILayers : IEnumerable<ILayer>
   {
     /// <summary>
     /// Add an entity to a layer based on the layer type
@@ -34,16 +31,15 @@ namespace BlueJay.Component.System.Interfaces
     bool Contains(string layer);
 
     /// <summary>
-    /// Helper meant that returns a read only span
-    /// </summary>
-    /// <returns>Will return a read only span for the collection</returns>
-    ReadOnlySpan<ILayer> AsSpan();
-
-    /// <summary>
     /// Overloaded operator to get a layer based on the id of the collection
     /// </summary>
     /// <param name="id">The id of the layer we are looking for</param>
     /// <returns>Will return the layer with the specific id</returns>
     ILayer? this[string id] { get; }
+
+    /// <summary>
+    /// Clear all layers from the collection
+    /// </summary>
+    void Clear();
   }
 }

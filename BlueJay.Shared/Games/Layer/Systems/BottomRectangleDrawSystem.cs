@@ -1,44 +1,35 @@
 ﻿using BlueJay.Common.Addons;
-using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Shared.Games.Layer.Addons;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace BlueJay.Shared.Games.Layer.Systems
 {
-  internal class BottomRectangleDrawSystem : IDrawSystem, IDrawEntitySystem, IDrawEndSystem
+  internal class BottomRectangleDrawSystem : IDrawSystem
   {
     private readonly SpriteBatch _batch;
     private readonly SpriteBatchExtension _batchExtension;
+    private readonly IQuery<SizeAddon, PositionAddon, ColorAddon, BottomAddon> _entities;
 
-    public AddonKey Key => KeyHelper.Create<SizeAddon, PositionAddon, ColorAddon, BottomAddon>();
-
-    public List<string> Layers => new List<string>();
-
-    public BottomRectangleDrawSystem(SpriteBatch batch, SpriteBatchExtension batchExtension)
+    public BottomRectangleDrawSystem(SpriteBatch batch, SpriteBatchExtension batchExtension, IQuery<SizeAddon, PositionAddon, ColorAddon, BottomAddon> entities)
     {
       _batch = batch;
       _batchExtension = batchExtension;
+      _entities = entities;
     }
 
     public void OnDraw()
     {
       _batch.Begin();
-    }
+      foreach (var entity in _entities)
+      {
+        var sa = entity.GetAddon<SizeAddon>();
+        var pa = entity.GetAddon<PositionAddon>();
+        var ca = entity.GetAddon<ColorAddon>();
 
-    public void OnDraw(IEntity entity)
-    {
-      var sa = entity.GetAddon<SizeAddon>();
-      var pa = entity.GetAddon<PositionAddon>();
-      var ca = entity.GetAddon<ColorAddon>();
-
-      _batchExtension.DrawRectangle(sa.Size, pa.Position, ca.Color);
-    }
-
-    public void OnDrawEnd()
-    {
+        _batchExtension.DrawRectangle(sa.Size, pa.Position, ca.Color);
+      }
       _batch.End();
     }
   }

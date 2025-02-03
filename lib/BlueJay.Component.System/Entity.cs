@@ -11,11 +11,6 @@ namespace BlueJay.Component.System
   public class Entity : IEntity
   {
     /// <summary>
-    /// The current entity collection 
-    /// </summary>
-    private readonly ILayerCollection _layerCollection;
-
-    /// <summary>
     /// The event queue
     /// </summary>
     private readonly IEventQueue _eventQueue;
@@ -35,11 +30,6 @@ namespace BlueJay.Component.System
     /// </summary>
     private AddonKey _addonsId;
 
-    /// <summary>
-    /// The internal weight of this entity in the layer that it is currently in
-    /// </summary>
-    private int _weight;
-
     /// <inheritdoc />
     public long Id { get; set; }
 
@@ -50,29 +40,19 @@ namespace BlueJay.Component.System
     public string Layer { get; set; }
 
     /// <inheritdoc />
-    public int Weight
-    {
-      get => _weight;
-      set
-      {
-        _weight = value;
-        _layerCollection[Layer]?.SortEntities();
-      }
-    }
+    public int Weight { get; set; }
 
     /// <summary>
     /// Constructor to build out this entity through DI
     /// </summary>
-    /// <param name="layerCollection">The current layer collection</param>
     /// <param name="eventQueue">The event queue</param>
-    public Entity(ILayerCollection layerCollection, IEventQueue eventQueue)
+    public Entity(IEventQueue eventQueue)
     {
-      _layerCollection = layerCollection;
       _eventQueue = eventQueue;
 
       _addonsId = AddonKey.None;
-      _addons = new IAddon[0];
-      _addonKeys = new AddonKey[0];
+      _addons = [];
+      _addonKeys = [];
       Active = true;
       Layer = string.Empty;
     }
@@ -89,7 +69,6 @@ namespace BlueJay.Component.System
         _addons[_addons.Length - 1] = addon;
         _addonKeys[_addons.Length - 1] = KeyHelper.Create(addon.GetType());
         _addonsId |= _addonKeys[_addons.Length - 1];
-        _layerCollection[Layer]?.UpdateAddonTree(this);
 
         _eventQueue.DispatchEvent(new AddAddonEvent(addon), this);
         return true;
@@ -118,7 +97,6 @@ namespace BlueJay.Component.System
         Array.Resize(ref _addons, _addons.Length - 1);
         Array.Resize(ref _addonKeys, _addonKeys.Length - 1);
         _addonsId = KeyHelper.Create(_addons.Select(x => x.GetType()).ToArray());
-        _layerCollection[Layer]?.UpdateAddonTree(this);
         _eventQueue.DispatchEvent(new RemoveAddonEvent(addon), this);
         return true;
       }
@@ -184,7 +162,7 @@ namespace BlueJay.Component.System
           return (T)_addons[i];
         }
       }
-      return default(T);
+      return default;
     }
 
     /// <inheritdoc />

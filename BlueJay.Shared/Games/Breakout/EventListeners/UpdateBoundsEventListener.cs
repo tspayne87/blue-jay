@@ -17,9 +17,9 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
   public class UpdateBoundsEventListener : EventListener<UpdateBoundsEvent>
   {
     /// <summary>
-    /// The layer collection that we need to iterate over to process each entity to determine what the bounds will be set as
+    /// All the entities that exist in the game
     /// </summary>
-    private readonly ILayerCollection _layers;
+    private readonly IQuery _query;
 
     /// <summary>
     /// The current event queue that is being processed
@@ -30,10 +30,10 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// Constructor to injection the layer collection into the listener
     /// </summary>
     /// <param name="layers">The layer collection we are currently working with</param>
-    public UpdateBoundsEventListener(ILayerCollection layers, IEventQueue eventQueue)
+    public UpdateBoundsEventListener(IEventQueue eventQueue, IQuery query)
     {
-      _layers = layers;
       _eventQueue = eventQueue;
+      _query = query.ExcludeLayer(UIStatic.LayerName);
     }
 
     /// <summary>
@@ -42,16 +42,8 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UpdateBoundsEvent> evt)
     {
-      for (var i = 0; i < _layers.Count; ++i)
-      {
-        if (_layers[i].Id != UIStatic.LayerName)
-        {
-          for (var j = 0; j < _layers[i].Count; ++j)
-          {
-            ProcessEntity(_layers[i][j], evt.Data);
-          }
-        }
-      }
+      foreach (var entity in _query)
+        ProcessEntity(entity, evt.Data);
     }
 
     /// <summary>

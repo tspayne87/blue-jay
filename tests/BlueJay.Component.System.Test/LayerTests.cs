@@ -25,8 +25,8 @@ namespace BlueJay.Component.System.Test
       var mockLayers = new Mock<ILayerCollection>();
       var mockEvents = new Mock<IEventQueue>();
 
-      var entity1 = new Entity(mockLayers.Object, mockEvents.Object);
-      var entity2 = new Entity(mockLayers.Object, mockEvents.Object);
+      var entity1 = new Entity(mockEvents.Object);
+      var entity2 = new Entity(mockEvents.Object);
 
       var layer = new Layer(string.Empty, 0);
       layer.Add(entity1);
@@ -45,9 +45,9 @@ namespace BlueJay.Component.System.Test
       var mockLayers = new Mock<ILayerCollection>();
       var mockEvents = new Mock<IEventQueue>();
 
-      var entity1 = new Entity(mockLayers.Object, mockEvents.Object);
-      var entity2 = new Entity(mockLayers.Object, mockEvents.Object);
-      var entity3 = new Entity(mockLayers.Object, mockEvents.Object);
+      var entity1 = new Entity(mockEvents.Object);
+      var entity2 = new Entity(mockEvents.Object);
+      var entity3 = new Entity(mockEvents.Object);
 
       var items = new IEntity[] { entity3, entity2 };
 

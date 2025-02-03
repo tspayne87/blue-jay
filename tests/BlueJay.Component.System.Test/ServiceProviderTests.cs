@@ -24,7 +24,7 @@ namespace BlueJay.Component.System.Test
       var mockService = new Mock<IServiceProvider>();
       var mockLayers = new Mock<ILayerCollection>();
       var mockEvents = new Mock<IEventQueue>();
-      var entity = new Entity(mockLayers.Object, mockEvents.Object);
+      var entity = new Entity(mockEvents.Object);
 
       mockService.Setup(x => x.GetService(typeof(ILayerCollection)))
         .Returns(mockLayers.Object);

@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Core.Containers;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay.Component.System.Collections
 {

@@ -135,11 +135,14 @@ namespace BlueJay.Common.Systems
         {
           var pair = list[i];
           var stickState = GetStickState(state, pair.Key);
-          if (stickState != pair.Value)
+          _queue.DispatchEvent(new GamePadStickEvent()
           {
-            _queue.DispatchEvent(new GamePadStickEvent() { Value = stickState, PreviousValue = pair.Value, Type = pair.Key, Index = index });
-            _sticks[pair.Key] = stickState;
-          }
+            Value = stickState,
+            PreviousValue = pair.Value,
+            Type = pair.Key,
+            Index = index
+          });
+          _sticks[pair.Key] = stickState;
         }
       }
 

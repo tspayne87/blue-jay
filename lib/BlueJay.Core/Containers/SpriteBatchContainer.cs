@@ -10,6 +10,11 @@ namespace BlueJay.Core.Containers
   internal class SpriteBatchContainer : ISpriteBatchContainer
   {
     /// <summary>
+    /// The current pixel that should be used to render rectangles
+    /// </summary>
+    private readonly Texture2D _pixel;
+
+    /// <summary>
     /// The current sprite batch for this container
     /// </summary>
     private readonly SpriteBatch _spriteBatch;
@@ -21,6 +26,7 @@ namespace BlueJay.Core.Containers
     public SpriteBatchContainer(SpriteBatch spriteBatch)
     {
       _spriteBatch = spriteBatch;
+      _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
     }
 
     /// <inheritdoc />
@@ -215,6 +221,18 @@ namespace BlueJay.Core.Containers
       Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, 0), ninePatch.Break), ninePatch.TopRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
       Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(0, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomLeft, color, 0f, Vector2.Zero, SpriteEffects.None, 1f);
       Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+    }
+
+    public void DrawLine(Vector2 pointA, Vector2 pointB, int weight, Color color)
+    {
+      var offset = pointA - pointB;
+      var angle = (float)Math.Atan2(offset.Y, offset.X);
+      var distance = Vector2.Distance(pointA, pointB);
+      var origin = new Vector2();
+      var pixelRect = new Rectangle(0, 0, 1, 1);
+      var scale = new Vector2(weight, distance);
+
+      _spriteBatch.Draw(_pixel, pointA, pixelRect, color, angle, origin, scale, SpriteEffects.None, 0);
     }
   }
 }

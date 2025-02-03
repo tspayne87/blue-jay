@@ -19,7 +19,20 @@ namespace BlueJay.Component.System
         .AddSingleton<IFontCollection, FontCollection>()
 
         // Add Scoped 
-        .AddScoped<ILayerCollection, LayerCollection>();
+        .AddScoped<ILayers, Layers>()
+
+        // Add Transient
+        .AddTransient<IQuery, AllQuery>()
+        .AddTransient(typeof(IQuery<>), typeof(Query<>))
+        .AddTransient(typeof(IQuery<,>), typeof(Query<,>))
+        .AddTransient(typeof(IQuery<,,>), typeof(Query<,,>))
+        .AddTransient(typeof(IQuery<,,,>), typeof(Query<,,,>))
+        .AddTransient(typeof(IQuery<,,,,>), typeof(Query<,,,,>))
+        .AddTransient(typeof(IQuery<,,,,,>), typeof(Query<,,,,,>))
+        .AddTransient(typeof(IQuery<,,,,,,>), typeof(Query<,,,,,,>))
+        .AddTransient(typeof(IQuery<,,,,,,,>), typeof(Query<,,,,,,,>))
+        .AddTransient(typeof(IQuery<,,,,,,,,>), typeof(Query<,,,,,,,,>))
+        .AddTransient(typeof(IQuery<,,,,,,,,,>), typeof(Query<,,,,,,,,,>));
     }
   }
 }

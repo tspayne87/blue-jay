@@ -159,36 +159,28 @@ namespace BlueJay.UI
 
     public static string GetUIDebugStructureString(this IServiceProvider provider)
     {
-      var layers = provider.GetRequiredService<ILayerCollection>();
+      var query = provider.GetRequiredService<IQuery<LineageAddon>>().WhereLayer(UIStatic.LayerName);
       var sb = new StringBuilder();
 
-      var uiLayer = layers[UIStatic.LayerName];
-      if (uiLayer != null)
+      foreach (var item in query)
       {
-        foreach (var item in uiLayer.GetByKey(KeyHelper.Create<LineageAddon>()))
-        {
-          var la = item.GetAddon<LineageAddon>();
-          if (la.Parent == null)
-            sb.AppendLine(item.PrintUIStructure());
-        }
-        return sb.ToString().Trim();
+        var la = item.GetAddon<LineageAddon>();
+        if (la.Parent == null)
+          sb.AppendLine(item.PrintUIStructure());
       }
-      return string.Empty;
+      return sb.ToString().Trim();
     }
 
     public static IEntity? GetFirstUIRootEntity(this IServiceProvider provider)
     {
-      var layers = provider.GetRequiredService<ILayerCollection>();
+      var query = provider.GetRequiredService<IQuery<LineageAddon>>()
+        .WhereLayer(UIStatic.LayerName);
 
-      var uiLayer = layers[UIStatic.LayerName];
-      if (uiLayer != null)
+      foreach (var item in query)
       {
-        foreach (var item in uiLayer.GetByKey(KeyHelper.Create<LineageAddon>()))
-        {
-          var la = item.GetAddon<LineageAddon>();
-          if (la.Parent == null)
-            return item;
-        }
+        var la = item.GetAddon<LineageAddon>();
+        if (la.Parent == null)
+          return item;
       }
       return null;
     }

@@ -27,11 +27,11 @@ namespace BlueJay
         var system = ActivatorUtilities.CreateInstance<T>(provider, parameters);
 
         // If this is an update system we need to add an event listener to the queue
-        if (system is IUpdateSystem || system is IUpdateEntitySystem || system is IUpdateEndSystem)
+        if (system is IUpdateSystem)
           eventQueue.AddEventListener(ActivatorUtilities.CreateInstance<UpdateEventListener>(provider, new object[] { system }));
 
         // If this is a draw system we need to add an event listener to the queue
-        if (system is IDrawSystem || system is IDrawEntitySystem || system is IDrawEndSystem)
+        if (system is IDrawSystem)
           provider.GetRequiredService<DrawableSystemCollection>().Add(system);
 
         systems.Add(typeof(T));

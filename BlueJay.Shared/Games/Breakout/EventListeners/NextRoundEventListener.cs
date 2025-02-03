@@ -8,16 +8,14 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core.Container;
+using BlueJay.Utils;
+using BlueJay.Component.System;
+using System.Linq;
 
 namespace BlueJay.Shared.Games.Breakout.EventListeners
 {
   public class NextRoundEventListener : EventListener<NextRoundEvent>
   {
-    /// <summary>
-    /// The layer collection that has all the entities in the game at the moment
-    /// </summary>
-    private readonly ILayerCollection _layerCollection;
-
     /// <summary>
     /// The current service provider
     /// </summary>
@@ -31,7 +29,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <summary>
     /// The current content manager meant to load different type of textures
     /// </summary>
-    private readonly ContentManager _contentManager;
+    private readonly IContentManagerContainer _contentManager;
 
     /// <summary>
     /// The current graphic device for the screen
@@ -43,23 +41,24 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// </summary>
     private readonly IEventQueue _eventQueue;
 
+    private readonly IQuery _query;
+
     /// <summary>
     /// Constructor is meant to inject various items to be used in this system
     /// </summary>
-    /// <param name="layerCollection">The layer collection that has all the entities in the game at the moment</param>
     /// <param name="provider">The service provider we will use to add a new ball from</param>
     /// <param name="service">The game service meant to update the UI based on the different items</param>
     /// <param name="contentManager">The content manager ment to load textures and other content types</param>
     /// <param name="graphics">The graphics device that is represents the screen</param>
     /// <param name="eventQueue">The event queue that will be used to send out events to the system</param>
-    public NextRoundEventListener(ILayerCollection layerCollection, IServiceProvider provider, BreakoutGameService service, ContentManager contentManager, GraphicsDevice graphics, IEventQueue eventQueue)
+    public NextRoundEventListener(IServiceProvider provider, BreakoutGameService service, IContentManagerContainer contentManager, GraphicsDevice graphics, IEventQueue eventQueue, IQuery query)
     {
-      _layerCollection = layerCollection;
       _provider = provider;
       _service = service;
       _contentManager = contentManager;
       _graphics = graphics;
       _eventQueue = eventQueue;
+      _query = query;
     }
 
     /// <summary>
@@ -69,25 +68,14 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     /// <param name="evt">The event that is being processed</param>
     public override void Process(IEvent<NextRoundEvent> evt)
     {
-      // Clear the ball layer
-      if (_layerCollection[LayerNames.BallLayer]?.Count == 1)
-      {
-        _layerCollection[LayerNames.BallLayer].Clear();
-      }
-
-      // Clear all blocks if any
-      if (_layerCollection[LayerNames.BlockLayer]?.Count > 0)
-      {
-        _layerCollection[LayerNames.BlockLayer].Clear();
-      }
-
+      _provider.ClearEntities(LayerNames.BallLayer);
+      _provider.ClearEntities(LayerNames.BlockLayer);
+ 
       // Start the new game with the blocks and ball added
       _service.Round++;
       _provider.AddBall(_contentManager.Load<ITexture2DContainer>("Circle"));
       for (var i = 0; i < 20; ++i)
-      {
         _provider.AddBlock(i);
-      }
 
       // Dispatch event to trigger and a re-render of the blocks
       _eventQueue.DispatchEvent(new UpdateBoundsEvent() { Size = new Size(_graphics.Viewport.Width, _graphics.Viewport.Height) });

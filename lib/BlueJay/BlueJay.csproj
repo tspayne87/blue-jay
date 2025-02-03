@@ -11,7 +11,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://bluejaycs.org/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tspayne87/blue-jay</RepositoryUrl>
-    <PackageReadmeFile>../../README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +25,10 @@
     <ProjectReference Include="..\BlueJay.Common\BlueJay.Common.csproj" />
     <ProjectReference Include="..\BlueJay.Component.System\BlueJay.Component.System.csproj" />
     <ProjectReference Include="..\BlueJay.Events\BlueJay.Events.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\"/> 
   </ItemGroup>
 
 </Project>

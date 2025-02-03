@@ -10,23 +10,29 @@ using System.Collections.Generic;
 using BlueJay.Component.System;
 using BlueJay.Common.Addons;
 using BlueJay.Events.Interfaces;
+using System.Linq;
 
 namespace BlueJay.Shared.Games.Breakout.Systems
 {
   /// <summary>
   /// The heart of the game that handles the ball and how it behaves
   /// </summary>
-  public class BallSystem : IUpdateEntitySystem
+  public class BallSystem : IUpdateSystem
   {
+    /// <summary>
+    /// The current layer collection that has all the entities in the game at the moment
+    /// </summary>
+    private readonly IQuery _paddleQuery;
+
+    /// <summary>
+    /// The current layer collection that has all the entities in the game at the moment
+    /// </summary>
+    private readonly IQuery _blockQuery;
+
     /// <summary>
     /// The current graphic device we are working with
     /// </summary>
     private readonly GraphicsDevice _graphics;
-
-    /// <summary>
-    /// The layer collection that has all the entities in the game at the moment
-    /// </summary>
-    private readonly ILayerCollection _layerCollection;
 
     /// <summary>
     /// The event queue we want to dispatch events too
@@ -38,11 +44,15 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// </summary>
     private readonly BreakoutGameService _service;
 
-    /// <inheritdoc />
-    public AddonKey Key => KeyHelper.Create<BoundsAddon, VelocityAddon, BallActiveAddon>();
+    /// <summary>
+    /// The entities that we want to process in this system
+    /// </summary>
+    private readonly IQuery _entities;
 
-    /// <inheritdoc />
-    public List<string> Layers => new List<string>() { LayerNames.BallLayer };
+    /// <summary>
+    /// The current service provider
+    /// </summary>
+    private readonly IServiceProvider _provider;
 
     /// <summary>
     /// Constructor is meant to inject various items to be used in this system
@@ -51,20 +61,28 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="eventQueue">The event queue we want to dispatch events too</param>
     /// <param name="service">The current service that keeps track of the game</param>
-    public BallSystem(ILayerCollection layerCollection, GraphicsDevice graphics, IEventQueue eventQueue, BreakoutGameService service)
+    /// <param name="entities">The entities that we want to process in this system</param>
+    public BallSystem(GraphicsDevice graphics, IEventQueue eventQueue, BreakoutGameService service,
+    IQuery<BoundsAddon, VelocityAddon, BallActiveAddon> entities, IServiceProvider provider, IQuery query)
     {
-      _layerCollection = layerCollection;
+      _entities = entities.WhereLayer(LayerNames.BallLayer);
+      _blockQuery = query.WhereLayer(LayerNames.BlockLayer);
+      _paddleQuery = query.WhereLayer(LayerNames.PaddleLayer);
       _graphics = graphics;
       _eventQueue = eventQueue;
       _service = service;
+      _provider = provider;
     }
 
     /// <inheritdoc />
-    public void OnUpdate(IEntity entity)
+    public void OnUpdate()
     {
-      var baa = entity.GetAddon<BallActiveAddon>();
-      if (!baa.IsActive) BeforeStart(entity);
-      else DuringGame(entity);
+      foreach (var entity in _entities)
+      {
+        var baa = entity.GetAddon<BallActiveAddon>();
+        if (!baa.IsActive) BeforeStart(entity);
+        else DuringGame(entity);
+      }
     }
 
     /// <summary>
@@ -73,9 +91,9 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="entity">The entity we are working with (aka: The ball)</param>
     private void BeforeStart(IEntity entity)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
+      var paddle = _paddleQuery.FirstOrDefault();
+      if (paddle != null)
       {
-        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var ba = entity.GetAddon<BoundsAddon>();
         var pba = paddle.GetAddon<BoundsAddon>();
 
@@ -92,15 +110,14 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="entity">The entity we are working with (aka: The ball)</param>
     private void DuringGame(IEntity entity)
     {
-      if (_layerCollection[LayerNames.PaddleLayer].Count == 1)
+      var paddle = _paddleQuery.FirstOrDefault();
+      if (paddle != null)
       {
         var ba = entity.GetAddon<BoundsAddon>();
         var va = entity.GetAddon<VelocityAddon>();
 
         // Add the velocity to the bounds to move it around
         ba.Bounds = ba.Bounds.Add(va.Velocity);
-
-        var paddle = _layerCollection[LayerNames.PaddleLayer][0];
         var pba = paddle.GetAddon<BoundsAddon>();
 
         var side = RectangleHelper.SideIntersection(ba.Bounds, pba.Bounds);
@@ -134,14 +151,14 @@ namespace BlueJay.Shared.Games.Breakout.Systems
         }
         else
         { // Check if the ball has intersected with any blocks on this frame
-          var blocks = _layerCollection[LayerNames.BlockLayer];
-          for (var i = 0; i < blocks.Count; ++i)
+          var blocks = _blockQuery.ToList();
+          foreach (var block in blocks)
           {
-            var bba = blocks[i].GetAddon<BoundsAddon>();
+            var bba = block.GetAddon<BoundsAddon>();
             side = RectangleHelper.SideIntersection(ba.Bounds, bba.Bounds);
             if (side != RectangleSide.None)
             { // If we are dealing with a collection we need to alter the direction based on what side was hit
-              var bi = blocks[i].GetAddon<BlockIndexAddon>();
+              var bi = block.GetAddon<BlockIndexAddon>();
               if (side == RectangleSide.Left || side == RectangleSide.Right)
               { // Change the x direction if we hit left or right side
                 va.Velocity = new Vector2(-va.Velocity.X, va.Velocity.Y);
@@ -152,9 +169,9 @@ namespace BlueJay.Shared.Games.Breakout.Systems
               }
 
               // Remove the block from the screen since the ball has hit it
-              _layerCollection[LayerNames.BlockLayer].Remove(blocks[i]);
+              _provider.RemoveEntity(block);
               _service.Score += bi.Score;
-              if (_layerCollection[LayerNames.BlockLayer].Count == 0)
+              if (blocks.Count == 1)
               {
                 _eventQueue.DispatchEvent(new NextRoundEvent());
               }

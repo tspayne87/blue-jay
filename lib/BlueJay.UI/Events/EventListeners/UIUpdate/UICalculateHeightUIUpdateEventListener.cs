@@ -8,21 +8,17 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
   internal class UICalculateHeightUIUpdateEventListener : EventListener<UIUpdateEvent>
   {
     /// <summary>
-    /// The layer collection that we need to iterate over to process each entity to determine what the height of each element is
-    /// 
-    /// NOTE: This event will get triggered twice during the event listener loop once to calculate the first iteration will handle basic
-    ///       heights and the second to clean up any missed heights after other calculates may of updated to better heights based on
-    ///       content or templating
+    /// The current layer of entities that we are working with
     /// </summary>
-    private readonly ILayerCollection _layers;
+    private readonly IQuery _query;
 
     /// <summary>
     /// Constructor to injection the layer collection into the listener
     /// </summary>
-    /// <param name="layers">The layer collection we are currently working with</param>
-    public UICalculateHeightUIUpdateEventListener(ILayerCollection layers)
+    /// <param name="query">The current layer of entities that we are working with</param>
+    public UICalculateHeightUIUpdateEventListener(IQuery query)
     {
-      _layers = layers;
+      _query = query.WhereLayer(UIStatic.LayerName);
     }
 
 
@@ -32,13 +28,8 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<UIUpdateEvent> evt)
     {
-      if (_layers.Contains(UIStatic.LayerName))
-      {
-        var layer = _layers[UIStatic.LayerName];
-        if (layer != null)
-          foreach (var entity in layer.AsSpan())
-            ProcessEntity(entity, evt.Data);
-      }
+      foreach (var entity in _query)
+        ProcessEntity(entity, evt.Data);
     }
 
     /// <summary>

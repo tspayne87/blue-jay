@@ -48,7 +48,8 @@ const config = {
             { text: 'Views', link: '/guide/views' },
             { text: 'Addons', link: '/guide/addons' },
             { text: 'Systems', link: '/guide/systems' },
-            { text: 'Entities', link: '/guide/entities' }
+            { text: 'Entities', link: '/guide/entities' },
+            { text: 'Queries', link: '/guide/queries' }
           ]
         }
       ],

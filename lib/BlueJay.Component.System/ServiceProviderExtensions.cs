@@ -33,9 +33,38 @@ namespace BlueJay.Component.System
     public static IEntity AddEntity(this IServiceProvider provider, IEntity entity, string layer = "", int weight = 0)
     {
       entity.Layer = layer;
-      provider.GetRequiredService<ILayerCollection>()
+      provider.GetRequiredService<ILayers>()
         .Add(entity, layer, weight);
       return entity;
+    }
+
+    /// <summary>
+    /// Method is meant to remove the entity from the layer collection
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="entity">The entity we would like to remove</param>
+    public static void RemoveEntity(this IServiceProvider provider, IEntity entity)
+    {
+      provider.GetRequiredService<ILayers>()
+        .Remove(entity);
+      entity.Dispose();
+    }
+
+    /// <summary>
+    /// Method is meant to remove all entities from the system or a specific layer
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="layer">The layer to remove data from</param>
+    public static void ClearEntities(this IServiceProvider provider, string? layer = null)
+    {
+      var collection = provider.GetRequiredService<ILayers>();
+      if (string.IsNullOrWhiteSpace(layer))
+      {
+        collection.Clear();
+        return;
+      }
+      if (collection.Contains(layer))
+        collection[layer]!.Clear();
     }
 
     /// <summary>
