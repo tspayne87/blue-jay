@@ -20,7 +20,7 @@ namespace BlueJay.Component.System.Test
     public void AddAddon()
     {
       var vector = new Vector2(15, 10);
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<Layers>();
       var layer = new Mock<ILayer>();
       var events = new Mock<IEventQueue>();
 
@@ -30,7 +30,6 @@ namespace BlueJay.Component.System.Test
       var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
-      layer.Verify(x => x.UpdateAddonTree(entity));
       events.Verify(x => x.DispatchEvent(It.IsAny<AddAddonEvent>(), entity));
       Assert.True(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
       Assert.False(entity.MatchKey(KeyHelper.Create<DebugAddon>()));
@@ -45,7 +44,7 @@ namespace BlueJay.Component.System.Test
     public void RemoveAddon()
     {
       var vector = new Vector2(15, 10);
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<ILayers>();
       var layer = new Mock<ILayer>();
       var events = new Mock<IEventQueue>();
 
@@ -58,7 +57,6 @@ namespace BlueJay.Component.System.Test
       Assert.True(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
 
       Assert.True(entity.Remove<PositionAddon>());
-      layer.Verify(x => x.UpdateAddonTree(entity));
       events.Verify(x => x.DispatchEvent(It.IsAny<RemoveAddonEvent>(), entity));
       Assert.False(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
 
@@ -78,7 +76,7 @@ namespace BlueJay.Component.System.Test
     public void UpdateAddon()
     {
       var vector = new Vector2(15, 10);
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<ILayers>();
       var layer = new Mock<ILayer>();
       var events = new Mock<IEventQueue>();
 
@@ -106,7 +104,7 @@ namespace BlueJay.Component.System.Test
     public void UpsertAddon()
     {
       var vector = new Vector2(15, 10);
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<ILayers>();
       var layer = new Mock<ILayer>();
       var events = new Mock<IEventQueue>();
 
@@ -116,7 +114,6 @@ namespace BlueJay.Component.System.Test
       var entity = new Entity(events.Object);
 
       Assert.True(entity.Add(new PositionAddon(vector)));
-      layer.Verify(x => x.UpdateAddonTree(entity));
       events.Verify(x => x.DispatchEvent(It.IsAny<AddAddonEvent>(), entity));
       Assert.True(entity.MatchKey(KeyHelper.Create<PositionAddon>()));
       Assert.False(entity.MatchKey(KeyHelper.Create<DebugAddon>()));
@@ -141,7 +138,7 @@ namespace BlueJay.Component.System.Test
     public void GetAddons()
     {
       var vector = new Vector2(15, 10);
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<ILayers>();
       var events = new Mock<IEventQueue>();
 
       var entity = new Entity(events.Object);
@@ -172,7 +169,7 @@ namespace BlueJay.Component.System.Test
     public void TryGetAddon()
     {
       var vector = new Vector2(15, 10);
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<ILayers>();
       var events = new Mock<IEventQueue>();
 
       var entity = new Entity(events.Object);
@@ -187,7 +184,7 @@ namespace BlueJay.Component.System.Test
     [Fact]
     public void Contains()
     {
-      var layers = new Mock<ILayerCollection>();
+      var layers = new Mock<ILayers>();
       var events = new Mock<IEventQueue>();
 
       var entity = new Entity(events.Object);

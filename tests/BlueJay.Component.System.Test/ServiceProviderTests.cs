@@ -22,11 +22,11 @@ namespace BlueJay.Component.System.Test
       var weight = 0;
       var fonts = new Dictionary<string, SpriteFont>();
       var mockService = new Mock<IServiceProvider>();
-      var mockLayers = new Mock<ILayerCollection>();
+      var mockLayers = new Mock<ILayers>();
       var mockEvents = new Mock<IEventQueue>();
       var entity = new Entity(mockEvents.Object);
 
-      mockService.Setup(x => x.GetService(typeof(ILayerCollection)))
+      mockService.Setup(x => x.GetService(typeof(ILayers)))
         .Returns(mockLayers.Object);
       mockService.Setup(x => x.GetService(typeof(IEventQueue)))
         .Returns(mockEvents.Object);

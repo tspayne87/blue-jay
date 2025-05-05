@@ -26,21 +26,14 @@ namespace BlueJay.UI.Events.EventListeners
     private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
-    /// Extensions for the sprite batch
-    /// </summary>
-    private readonly SpriteBatchExtension _batchExtension;
-
-    /// <summary>
     /// Constructor to build out the event listener to update the texture for the ninepatch
     /// </summary>
     /// <param name="graphics">The current graphic device we are working with</param>
     /// <param name="batch">The sprite batch to draw to the screen</param>
-    /// <param name="batchExtension">Extensions for the sprite batch</param>
-    public UIStyleUpdateEventListener(GraphicsDevice graphics, ISpriteBatchContainer batch, SpriteBatchExtension batchExtension)
+    public UIStyleUpdateEventListener(GraphicsDevice graphics, ISpriteBatchContainer batch)
     {
       _graphics = graphics;
       _batch = batch;
-      _batchExtension = batchExtension;
     }
 
     /// <summary>
@@ -74,7 +67,7 @@ namespace BlueJay.UI.Events.EventListeners
             }
             else if (sa.CurrentStyle.BackgroundColor != null)
             {
-              _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, sa.CurrentStyle.BackgroundColor.Value);
+              _batch.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, Vector2.Zero, sa.CurrentStyle.BackgroundColor.Value);
             }
             _batch.End();
             _graphics.SetRenderTarget(null);

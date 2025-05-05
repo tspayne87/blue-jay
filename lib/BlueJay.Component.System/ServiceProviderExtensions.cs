@@ -2,13 +2,16 @@
 using BlueJay.Core;
 using BlueJay.Core.Containers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace BlueJay.Component.System
 {
   public static class ServiceProviderExtensions
   {
+    /// <summary>
+    /// The next id to be used for the entity
+    /// </summary>
+    private static long _nextId = 0;
+
     /// <summary>
     /// Method is meant to add an entity to the entity collection and use DI to build out the object so that
     /// services and other DI components can be injected properly into the class
@@ -19,7 +22,9 @@ namespace BlueJay.Component.System
     /// <returns>Will return the entity that was created and added to the collection</returns>
     public static IEntity AddEntity(this IServiceProvider provider, string layer = "", int weight = 0)
     {
-      return provider.AddEntity(ActivatorUtilities.CreateInstance<Entity>(provider), layer, weight);
+      var entity = ActivatorUtilities.CreateInstance<Entity>(provider);
+      entity.Id = Interlocked.Increment(ref _nextId);
+      return provider.AddEntity(entity, layer, weight);
     }
 
     /// <summary>

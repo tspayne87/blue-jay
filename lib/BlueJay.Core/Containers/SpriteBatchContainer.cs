@@ -1,4 +1,5 @@
-﻿using BlueJay.Core.Container;
+﻿using System.Text;
+using BlueJay.Core.Container;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -70,11 +71,83 @@ namespace BlueJay.Core.Containers
     }
 
     /// <inheritdoc />
+    public void Draw(ITexture2DContainer texture, Vector2 position, Rectangle? sourceRectangle, Color color)
+    {
+      if (texture.Current == null)
+        throw new ArgumentNullException("texture.Current");
+      _spriteBatch.Draw(texture.Current, position, sourceRectangle, color);
+    }
+
+    /// <inheritdoc />
+    public void Draw(ITexture2DContainer texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color)
+    {
+      if (texture.Current == null)
+        throw new ArgumentNullException("texture.Current");
+      _spriteBatch.Draw(texture.Current, destinationRectangle, sourceRectangle, color);
+    }
+
+    /// <inheritdoc />
     public void DrawString(ISpriteFontContainer container, string text, Vector2 position, Color color)
     {
       if (container.Current == null)
         throw new ArgumentNullException("container.Current");
       _spriteBatch.DrawString(container.Current, text, position, color);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color, rotation, origin, scale, effects, layerDepth);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color, rotation, origin, scale, effects, layerDepth);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, bool rtl)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color, rotation, origin, scale, effects, layerDepth, rtl);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color, rotation, origin, scale, effects, layerDepth);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color, rotation, origin, scale, effects, layerDepth);
+    }
+
+    /// <inheritdoc />
+    public void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, bool rtl)
+    {
+      if (spriteFont.Current == null)
+        throw new ArgumentNullException("spriteFont.Current");
+      _spriteBatch.DrawString(spriteFont.Current, text, position, color, rotation, origin, scale, effects, layerDepth, rtl);
     }
 
     /// <inheritdoc />
@@ -223,6 +296,7 @@ namespace BlueJay.Core.Containers
       Draw(ninePatch.Texture, new Rectangle(position.ToPoint() + new Point(width - ninePatch.Break.X, height - ninePatch.Break.Y), ninePatch.Break), ninePatch.BottomRight, color, 0f, Vector2.Zero, SpriteEffects.None, 0f);
     }
 
+    /// <inheritdoc />
     public void DrawLine(Vector2 pointA, Vector2 pointB, int weight, Color color)
     {
       var offset = pointA - pointB;
@@ -233,6 +307,18 @@ namespace BlueJay.Core.Containers
       var scale = new Vector2(weight, distance);
 
       _spriteBatch.Draw(_pixel, pointA, pixelRect, color, angle, origin, scale, SpriteEffects.None, 0);
+    }
+
+    /// <inheritdoc />
+    public void DrawRectangle(int width, int height, Vector2 position, Color color)
+    {
+      _spriteBatch.Draw(_pixel, new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), width, height), color);
+    }
+    
+    /// <inheritdoc />
+    public void DrawRectangle(Size size, Vector2 position, Color color)
+    {
+      DrawRectangle(size.Width, size.Height, position, color);
     }
   }
 }

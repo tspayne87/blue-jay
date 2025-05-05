@@ -78,7 +78,6 @@ namespace BlueJay
       _serviceCollection.AddSingleton(Window);
       _serviceCollection.AddSingleton(GraphicsDevice);
       _serviceCollection.AddSingleton<SpriteBatch>();
-      _serviceCollection.AddSingleton<SpriteBatchExtension>();
       _serviceCollection.AddSingleton<IScreenViewport, ScreenViewport>();
       _serviceCollection.AddSingleton<IContentManagerContainer, ContentManagerContainer>();
       _serviceCollection.AddBlueJayEvents();

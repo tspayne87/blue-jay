@@ -20,7 +20,7 @@ namespace BlueJay.Shared.Components
 
   <Button @Select=""OnBreakoutClick()"">{{BreakoutTitle}}</Button>
   <Button @Select=""OnLayoutClick()"">{{LayoutTitle}}</Button>
-  <Button @Select=""OnTetrisClick()"">{{TetrisTitle}}</Button>
+  <Button @Select=""OnLDtkClick()"">{{LDtkTitle}}</Button>
   <Button Style=""ColumnSpan: 3"" @Select=""OnUIComponentClick()"">{{UIComponentTitle}}</Button>
 </Container>
   ")]
@@ -38,9 +38,9 @@ namespace BlueJay.Shared.Components
     public readonly ReactiveProperty<Text> BreakoutTitle;
 
     /// <summary>
-    /// The Tetris title we are using for this component
+    /// The LDtk title for this component
     /// </summary>
-    public readonly ReactiveProperty<Text> TetrisTitle;
+    public readonly ReactiveProperty<Text> LDtkTitle;
 
     /// <summary>
     /// The UI Component title
@@ -61,7 +61,7 @@ namespace BlueJay.Shared.Components
       _views = views;
 
       BreakoutTitle = new ReactiveProperty<Text>("Breakout");
-      TetrisTitle = new ReactiveProperty<Text>("Tetris");
+      LDtkTitle = new ReactiveProperty<Text>("LDtk");
       UIComponentTitle = new ReactiveProperty<Text>("UI Components");
       LayoutTitle = new ReactiveProperty<Text>("Layout");
     }
@@ -93,9 +93,9 @@ namespace BlueJay.Shared.Components
     /// </summary>
     /// <param name="evt">The select event</param>
     /// <returns>will return true to continue propegation</returns>
-    public bool OnTetrisClick()
+    public bool OnLDtkClick()
     {
-      // TODO: Set Current to Tetris
+      _views.SetCurrent<LDtkView>();
       return true;
     }
 
