@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using Microsoft.Xna.Framework.Content;
 
@@ -11,7 +10,7 @@ public class LDtkContentTypeReader : ContentTypeReader<TOutput>
   protected override TOutput Read(ContentReader input, TOutput existingInstance)
   {
     string json = input.ReadString();
-    var result = JsonSerializer.Deserialize<TOutput>(json);
+    var result = JsonSerializer.Deserialize<TOutput>(json, Converter.Settings);
     return result ?? default!;
   }
 }

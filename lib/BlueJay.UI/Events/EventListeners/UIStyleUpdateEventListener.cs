@@ -73,7 +73,7 @@ namespace BlueJay.UI.Events.EventListeners
             _graphics.SetRenderTarget(null);
 
             sa.StyleUpdates++;
-            ta.Texture = target.AsContainer();
+            ta.Texture = ((Texture2D)target).AsContainer();
           }
 
           evt.Data.Entity.Update(sa);

@@ -22,6 +22,18 @@ namespace BlueJay.Core
     }
 
     /// <summary>
+    /// Helper method meant to add a wrapper for a rendertarget2d object
+    /// </summary>
+    /// <param name="renderTarget">The render target we want to wrap in a container</param>
+    /// <returns>Will return the wrapped container</returns>
+    public static IRenderTarget2DContainer AsContainer(this RenderTarget2D renderTarget)
+    {
+      var container = new RenderTarget2DContainer();
+      container.Current = renderTarget;
+      return container;
+    }
+
+    /// <summary>
     /// Helper method meant to add a wrapper for the spritefont object
     /// </summary>
     /// <param name="spriteFont">The sprite font we want to wrap in a container</param>

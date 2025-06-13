@@ -14,9 +14,10 @@
   /// array of levels, - a group of definitions (that can probably be safely ignored for most
   /// users).
   /// </summary>
-  public partial class LDtkObject
+  public class LDtkObject
   {
     /// <summary>
+    /// 
     /// This object is not actually used by LDtk. It ONLY exists to force explicit references to
     /// all types, to make sure QuickType finds them and integrate all of them. Otherwise,
     /// Quicktype will drop types that are not explicitely used.
@@ -286,7 +287,7 @@
     public World[] Worlds { get; set; }
   }
 
-  public partial class LdtkCustomCommand
+  public class LdtkCustomCommand
   {
     [JsonPropertyName("command")]
     public string Command { get; set; }
@@ -308,7 +309,7 @@
   ///
   /// A structure containing all the definitions of this project
   /// </summary>
-  public partial class Definitions
+  public class Definitions
   {
     /// <summary>
     /// All entities definitions, including their custom fields
@@ -348,7 +349,7 @@
     public TilesetDefinition[] Tilesets { get; set; }
   }
 
-  public partial class EntityDefinition
+  public class EntityDefinition
   {
     /// <summary>
     /// If enabled, this entity is allowed to stay outside of the current level bounds
@@ -555,7 +556,7 @@
   /// This section is mostly only intended for the LDtk editor app itself. You can safely
   /// ignore it.
   /// </summary>
-  public partial class FieldDefinition
+  public class FieldDefinition
   {
     /// <summary>
     /// Human readable value type. Possible values: `Int, Float, String, Bool, Color,
@@ -751,7 +752,7 @@
   /// <summary>
   /// This object represents a custom sub rectangle in a Tileset image.
   /// </summary>
-  public partial class TilesetRectangle
+  public class TilesetRectangle
   {
     /// <summary>
     /// Height in pixels
@@ -784,7 +785,7 @@
     public long Y { get; set; }
   }
 
-  public partial class EnumDefinition
+  public class EnumDefinition
   {
     [JsonPropertyName("externalFileChecksum")]
     public string ExternalFileChecksum { get; set; }
@@ -826,7 +827,7 @@
     public EnumValueDefinition[] Values { get; set; }
   }
 
-  public partial class EnumValueDefinition
+  public class EnumValueDefinition
   {
     /// <summary>
     /// **WARNING**: this deprecated value is no longer exported since version 1.4.0  Replaced
@@ -861,7 +862,7 @@
     public TilesetRectangle TileRect { get; set; }
   }
 
-  public partial class LayerDefinition
+  public class LayerDefinition
   {
     /// <summary>
     /// Type of the layer (*IntGrid, Entities, Tiles or AutoLayer*)
@@ -1070,7 +1071,7 @@
     public bool UseAsyncRender { get; set; }
   }
 
-  public partial class AutoLayerRuleGroup
+  public class AutoLayerRuleGroup
   {
     [JsonPropertyName("active")]
     public bool Active { get; set; }
@@ -1114,7 +1115,7 @@
   /// completely resolved internally by the editor before any saving. You should just ignore
   /// this part.
   /// </summary>
-  public partial class AutoLayerRuleDefinition
+  public class AutoLayerRuleDefinition
   {
     /// <summary>
     /// If FALSE, the rule effect isn't applied, and no tiles are generated.
@@ -1296,7 +1297,7 @@
   /// <summary>
   /// IntGrid value definition
   /// </summary>
-  public partial class IntGridValueDefinition
+  public class IntGridValueDefinition
   {
     [JsonPropertyName("color")]
     public string Color { get; set; }
@@ -1326,7 +1327,7 @@
   /// <summary>
   /// IntGrid value group definition
   /// </summary>
-  public partial class IntGridValueGroupDefinition
+  public class IntGridValueGroupDefinition
   {
     /// <summary>
     /// User defined color
@@ -1352,7 +1353,7 @@
   /// contains some extra informations about each integrated tileset. If you only had to parse
   /// one definition section, that would be the one.
   /// </summary>
-  public partial class TilesetDefinition
+  public class TilesetDefinition
   {
     /// <summary>
     /// Grid-based height
@@ -1461,7 +1462,7 @@
   /// <summary>
   /// In a tileset definition, user defined meta-data of a tile.
   /// </summary>
-  public partial class TileCustomMetadata
+  public class TileCustomMetadata
   {
     [JsonPropertyName("data")]
     public string Data { get; set; }
@@ -1473,7 +1474,7 @@
   /// <summary>
   /// In a tileset definition, enum based tag infos
   /// </summary>
-  public partial class EnumTagValue
+  public class EnumTagValue
   {
     [JsonPropertyName("enumValueId")]
     public string EnumValueId { get; set; }
@@ -1487,7 +1488,7 @@
   /// all types, to make sure QuickType finds them and integrate all of them. Otherwise,
   /// Quicktype will drop types that are not explicitely used.
   /// </summary>
-  public partial class ForcedRefs
+  public class ForcedRefs
   {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonPropertyName("AutoLayerRuleGroup")]
@@ -1602,7 +1603,7 @@
     public World World { get; set; }
   }
 
-  public partial class EntityInstance
+  public class EntityInstance
   {
     /// <summary>
     /// Grid-based coordinates (`[x,y]` format)
@@ -1694,7 +1695,7 @@
     public long Width { get; set; }
   }
 
-  public partial class FieldInstance
+  public class FieldInstance
   {
     /// <summary>
     /// Field definition identifier
@@ -1749,7 +1750,7 @@
   ///
   /// IID information of this instance
   /// </summary>
-  public partial class ReferenceToAnEntityInstance
+  public class ReferenceToAnEntityInstance
   {
     /// <summary>
     /// IID of the refered EntityInstance
@@ -1779,7 +1780,7 @@
   /// <summary>
   /// This object is just a grid-based coordinate used in Field values.
   /// </summary>
-  public partial class GridPoint
+  public class GridPoint
   {
     /// <summary>
     /// X grid-based coordinate
@@ -1797,7 +1798,7 @@
   /// <summary>
   /// IntGrid value instance
   /// </summary>
-  public partial class IntGridValueInstance
+  public class IntGridValueInstance
   {
     /// <summary>
     /// Coordinate ID in the layer grid
@@ -1812,7 +1813,7 @@
     public long V { get; set; }
   }
 
-  public partial class LayerInstance
+  public class LayerInstance
   {
     /// <summary>
     /// Grid-based height
@@ -1968,7 +1969,7 @@
   /// <summary>
   /// This structure represents a single tile from a given Tileset.
   /// </summary>
-  public partial class TileInstance
+  public class TileInstance
   {
     /// <summary>
     /// Alpha/opacity of the tile (0-1, defaults to 1)
@@ -2021,7 +2022,7 @@
   /// `externalRelPath` string points to the `ldtkl` file.  A `ldtkl` file is just a JSON file
   /// containing exactly what is described below.
   /// </summary>
-  public partial class Level
+  public class Level
   {
     /// <summary>
     /// Background color of the level (same as `bgColor`, except the default value is
@@ -2172,7 +2173,7 @@
   /// <summary>
   /// Level background image position info
   /// </summary>
-  public partial class LevelBackgroundPosition
+  public class LevelBackgroundPosition
   {
     /// <summary>
     /// An array of 4 float values describing the cropped sub-rectangle of the displayed
@@ -2200,7 +2201,7 @@
   /// <summary>
   /// Nearby level info
   /// </summary>
-  public partial class NeighbourLevel
+  public class NeighbourLevel
   {
     /// <summary>
     /// A lowercase string tipping on the level location (`n`orth, `s`outh, `w`est,
@@ -2226,7 +2227,7 @@
     public long? LevelUid { get; set; }
   }
 
-  public partial class LdtkTableOfContentEntry
+  public class LdtkTableOfContentEntry
   {
     [JsonPropertyName("identifier")]
     public string Identifier { get; set; }
@@ -2243,7 +2244,7 @@
     public LdtkTocInstanceData[] InstancesData { get; set; }
   }
 
-  public partial class LdtkTocInstanceData
+  public class LdtkTocInstanceData
   {
     /// <summary>
     /// An object containing the values of all entity fields with the `exportToToc` option
@@ -2276,7 +2277,7 @@
   /// importers, for when it will be officially available.  A World contains multiple levels,
   /// and it has its own layout settings.
   /// </summary>
-  public partial class World
+  public class World
   {
     /// <summary>
     /// Default new level height
@@ -2451,7 +2452,7 @@
     };
   }
 
-  internal class CheckerConverter : JsonConverter<Checker>
+  public class CheckerConverter : JsonConverter<Checker>
   {
     public override bool CanConvert(Type t) => t == typeof(Checker);
 
@@ -2490,7 +2491,7 @@
     public static readonly CheckerConverter Singleton = new CheckerConverter();
   }
 
-  internal class TileModeConverter : JsonConverter<TileMode>
+  public class TileModeConverter : JsonConverter<TileMode>
   {
     public override bool CanConvert(Type t) => t == typeof(TileMode);
 
@@ -2524,7 +2525,7 @@
     public static readonly TileModeConverter Singleton = new TileModeConverter();
   }
 
-  internal class WhenConverter : JsonConverter<When>
+  public class WhenConverter : JsonConverter<When>
   {
     public override bool CanConvert(Type t) => t == typeof(When);
 
@@ -2568,7 +2569,7 @@
     public static readonly WhenConverter Singleton = new WhenConverter();
   }
 
-  internal class AllowedRefsConverter : JsonConverter<AllowedRefs>
+  public class AllowedRefsConverter : JsonConverter<AllowedRefs>
   {
     public override bool CanConvert(Type t) => t == typeof(AllowedRefs);
 
@@ -2612,7 +2613,7 @@
     public static readonly AllowedRefsConverter Singleton = new AllowedRefsConverter();
   }
 
-  internal class EditorDisplayModeConverter : JsonConverter<EditorDisplayMode>
+  public class EditorDisplayModeConverter : JsonConverter<EditorDisplayMode>
   {
     public override bool CanConvert(Type t) => t == typeof(EditorDisplayMode);
 
@@ -2711,7 +2712,7 @@
     public static readonly EditorDisplayModeConverter Singleton = new EditorDisplayModeConverter();
   }
 
-  internal class EditorDisplayPosConverter : JsonConverter<EditorDisplayPos>
+  public class EditorDisplayPosConverter : JsonConverter<EditorDisplayPos>
   {
     public override bool CanConvert(Type t) => t == typeof(EditorDisplayPos);
 
@@ -2750,7 +2751,7 @@
     public static readonly EditorDisplayPosConverter Singleton = new EditorDisplayPosConverter();
   }
 
-  internal class EditorLinkStyleConverter : JsonConverter<EditorLinkStyle>
+  public class EditorLinkStyleConverter : JsonConverter<EditorLinkStyle>
   {
     public override bool CanConvert(Type t) => t == typeof(EditorLinkStyle);
 
@@ -2799,7 +2800,7 @@
     public static readonly EditorLinkStyleConverter Singleton = new EditorLinkStyleConverter();
   }
 
-  internal class TextLanguageModeConverter : JsonConverter<TextLanguageMode>
+  public class TextLanguageModeConverter : JsonConverter<TextLanguageMode>
   {
     public override bool CanConvert(Type t) => t == typeof(TextLanguageMode);
 
@@ -2873,7 +2874,7 @@
     public static readonly TextLanguageModeConverter Singleton = new TextLanguageModeConverter();
   }
 
-  internal class LimitBehaviorConverter : JsonConverter<LimitBehavior>
+  public class LimitBehaviorConverter : JsonConverter<LimitBehavior>
   {
     public override bool CanConvert(Type t) => t == typeof(LimitBehavior);
 
@@ -2912,7 +2913,7 @@
     public static readonly LimitBehaviorConverter Singleton = new LimitBehaviorConverter();
   }
 
-  internal class LimitScopeConverter : JsonConverter<LimitScope>
+  public class LimitScopeConverter : JsonConverter<LimitScope>
   {
     public override bool CanConvert(Type t) => t == typeof(LimitScope);
 
@@ -2951,7 +2952,7 @@
     public static readonly LimitScopeConverter Singleton = new LimitScopeConverter();
   }
 
-  internal class RenderModeConverter : JsonConverter<RenderMode>
+  public class RenderModeConverter : JsonConverter<RenderMode>
   {
     public override bool CanConvert(Type t) => t == typeof(RenderMode);
 
@@ -2995,7 +2996,7 @@
     public static readonly RenderModeConverter Singleton = new RenderModeConverter();
   }
 
-  internal class TileRenderModeConverter : JsonConverter<TileRenderMode>
+  public class TileRenderModeConverter : JsonConverter<TileRenderMode>
   {
     public override bool CanConvert(Type t) => t == typeof(TileRenderMode);
 
@@ -3054,7 +3055,7 @@
     public static readonly TileRenderModeConverter Singleton = new TileRenderModeConverter();
   }
 
-  internal class TypeEnumConverter : JsonConverter<TypeEnum>
+  public class TypeEnumConverter : JsonConverter<TypeEnum>
   {
     public override bool CanConvert(Type t) => t == typeof(TypeEnum);
 
@@ -3098,7 +3099,7 @@
     public static readonly TypeEnumConverter Singleton = new TypeEnumConverter();
   }
 
-  internal class EmbedAtlasConverter : JsonConverter<EmbedAtlas>
+  public class EmbedAtlasConverter : JsonConverter<EmbedAtlas>
   {
     public override bool CanConvert(Type t) => t == typeof(EmbedAtlas);
 
@@ -3125,7 +3126,7 @@
     public static readonly EmbedAtlasConverter Singleton = new EmbedAtlasConverter();
   }
 
-  internal class BgPosConverter : JsonConverter<BgPos>
+  public class BgPosConverter : JsonConverter<BgPos>
   {
     public override bool CanConvert(Type t) => t == typeof(BgPos);
 
@@ -3174,7 +3175,7 @@
     public static readonly BgPosConverter Singleton = new BgPosConverter();
   }
 
-  internal class WorldLayoutConverter : JsonConverter<WorldLayout>
+  public class WorldLayoutConverter : JsonConverter<WorldLayout>
   {
     public override bool CanConvert(Type t) => t == typeof(WorldLayout);
 
@@ -3218,7 +3219,7 @@
     public static readonly WorldLayoutConverter Singleton = new WorldLayoutConverter();
   }
 
-  internal class FlagConverter : JsonConverter<Flag>
+  public class FlagConverter : JsonConverter<Flag>
   {
     public override bool CanConvert(Type t) => t == typeof(Flag);
 
@@ -3277,7 +3278,7 @@
     public static readonly FlagConverter Singleton = new FlagConverter();
   }
 
-  internal class IdentifierStyleConverter : JsonConverter<IdentifierStyle>
+  public class IdentifierStyleConverter : JsonConverter<IdentifierStyle>
   {
     public override bool CanConvert(Type t) => t == typeof(IdentifierStyle);
 
@@ -3321,7 +3322,7 @@
     public static readonly IdentifierStyleConverter Singleton = new IdentifierStyleConverter();
   }
 
-  internal class ImageExportModeConverter : JsonConverter<ImageExportMode>
+  public class ImageExportModeConverter : JsonConverter<ImageExportMode>
   {
     public override bool CanConvert(Type t) => t == typeof(ImageExportMode);
 
@@ -3406,7 +3407,7 @@
             => writer.WriteStringValue(value.ToString(serializationFormat));
   }
 
-  internal class IsoDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
+  public class IsoDateTimeOffsetConverter : JsonConverter<DateTimeOffset>
   {
     public override bool CanConvert(Type t) => t == typeof(DateTimeOffset);
 
@@ -3470,7 +3471,7 @@
         return default(DateTimeOffset);
       }
     }
-    
+
     public static readonly IsoDateTimeOffsetConverter Singleton = new IsoDateTimeOffsetConverter();
   }
 }
