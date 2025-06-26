@@ -28,6 +28,7 @@ namespace BlueJay.Core.Containers
     {
       _spriteBatch = spriteBatch;
       _pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+      _pixel.SetData([Color.White]);
     }
 
     /// <inheritdoc />
