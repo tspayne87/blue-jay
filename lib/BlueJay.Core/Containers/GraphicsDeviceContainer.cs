@@ -35,5 +35,17 @@ namespace BlueJay.Core.Containers
     {
       return new Texture2D(_graphicsDevice, width, height).AsContainer();
     }
+
+    /// <inheritdoc />
+    public IRenderTarget2DContainer CreateRenderTarget2D(int width, int height)
+    {
+      return new RenderTarget2D(_graphicsDevice, width, height).AsContainer();
+    }
+
+    /// <inheritdoc />
+    public void SetRenderTarget(IRenderTarget2DContainer? renderTarget)
+    {
+      _graphicsDevice.SetRenderTarget(renderTarget?.Current);
+    }
   }
 }

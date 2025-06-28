@@ -1,4 +1,5 @@
-﻿using BlueJay.Core.Container;
+﻿using System.Text;
+using BlueJay.Core.Container;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -18,6 +19,16 @@ namespace BlueJay.Core.Containers
     /// <see cref="ITexture2DContainer" /> draw method for <see cref="SpriteBatch.Draw(Texture2D, Rectangle, Rectangle?, Color, float, Vector2, SpriteEffects, float)" />
     /// </summary>
     void Draw(ITexture2DContainer container, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth);
+
+    /// <summary>
+    /// <see cref="ITexture2DContainer" /> draw method for <see cref="SpriteBatch.Draw(Texture2D, Vector2, Rectangle?, Color)" />
+    /// </summary>
+    void Draw(ITexture2DContainer texture, Vector2 position, Rectangle? sourceRectangle, Color color);
+
+    /// <summary>
+    /// <see cref="ITexture2DContainer" /> draw method for <see cref="SpriteBatch.Draw(Texture2D, Rectangle, Rectangle?, Color)" />
+    /// </summary>
+    void Draw(ITexture2DContainer texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color);
 
     /// <summary>
     /// <see cref="ITexture2DContainer" /> draw method for <see cref="SpriteBatch.Draw(Texture2D, Vector2, Rectangle?, Color, float, Vector2, Vector2, SpriteEffects, float)" />
@@ -43,6 +54,41 @@ namespace BlueJay.Core.Containers
     /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, string, Vector2, Color)"/>
     /// </summary>
     void DrawString(ISpriteFontContainer container, string text, Vector2 position, Color color);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, string, Vector2, Color, float, Vector2, float, SpriteEffects, float)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, string, Vector2, Color, float, Vector2, Vector2, SpriteEffects, float)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, string, Vector2, Color, float, Vector2, Vector2, SpriteEffects, float)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, bool rtl);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, StringBuilder, Vector2, Color)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, StringBuilder, Vector2, Color, float, Vector2, float, SpriteEffects, float)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, StringBuilder, Vector2, Color, float, Vector2, Vector2, SpriteEffects, float)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth);
+
+    /// <summary>
+    /// <see cref="ISpriteFontContainer" /> draw method for <see cref="SpriteBatch.DrawString(SpriteFont, StringBuilder, Vector2, Color, float, Vector2, Vector2, SpriteEffects, float)"/>
+    /// </summary>
+    void DrawString(ISpriteFontContainer spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, bool rtl);
 
     /// <summary>
     /// <see cref="ITexture2DContainer "/> draw method for <see cref="SpriteBatch.Draw(Texture2D, Vector2, Rectangle?, Color, float, Vector2, float, SpriteEffects, float)"/>
@@ -116,5 +162,22 @@ namespace BlueJay.Core.Containers
     /// <param name="weight">The current weight of the line being drawn</param>
     /// <param name="color">The color of the line being drawn</param>
     void DrawLine(Vector2 pointA, Vector2 pointB, int weight, Color color);
+
+    /// <summary>
+    /// Method is meant to draw a rectangle to the screen
+    /// </summary>
+    /// <param name="width">The width of the rectangle that should be drawn</param>
+    /// <param name="height">The height of the rectangle that should be drawn</param>
+    /// <param name="position">The position of the rectangle</param>
+    /// <param name="color">The color of the rectangle</param>
+    void DrawRectangle(int width, int height, Vector2 position, Color color);
+
+    /// <summary>
+    /// Method is meant to draw a rectangle to the screen
+    /// </summary>
+    /// <param name="size">The size of the rectangle to draw</param>
+    /// <param name="position">The position of the rectangle</param>
+    /// <param name="color">The color of the rectangle</param>
+    void DrawRectangle(Size size, Vector2 position, Color color);
   }
 }

@@ -20,11 +20,6 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
-    /// The sprite batch to draw to the screen extensions
-    /// </summary>
-    private readonly SpriteBatchExtension _batchExtension;
-
-    /// <summary>
     /// The game service that is meant to process the different states of the game
     /// </summary>
     private readonly BreakoutGameService _service;
@@ -50,16 +45,14 @@ namespace BlueJay.Shared.Games.Breakout.Systems
     /// <param name="font">The global font</param>
     /// <param name="graphics">The graphics for the screen</param>
     /// <param name="service">The current service that represents the game</param>
-    /// <param name="batchExtension">The sprite batch to draw to the screen extensions</param>
     /// <param name="entities">The entities that we want to process in this system</param>
     /// <param name="ballEntities">The entities that we want to process in this system</param>
-    public BreakoutRenderingSystem(ISpriteBatchContainer batch, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, SpriteBatchExtension batchExtension, IQuery<TypeAddon, BoundsAddon> entities, IQuery ballEntities)
+    public BreakoutRenderingSystem(ISpriteBatchContainer batch, BreakoutGameService service, IFontCollection font, GraphicsDevice graphics, IQuery<TypeAddon, BoundsAddon> entities, IQuery ballEntities)
     {
       _batch = batch;
       _service = service;
       _font = font;
       _graphics = graphics;
-      _batchExtension = batchExtension;
 
       _entities = entities;
       _ballEntities = ballEntities.WhereLayer(LayerNames.BallLayer);
@@ -101,7 +94,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
         switch (ta.Type)
         {
           case EntityType.Paddle: // Draw the paddle to the screen
-            _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), Color.Blue);
+            _batch.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), Color.Blue);
             break;
           case EntityType.Ball:
             { // Load the texture and color of the ball and draw it to the screen
@@ -113,7 +106,7 @@ namespace BlueJay.Shared.Games.Breakout.Systems
           case EntityType.Block:
             { // Load the block index to get the color and draw it to the screen
               var bia = entity.GetAddon<BlockIndexAddon>();
-              _batchExtension.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), bia.Color);
+              _batch.DrawRectangle(ba.Bounds.Width, ba.Bounds.Height, new Vector2(ba.Bounds.X, ba.Bounds.Y), bia.Color);
             }
             break;
         }

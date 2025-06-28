@@ -28,7 +28,7 @@ namespace BlueJay.Events
     public void Update()
     {
       _queue.Tick();
-      _queue.Update();
+      _queue.Update(); 
     }
 
     /// <summary>

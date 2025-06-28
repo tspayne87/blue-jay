@@ -10,20 +10,9 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\lib\BlueJay.LDtk.Pipeline\bin\Debug\netstandard2.0\BlueJay.LDtk.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
-
-#begin Bitmap-Font.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Bitmap-Font.png
 
 #begin Bitmap-Font-export.png
 /importer:TextureImporter
@@ -36,6 +25,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Bitmap-Font-export.png
+
+#begin Bitmap-Font.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Bitmap-Font.png
 
 #begin BlueJay_Logo.png
 /importer:TextureImporter
@@ -96,6 +97,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Sample_NinePatch.png
+
+#begin SampleMap.ldtk
+/importer:LDtkContentImporter
+/processor:LDtkContentProcessor
+/build:SampleMap.ldtk
 
 #begin TestFont.spritefont
 /importer:FontDescriptionImporter

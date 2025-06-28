@@ -16,11 +16,6 @@ namespace BlueJay.UI.Systems
     private readonly ISpriteBatchContainer _batch;
 
     /// <summary>
-    /// Extensions to the sprite batch to draw to the screen basic objects
-    /// </summary>
-    private readonly SpriteBatchExtension _batchExtensions;
-
-    /// <summary>
     /// The entities that we are going to draw to the screen
     /// </summary>
     private readonly IQuery<PositionAddon, BoundsAddon> _entities;
@@ -35,13 +30,11 @@ namespace BlueJay.UI.Systems
     /// the renderer for drawing
     /// </summary>
     /// <param name="batch">The sprite batch to draw to the screen</param>
-    /// <param name="batchExtension">Extensions to the sprite batch to draw to the screen basic objects</param>
     /// <param name="fonts">The font collection need to render stuff to the screen</param>
     /// <param name="entities">The entities that we are going to draw to the screen</param>
-    public DebugBoundingBoxSystem(ISpriteBatchContainer batch, SpriteBatchExtension batchExtension, IFontCollection fonts, IQuery<PositionAddon, BoundsAddon> entities)
+    public DebugBoundingBoxSystem(ISpriteBatchContainer batch, IFontCollection fonts, IQuery<PositionAddon, BoundsAddon> entities)
     {
       _batch = batch;
-      _batchExtensions = batchExtension;
       _fonts = fonts;
       _entities = entities;
     }
@@ -57,10 +50,10 @@ namespace BlueJay.UI.Systems
 
         if (!entity.MatchKey(KeyHelper.Create<TextAddon>()))
         {
-          _batchExtensions.DrawRectangle(ba.Bounds.Width, 1, pa.Position, Color.LightGray);
-          _batchExtensions.DrawRectangle(ba.Bounds.Width, 1, pa.Position + new Vector2(0, ba.Bounds.Height), Color.LightGray);
-          _batchExtensions.DrawRectangle(1, ba.Bounds.Height, pa.Position, Color.LightGray);
-          _batchExtensions.DrawRectangle(1, ba.Bounds.Height, pa.Position + new Vector2(ba.Bounds.Width, 0), Color.LightGray);
+          _batch.DrawRectangle(ba.Bounds.Width, 1, pa.Position, Color.LightGray);
+          _batch.DrawRectangle(ba.Bounds.Width, 1, pa.Position + new Vector2(0, ba.Bounds.Height), Color.LightGray);
+          _batch.DrawRectangle(1, ba.Bounds.Height, pa.Position, Color.LightGray);
+          _batch.DrawRectangle(1, ba.Bounds.Height, pa.Position + new Vector2(ba.Bounds.Width, 0), Color.LightGray);
 
           if (_fonts.TextureFonts.Count > 0)
           {

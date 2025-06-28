@@ -49,7 +49,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\RectangleFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\Systems\BottomRectangleDrawSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Games\Layer\Systems\TopRectangleDrawSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Games\LDtk\Factories\BackgroundFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\BreakOutView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\LDtkView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\LayerView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\TitleView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\UIComponentView.cs" />
