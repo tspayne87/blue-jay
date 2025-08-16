@@ -50,6 +50,11 @@ namespace BlueJay.UI
     private int? _textureFontSize = null;
 
     /// <summary>
+    /// The z-index of the element, determining its stacking order
+    /// </summary>
+    private int? _zIndex = null;
+
+    /// <summary>
     /// The parent style that will determine certain styles
     /// </summary>
     private Style? _parent;
@@ -152,6 +157,11 @@ namespace BlueJay.UI
     public virtual HeightTemplate? HeightTemplate { get; set; }
 
     /// <summary>
+    /// Configuration for how overflow should be handled
+    /// </summary>
+    public virtual Overflow? Overflow { get; set; }
+
+    /// <summary>
     /// The current number of grid columns the internals for this element should have
     /// </summary>
     public virtual int GridColumns { get => _gridColumns ?? 1; set => _gridColumns = value; }
@@ -180,6 +190,11 @@ namespace BlueJay.UI
     /// The texture font that should be used to render text for this element
     /// </summary>
     public virtual string? TextureFont { get => _textureFont ?? Parent?.TextureFont; set => _textureFont = value; }
+
+    /// <summary>
+    /// The z-index of the element, determining its stacking order
+    /// </summary>
+    public virtual int ZIndex { get => _zIndex ?? 0; set => _zIndex = value; }
 
     /// <summary>
     /// The texture font size that should be used when rendering the text element
@@ -227,6 +242,7 @@ namespace BlueJay.UI
       if (merge._textureFont != null) TextureFont = merge._textureFont;
       if (merge._textureFontSize != null) TextureFontSize = merge._textureFontSize;
       if (merge.HeightTemplate != null) HeightTemplate = merge.HeightTemplate;
+      if (merge._zIndex != null) ZIndex = merge._zIndex.Value;
     }
   }
 }

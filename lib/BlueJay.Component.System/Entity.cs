@@ -2,6 +2,7 @@
 using BlueJay.Component.System.Events;
 using BlueJay.Events.Interfaces;
 using System.Numerics;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlueJay.Component.System
 {

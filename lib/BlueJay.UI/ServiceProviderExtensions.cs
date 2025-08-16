@@ -13,6 +13,7 @@ using BlueJay.Common.Events;
 using BlueJay.UI.Events;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using BlueJay.Common.Addons;
 
 namespace BlueJay.UI
 {
@@ -88,7 +89,7 @@ namespace BlueJay.UI
       provider.AddEventListener<UICalculateHeightUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIPositionUIUpdateEventListener, UIUpdateEvent>();
       provider.AddEventListener<UIBoundsTriggerUIUpdateEventListener, UIUpdateEvent>();
-      
+
       provider.AddEventListener<ViewportChangeEventListener, ViewportChangeEvent>();
 
       provider.AddEventListener<UIStyleUpdateEventListener, StyleUpdateEvent>();
@@ -185,15 +186,20 @@ namespace BlueJay.UI
       return null;
     }
 
-    private static string PrintUIStructure(this IEntity entity, int tab = 2, int indentAmount = 2, char tabChar = '-')
+    internal static string PrintUIStructure(this IEntity entity, int tab = 2, int indentAmount = 2, char tabChar = '-')
     {
       var sb = new StringBuilder();
       var la = entity.GetAddon<LineageAddon>();
       var ta = entity.GetAddon<TextAddon>();
+      var sa = entity.GetAddon<StyleAddon>();
+      var pa = entity.GetAddon<PositionAddon>();
 
       sb.Append(tabChar.Explode(tab));
       sb.Append(' ');
-      sb.AppendLine(entity.Contains<TextAddon>() ? $"Text: {ta.Text}" : "Container");
+
+      var line = entity.Contains<TextAddon>() ? $"Text: '{ta.Text}'" : "Container";
+      line += $" | Position: {pa.Position} | Grid Position: {sa.GridPosition} | Bounds: {sa.CalculatedBounds}";
+      sb.AppendLine(line);
 
       foreach (var child in la.Children)
         sb.AppendLine(child.PrintUIStructure(tab + indentAmount, indentAmount, tabChar));

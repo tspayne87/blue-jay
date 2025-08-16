@@ -29,7 +29,7 @@ namespace BlueJay.Shared.Views
 
       serviceProvider.AddUIRenderSystems();
 
-      serviceProvider.AttachComponent<UIComponentTestComponent>();
+      serviceProvider.AttachComponent<InfoComponent>();
     }
   }
 }

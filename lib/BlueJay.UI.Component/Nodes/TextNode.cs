@@ -50,7 +50,6 @@ namespace BlueJay.UI.Component.Nodes
         {
           callbacks.Add(prop.Subscribe(evt =>
           {
-            var test = prop;
             var ta = entity.GetAddon<TextAddon>();
             ta.Text = _textCallback(component, null, scope) as string ?? string.Empty;
             entity.Update(ta);

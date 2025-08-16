@@ -43,5 +43,11 @@
     /// Clears all entities from the layer
     /// </summary>
     void Clear();
+
+    /// <summary>
+    /// Method is meant to update the sort order of the entities in the layer, this should be called
+    /// if the weights of the entities change and we need to keep the layer sorted.
+    /// </summary>
+    void UpdateSort();
   }
 }

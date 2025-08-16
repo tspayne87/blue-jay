@@ -16,7 +16,7 @@ namespace BlueJay.UI.Component.Interactivity
     [View(@"
 <Container Style=""TextAlign: Left"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"" ref=""Root"">
   <Container Style=""Height: {{ContainerHeight}}"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"">{{Model}}</Container>
-  <Container if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60; TopOffset: {{CursorTopOffset}}; LeftOffset: {{CursorLeftOffset}}; Height: {{CursorHeight}}"" />
+  <Container if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60; TopOffset: {{CursorTopOffset}}; LeftOffset: {{CursorLeftOffset}}; Height: {{CursorHeight}}; ZIndex: 1"" />
 </Container>
     ")]
   public class TextInput : UIComponent

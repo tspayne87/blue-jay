@@ -1,4 +1,6 @@
 ﻿using BlueJay.Core.Container;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,5 +35,9 @@ namespace BlueJay.Core.Containers
     /// </summary>
     /// <param name="renderTarget">The current texture for the render target</param>
     void SetRenderTarget(IRenderTarget2DContainer? renderTarget);
+
+    void Clear(Color color);
+    void Clear(ClearOptions options, Color color, float depth, int stencil);
+    void Clear(ClearOptions options, Vector4 color, float depth, int stencil);
   }
 }

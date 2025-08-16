@@ -16,13 +16,18 @@ namespace BlueJay.Shared.Components
     [View(@"
 <Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default; Padding: 10"">
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
-
+  
+  <Texture AssetName=""Sample_Hover_NinePatch"" Style=""Position: Absolute; ZIndex: 51; LeftOffset: 475"" />
+  <Texture AssetName=""BlueJay_Logo"" Style=""Position: Absolute; ZIndex: 50; LeftOffset: 400"" />
+  
   <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
   <Container Style=""ColumnSpan: 2"">{{ComputedExpression}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
   <Container if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
+  <Texture AssetName=""TestTiles"" :Frame=""Frame"" Rows=""2"" Cols=""4"" />
+  <Button @Select=""UpdateFrame()"">Update Frame</Button>
 
   <SliderInput :Model=""Slider"" :Max=""20"" Style=""ColumnSpan: 3"" />
   <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
@@ -87,6 +92,8 @@ namespace BlueJay.Shared.Components
     /// </summary>
     public readonly ReactiveCollection<SelectableItem> DropdownItems;
 
+    public readonly ReactiveProperty<int> Frame;
+
     public readonly ComputedProperty<Text> ComputedExpression;
 
     /// <summary>
@@ -99,6 +106,7 @@ namespace BlueJay.Shared.Components
       Slider = new ReactiveProperty<int>(0);
       Dropdown = new NullableReactiveProperty<int>(null);
       TextInput = new ReactiveProperty<Text>("");
+      Frame = new ReactiveProperty<int>(0);
       DropdownItems = new ReactiveCollection<SelectableItem>(new List<SelectableItem>()
       {
         new SelectableItem() { Name = "Item 1", Id = 1, Toggled = false },
@@ -181,6 +189,12 @@ namespace BlueJay.Shared.Components
       if (DropdownItems.Any(x => x.Id == item))
         selected = DropdownItems.FirstOrDefault(x => x.Id == item);
       return selected?.Name ?? string.Empty;
+    }
+
+    public bool UpdateFrame()
+    {
+      Frame.Value = (Frame.Value + 1) % 8;
+      return true;
     }
 
     [Watch(nameof(Dropdown))]

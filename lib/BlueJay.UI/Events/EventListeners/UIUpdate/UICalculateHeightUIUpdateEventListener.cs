@@ -50,7 +50,7 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
       // Process Height Properties
       if (sa.CurrentStyle.Height != null) sa.CalculatedBounds.Height = sa.CurrentStyle.Height.Value;
       else if (sa.CurrentStyle.HeightPercentage != null) sa.CalculatedBounds.Height = (int)Math.Floor(pHeight * sa.CurrentStyle.HeightPercentage.Value);
-
+      
       entity.Update(sa);
     }
   }

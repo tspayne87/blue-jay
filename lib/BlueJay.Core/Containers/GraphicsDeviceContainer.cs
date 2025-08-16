@@ -1,5 +1,5 @@
 ﻿using BlueJay.Core.Container;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BlueJay.Core.Containers
@@ -18,6 +18,11 @@ namespace BlueJay.Core.Containers
     /// The graphics device meant to build textures from
     /// </summary>
     private readonly GraphicsDevice _graphicsDevice;
+
+    /// <summary>
+    /// The current graphics device being used, in case some methods are needed to be accessed
+    /// </summary>
+    public GraphicsDevice Current => _graphicsDevice;
 
     /// <summary>
     /// Constructor meant to inject various services into the graphics device container
@@ -46,6 +51,24 @@ namespace BlueJay.Core.Containers
     public void SetRenderTarget(IRenderTarget2DContainer? renderTarget)
     {
       _graphicsDevice.SetRenderTarget(renderTarget?.Current);
+    }
+
+    /// <inheritdoc />
+    public void Clear(Color color)
+    {
+      _graphicsDevice.Clear(color);
+    }
+
+    /// <inheritdoc />
+    public void Clear(ClearOptions options, Color color, float depth, int stencil)
+    {
+      _graphicsDevice.Clear(options, color, depth, stencil);
+    }
+
+    /// <inheritdoc />
+    public void Clear(ClearOptions options, Vector4 color, float depth, int stencil)
+    {
+      _graphicsDevice.Clear(options, color, depth, stencil);
     }
   }
 }

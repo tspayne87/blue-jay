@@ -3,6 +3,7 @@ using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
 using BlueJay.Core;
 using BlueJay.Core.Containers;
+using BlueJay.UI.Addons;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -34,20 +35,31 @@ namespace BlueJay.UI.Systems
     /// <inheritdoc />
     public void OnDraw()
     {
-      _batch.Begin();
+      var zIndexRange = 100f;
+      var amount = _entities.Count();
+      var totalBucketAmount = (zIndexRange * 2f * amount) + amount;
+      var index = 0;
+      _batch.Begin(sortMode: SpriteSortMode.FrontToBack);
       foreach (var entity in _entities)
       {
         var pc = entity.GetAddon<PositionAddon>();
         var tc = entity.GetAddon<TextureAddon>();
+        var sa = entity.GetAddon<StyleAddon>();
 
+        // Calculate the layer depth based on the style's z-index and the current index of this item
+        var layerDepth = (((sa.CurrentStyle.ZIndex + zIndexRange) * amount) + index) / totalBucketAmount;
         if (tc.Texture != null)
         {
           var color = entity.TryGetAddon<ColorAddon>(out var ca) ? ca.Color : Color.White;
           if (entity.TryGetAddon<FrameAddon>(out var fa) && entity.TryGetAddon<SpriteSheetAddon>(out var ssa))
-            _batch.DrawFrame(tc.Texture, pc.Position, ssa.Rows, ssa.Cols, fa.Frame, color);
+            _batch.DrawFrame(tc.Texture, pc.Position, ssa.Rows, ssa.Cols, fa.Frame, color, layerDepth: layerDepth);
           else
-            _batch.Draw(tc.Texture, pc.Position, color);
+          {
+            var sourceRectangle = new Rectangle(0, 0, tc.Texture.Width, tc.Texture.Height);
+            _batch.Draw(tc.Texture, pc.Position, sourceRectangle, color, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, layerDepth);
+          }
         }
+        index++;
       }
       _batch.End();
     }

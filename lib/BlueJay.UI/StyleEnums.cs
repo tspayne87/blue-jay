@@ -47,4 +47,12 @@
   {
     Stretch
   }
+
+  /// <summary>
+  /// Overflow enum, used to determine how overflow should be handled
+  /// </summary>
+  public enum Overflow
+  {
+    None, Hidden, Scroll, Auto
+  }
 }

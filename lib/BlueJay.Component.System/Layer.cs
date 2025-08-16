@@ -1,5 +1,6 @@
 ﻿using BlueJay.Component.System.Interfaces;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace BlueJay.Component.System
 {
@@ -35,14 +36,13 @@ namespace BlueJay.Component.System
       Id = id;
       Weight = weight;
 
-      _collection = [];
+      _collection = new List<IEntity>();
     }
 
     /// <inheritdoc />
     public void Add(IEntity item)
     {
       _collection.Add(item);
-      Sort();
     }
 
     /// <inheritdoc />
@@ -57,12 +57,11 @@ namespace BlueJay.Component.System
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
 
-    /// <summary>
-    /// Method to sort the collection based on the weight of the entities
-    /// </summary>
-    private void Sort()
+    /// <inheritdoc />
+    public void UpdateSort()
     {
-      _collection = _collection.OrderBy(x => x.Weight).ToList();
+      _collection
+        .Sort((x, y) => x.Weight.CompareTo(y.Weight));
     }
   }
 }

@@ -34,16 +34,23 @@ internal class QueryEnumerator : IEnumerator<IEntity>
   private int _layerIndex;
 
   /// <summary>
+  /// Whether to include inactive entities in the query
+  /// </summary>
+  private bool _includeInactive;
+
+  /// <summary>
   /// Constructor to build out the enumerator
   /// </summary>
   /// <param name="layers">The internal collection of entities</param>
   /// <param name="key">The key we are looking for in the entities</param>
   /// <param name="filterOnLayers">The layers we are filtering on</param>
   /// <param name="layersToExclude">The layers we are excluding</param>
-  public QueryEnumerator(ILayers layers, AddonKey key, List<string>? filterOnLayers, List<string>? layersToExclude)
+  /// <param name="includeInactive">Whether to include inactive entities in the query</param>
+  public QueryEnumerator(ILayers layers, AddonKey key, List<string>? filterOnLayers, List<string>? layersToExclude, bool includeInactive)
   {
     _layers = layers;
     _key = key;
+    _includeInactive = includeInactive;
     _index = -1;
     _layerIndex = 0;
     _currentLayers = layers
@@ -77,7 +84,7 @@ internal class QueryEnumerator : IEnumerator<IEntity>
 
       // If we found a match we break out of the loop, and return true
       var layer = _layers[_currentLayers[_layerIndex]]!;
-      if (layer.Count > 0 && layer[_index]!.MatchKey(_key))
+      if (layer.Count > 0 && (_includeInactive || layer[_index]!.Active) && layer[_index]!.MatchKey(_key))
         return true;
     }
   }

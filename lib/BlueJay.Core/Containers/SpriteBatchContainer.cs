@@ -187,7 +187,7 @@ namespace BlueJay.Core.Containers
     }
 
     /// <inheritdoc />
-    public void DrawFrame(ITexture2DContainer container, Vector2 position, int rows, int columns, int frame, Color? color = null, float rotation = 0f, Vector2? origin = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+    public void DrawFrame(ITexture2DContainer container, Vector2 position, int rows, int columns, int frame, Color? color = null, float rotation = 0f, Vector2? origin = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
     {
       if (container != null)
       {
@@ -200,7 +200,7 @@ namespace BlueJay.Core.Containers
     }
 
     /// <inheritdoc />
-    public void DrawFrame(ITexture2DContainer container, Rectangle destinationRectangle, int rows, int columns, int frame, Color? color = null, float rotation = 0f, Vector2? origin = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 1f)
+    public void DrawFrame(ITexture2DContainer container, Rectangle destinationRectangle, int rows, int columns, int frame, Color? color = null, float rotation = 0f, Vector2? origin = null, SpriteEffects effects = SpriteEffects.None, float layerDepth = 0f)
     {
       var width = container.Width / columns;
       var height = container.Height / rows;
@@ -315,7 +315,7 @@ namespace BlueJay.Core.Containers
     {
       _spriteBatch.Draw(_pixel, new Rectangle((int)Math.Round(position.X), (int)Math.Round(position.Y), width, height), color);
     }
-    
+
     /// <inheritdoc />
     public void DrawRectangle(Size size, Vector2 position, Color color)
     {

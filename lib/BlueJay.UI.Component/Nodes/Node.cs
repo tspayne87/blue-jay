@@ -130,7 +130,7 @@ namespace BlueJay.UI.Component.Nodes
     /// <param name="disposables">The disposables that were generated to update the entity that was created</param>
     /// <returns>Will return a created UIEntity based on the entity and disposables</returns>
     protected UIEntity CreateUIElement(IEntity entity, List<IDisposable>? disposables = null)
-      => ActivatorUtilities.CreateInstance<UIEntity>(Scope.ServiceProvider, new object[] { entity, this, disposables ?? new List<IDisposable>() });
+      => ActivatorUtilities.CreateInstance<UIEntity>(Scope.ServiceProvider, [entity, this, disposables ?? new List<IDisposable>()]);
 
     /// <summary>
     /// Internal method meant to generate the UI and bind various elements to the UI element that is returned

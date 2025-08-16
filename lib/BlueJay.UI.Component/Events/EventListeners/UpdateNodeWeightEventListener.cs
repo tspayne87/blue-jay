@@ -1,4 +1,5 @@
-﻿using BlueJay.Component.System.Interfaces;
+﻿using BlueJay.Component.System;
+using BlueJay.Component.System.Interfaces;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
 using BlueJay.UI.Addons;
@@ -11,11 +12,25 @@ namespace BlueJay.UI.Component.Events.EventListeners
   /// </summary>
   internal class UpdateNodeWeightEventListener : EventListener<UpdateNodeWeight>
   {
+    /// <summary>
+    /// The service provider we will use to find the collection and build out the object with
+    /// </summary>
+    private readonly IServiceProvider _provider;
+
+    /// <summary>
+    /// Constructor to build out the event listener
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    public UpdateNodeWeightEventListener(IServiceProvider provider)
+    {
+      _provider = provider;
+    }
+
     /// <inheritdoc />
     public override void Process(IEvent<UpdateNodeWeight> evt)
     {
       var weight = 0;
-      var rootEntity = GetRoot(evt.Data.Node).UIEntities?.FirstOrDefault();
+      var rootEntity = GetRoot(evt.Data.Node).UIEntities?.Single();
       if (rootEntity == null)
         return;
 
@@ -26,9 +41,12 @@ namespace BlueJay.UI.Component.Events.EventListeners
       foreach (var entity in entities)
       {
         var la = entity.GetAddon<LineageAddon>();
-        la.Children = la.Children.OrderBy(x => x.Weight).ToList();
+        la.Children.Sort((x, y) => x.Weight.CompareTo(y.Weight));
         entity.Update(la);
       }
+
+      // Update the order based on the weight given
+      _provider.UpdateEntitySort(UIStatic.LayerName);
     }
 
     public IEnumerable<IEntity> GetEntities(Node node)

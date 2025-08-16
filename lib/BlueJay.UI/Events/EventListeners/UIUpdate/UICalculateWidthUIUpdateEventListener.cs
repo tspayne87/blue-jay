@@ -75,6 +75,12 @@ namespace BlueJay.UI.Events.EventListeners.UIUpdate
         else if (sa.CurrentStyle.WidthPercentage != null) sa.CalculatedBounds.Width = (int)Math.Floor(fWidth * sa.CurrentStyle.WidthPercentage.Value);
         else sa.CalculatedBounds.Width = fWidth;
 
+        if (sa.CalculatedBounds.Width < 0)
+        {
+          var test = entity.PrintUIStructure();
+          var i = 0;
+        }
+
         entity.Update(sa);
       }
     }

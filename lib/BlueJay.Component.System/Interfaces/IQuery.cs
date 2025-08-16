@@ -15,6 +15,12 @@ public interface IQuery : IEnumerable<IEntity>
   /// <param name="layers">The layers we want to exclude from the query</param>
   /// <returns>Will return a query that excludes certain layers</returns>
   public IQuery ExcludeLayer(params string[] layers);
+
+  /// <summary>
+  /// Will include inactive entities in the query
+  /// </summary>
+  /// <returns>Will return a new query that includes inactive entities</returns>
+  public IQuery IncludeInactive();
 }
 
 /// <summary>

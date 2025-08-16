@@ -29,7 +29,7 @@ namespace BlueJay.Component.System
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns>Will return the result of an and operation between the two entities</returns>
-    public static AddonKey operator&(AddonKey left, AddonKey right)
+    public static AddonKey operator &(AddonKey left, AddonKey right)
     {
       var newKey = new ulong[Math.Max(left._key.Length, right._key.Length)];
       for (var i = 0; i < newKey.Length; ++i)
@@ -43,7 +43,7 @@ namespace BlueJay.Component.System
     /// <param name="left">The left side of the overloaded operator</param>
     /// <param name="right">The right side of the overloaded operator</param>
     /// <returns>Will return the result of the or operation on the two addon keys</returns>
-    public static AddonKey operator|(AddonKey left, AddonKey right)
+    public static AddonKey operator |(AddonKey left, AddonKey right)
     {
       var newKey = new ulong[Math.Max(left._key.Length, right._key.Length)];
       for (var i = 0; i < newKey.Length; ++i)
@@ -102,7 +102,7 @@ namespace BlueJay.Component.System
     public override int GetHashCode()
     {
       int result = 0;
-      for (var i = 0; i< _key.Length; ++i)
+      for (var i = 0; i < _key.Length; ++i)
         result = HashCode.Combine(_key[i], result);
       return result;
     }

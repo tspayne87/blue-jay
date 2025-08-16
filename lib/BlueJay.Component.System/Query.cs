@@ -26,38 +26,50 @@ internal class Query : IEnumerable<IEntity>, IQuery
   private readonly List<string>? _layersToExclude;
 
   /// <summary>
+  /// Whether to include inactive entities in the query
+  /// </summary>
+  private readonly bool _includeInactive;
+
+  /// <summary>
   /// Constructor to build out the query
   /// </summary>
   /// <param name="layers">The internal collection of entities</param>
   /// <param name="key">The key we are looking for in the entities</param>
   /// <param name="filterOnLayers">The layers we are filtering on</param>
   /// <param name="layersToExclude">The layers we are excluding</param>
-  public Query(ILayers layers, AddonKey key, List<string>? filterOnLayers = null, List<string>? layersToExclude = null)
+  public Query(ILayers layers, AddonKey key, List<string>? filterOnLayers = null, List<string>? layersToExclude = null, bool includeInactive = false)
   {
     _layers = layers;
     _key = key;
     _filterOnLayers = filterOnLayers;
     _layersToExclude = layersToExclude;
+    _includeInactive = includeInactive;
   }
 
   /// <inheritdoc />
   public IEnumerator<IEntity> GetEnumerator()
   {
-    return new QueryEnumerator(_layers, _key, _filterOnLayers, _layersToExclude);
+    return new QueryEnumerator(_layers, _key, _filterOnLayers, _layersToExclude, _includeInactive);
   }
 
   /// <inheritdoc />
   public IQuery WhereLayer(params string[] layers)
   {
     var filterOnLayers = layers.ToList().Concat(_filterOnLayers ?? new List<string>()).ToList();
-    return new Query(_layers, _key, filterOnLayers, _layersToExclude);
+    return new Query(_layers, _key, filterOnLayers, _layersToExclude, _includeInactive);
   }
 
   /// <inheritdoc />
   public IQuery ExcludeLayer(params string[] layers)
   {
     var layersToExclude = layers.ToList().Concat(_layersToExclude ?? new List<string>()).ToList();
-    return new Query(_layers, _key, _filterOnLayers, layersToExclude);
+    return new Query(_layers, _key, _filterOnLayers, layersToExclude, _includeInactive);
+  }
+
+  /// <inheritdoc />
+  public IQuery IncludeInactive()
+  {
+    return new Query(_layers, _key, _filterOnLayers, _layersToExclude, true);
   }
 
   /// <inheritdoc />

@@ -56,6 +56,29 @@ namespace BlueJay.Component.System
     }
 
     /// <summary>
+    /// Method is meant to update the sort order of the entities in the layer, this should be called
+    /// if the weights of the entities change and we need to keep the layer sorted.
+    /// </summary>
+    /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
+    /// <param name="layer">The layer to update the sort order for</param>
+    public static void UpdateEntitySort(this IServiceProvider provider, string layer = "")
+    {
+      var collection = provider.GetRequiredService<ILayers>();
+      if (collection.Contains(layer))
+      {
+        collection[layer]!.UpdateSort();
+        return;
+      }
+
+      if (string.IsNullOrWhiteSpace(layer))
+      {
+        foreach (var l in collection)
+          l.UpdateSort();
+        return;
+      }
+    }
+
+    /// <summary>
     /// Method is meant to remove all entities from the system or a specific layer
     /// </summary>
     /// <param name="provider">The service provider we will use to find the collection and build out the object with</param>
