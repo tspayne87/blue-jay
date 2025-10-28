@@ -8,7 +8,7 @@ namespace BlueJay.UI.Component.Interactivity
   /// </summary>
   [View(@"
 <Container Style=""BackgroundColor: 200, 200, 200"" @Select=""OnSelect()"">
-  <Container Style=""WidthPercentage: 0.5; HeightPercentage: 1; BackgroundColor: 60, 60, 60; HorizontalAlign: {{Alignment}}"" @Select=""OnSelect()"" />
+  <Container Style=""Width: 50%; Height: 100%; BackgroundColor: 60, 60, 60; HorizontalAlign: {{Alignment}}"" @Select=""OnSelect()"" />
 </Container>
     ")]
   public class SwitchInput : UIComponent

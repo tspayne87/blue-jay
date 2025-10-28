@@ -11,9 +11,9 @@ namespace BlueJay.Shared.Components
   /// The basic title view
   /// </summary>
   [View(@"
-<Container Style=""WidthPercentage: 0.66; HeightPercentage: 0.75; Padding: 20; VerticalAlign: Center; HorizontalAlign: Center; GridColumns: 3; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; TextureFont: Default"">
-  <Container Style=""ColumnSpan: 3; TextureFontSize: 2; HeightTemplate: Stretch; TextBaseline: Center"">
-    <Container Style=""HeightPercentage: 1; Padding: 15; NinePatch: Sample_NinePatch"">
+<Container Style=""Width: 66%; Height: 75%; Padding: 20; VerticalAlign: Center; HorizontalAlign: Center; NinePatch: Sample_NinePatch"">
+  <Container Style=""FontSize: 2"">
+    <Container Style=""Height: 100%; Padding: 15; NinePatch: Sample_NinePatch"">
       <Texture AssetName=""BlueJay_Logo"" Style=""VerticalAlign: Center; HorizontalAlign: Center"" />
     </Container>
   </Container>
@@ -21,7 +21,7 @@ namespace BlueJay.Shared.Components
   <Button @Select=""OnBreakoutClick()"">{{BreakoutTitle}}</Button>
   <Button @Select=""OnLayoutClick()"">{{LayoutTitle}}</Button>
   <Button @Select=""OnLDtkClick()"">{{LDtkTitle}}</Button>
-  <Button Style=""ColumnSpan: 3"" @Select=""OnUIComponentClick()"">{{UIComponentTitle}}</Button>
+  <Button @Select=""OnUIComponentClick()"">{{UIComponentTitle}}</Button>
 </Container>
   ")]
   [Component(typeof(Button))]

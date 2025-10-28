@@ -31,7 +31,7 @@ namespace BlueJay.UI.Events.EventListeners
     public UIMouseMoveEventListener(IEventQueue eventQueue, IQuery query)
     {
       _eventQueue = eventQueue;
-      _query = query.WhereLayer(UIStatic.LayerName);
+      _query = query.WhereLayer(StaticNames.UILAYER);
     }
 
     /// <summary>
@@ -50,63 +50,18 @@ namespace BlueJay.UI.Events.EventListeners
     /// <param name="evt">The current event object that was triggered</param>
     public override void Process(IEvent<MouseMoveEvent> evt)
     {
-      IEntity? hoverEntity = null; // The current hover entity that was found in the system
-      // Iterate over all entities so we can find the hover entity and reset hovering if needed
       foreach (var entity in _query.Reverse())
       {
-        if (entity.Active)
+        if (entity.Active && Contains(entity, evt.Data.Position))
         {
-          var sa = entity.GetAddon<StyleAddon>();
-          if (hoverEntity == null && Contains(entity, evt.Data.Position))
-          {
-            hoverEntity = entity;
-          }
-
-          if (hoverEntity == null || (!IsParent(hoverEntity.GetAddon<LineageAddon>(), entity) && entity != hoverEntity))
-          {
-            if (sa.Hovering)
-            {
-              _eventQueue.DispatchEvent(new StyleUpdateEvent(entity));
-              _eventQueue.DispatchEvent(new MouseLeaveEvent() { Button = evt.Data.Button, Position = evt.Data.Position }, entity);
-            }
-
-            sa.Hovering = false;
-            entity.Update(sa);
-          }
-        }
-      }
-
-      // If we found a hover entity we want to loop through the lineage and update the hovering flag
-      if (hoverEntity != null)
-      {
-        _eventQueue.DispatchEvent(evt.Data, hoverEntity);
-
-        var sa = hoverEntity.GetAddon<StyleAddon>();
-        var la = hoverEntity.GetAddon<LineageAddon>();
-        while (hoverEntity != null)
-        {
-          _eventQueue.DispatchEvent(new HoverEvent(evt.Data.Position), hoverEntity);
-          if (!sa.Hovering)
-          {
-            _eventQueue.DispatchEvent(new StyleUpdateEvent(hoverEntity));
-            _eventQueue.DispatchEvent(new MouseEnterEvent() { Button = evt.Data.Button, Position = evt.Data.Position }, hoverEntity);
-          }
-
-          sa.Hovering = true;
-          hoverEntity.Update(sa);
-
-          hoverEntity = la.Parent;
-          if (hoverEntity != null)
-          {
-            la = hoverEntity.GetAddon<LineageAddon>();
-            sa = hoverEntity.GetAddon<StyleAddon>();
-          }
+          
         }
       }
     }
 
     /// <summary>
-    /// Helper method is meant to determine if the position contains inside the bounds of the entity based on the bounds and position
+    /// Helper method is meant to determine if the position contains inside the bounds of the entity
+    /// based on the bounds and position
     /// </summary>
     /// <param name="entity">The entity we are checking against</param>
     /// <param name="position">The position we are working with</param>
@@ -116,23 +71,11 @@ namespace BlueJay.UI.Events.EventListeners
       if (entity.Contains<TextAddon>())
         return false;
 
-      var ba = entity.GetAddon<BoundsAddon>();
+      var ba = entity.GetAddon<SizeAddon>();
       var pa = entity.GetAddon<PositionAddon>();
 
-      var bounds = new Rectangle((int)pa.Position.X, (int)pa.Position.Y, ba.Bounds.Width, ba.Bounds.Height);
+      var bounds = new Rectangle((int)pa.Position.X, (int)pa.Position.Y, ba.Size.Width, ba.Size.Height);
       return bounds.Contains(position);
-    }
-
-    /// <summary>
-    /// Helper method is meant to determine if this entity is a parent of this entity
-    /// </summary>
-    /// <param name="la">The lineage addon that we are looking at</param>
-    /// <param name="entity">The current entity we are processing</param>
-    /// <returns>Will return true if this is a parent of the current entity</returns>
-    private bool IsParent(LineageAddon la, IEntity entity)
-    {
-      if (la.Parent == null || entity == null) return false;
-      return entity == la.Parent || IsParent(la.Parent.GetAddon<LineageAddon>(), entity);
     }
   }
 }

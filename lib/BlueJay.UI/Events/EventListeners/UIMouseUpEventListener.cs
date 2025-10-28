@@ -36,7 +36,7 @@ namespace BlueJay.UI.Events.EventListeners
     {
       _eventQueue = eventQueue;
       _service = service;
-      _query = query.WhereLayer(UIStatic.LayerName);
+      _query = query.WhereLayer(StaticNames.UILAYER);
     }
 
     /// <summary>

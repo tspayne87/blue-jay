@@ -18,18 +18,11 @@ namespace BlueJay.Shared.Views
     /// <param name="serviceProvider">The service provider we need to add the entities and systems to</param>
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
+      serviceProvider.AddBlueJayUISystems();
+
       // Add Processor Systems
-      serviceProvider.AddSystem<ViewportSystem>();
       serviceProvider.AddSystem<ClearSystem>(Color.White);
-      serviceProvider.AddUISystems();
-      serviceProvider.AddUIMouseSupport();
-      serviceProvider.AddUIKeyboardSupport();
-      serviceProvider.AddUITouchSupport();
-      serviceProvider.AddUIComponentSystems();
-
-      serviceProvider.AddUIRenderSystems();
-
-      serviceProvider.AttachComponent<InfoComponent>();
+      serviceProvider.AddBlueJayUIRenderSystems();
     }
   }
 }

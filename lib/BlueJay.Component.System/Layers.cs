@@ -19,13 +19,8 @@ namespace BlueJay.Component.System
     /// </summary>
     private List<ILayer> _collection;
 
-    /// <summary>
-    /// The current size of the collection
-    /// </summary>
-    private int _size;
-
     /// <inheritdoc />
-    public int Count => _size;
+    public int Count => _collection.Count;
 
     /// <inheritdoc />
     public ILayer? this[string id] => _collection.FirstOrDefault(x => x.Id == id);
@@ -69,8 +64,8 @@ namespace BlueJay.Component.System
     /// <inheritdoc />
     public void Clear()
     {
-      for (var i = 0; i < _size; i++)
-        _collection[i]?.Clear();
+      foreach (var layer in _collection)
+        layer?.Clear();
     }
 
     /// <inheritdoc />

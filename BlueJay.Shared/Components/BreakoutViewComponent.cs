@@ -11,9 +11,8 @@ namespace BlueJay.Shared.Components
   /// The breakout view component we need to show some UI on the screen
   /// </summary>
   [View(@"
-<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
+<Container>
   <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
-
   <Container>Round: {{Round}}</Container>
   <Container>Balls: {{Balls}}</Container>
   <Container>Score: {{Score}}</Container>

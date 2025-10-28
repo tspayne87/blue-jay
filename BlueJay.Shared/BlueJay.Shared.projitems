@@ -17,8 +17,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)BlueJayAppGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\BreakoutViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Button.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\IconDetail.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\InfoComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\LayoutViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\TitleViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\UIComponentTestComponent.cs" />

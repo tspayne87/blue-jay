@@ -14,7 +14,7 @@ namespace BlueJay.UI.Component.Interactivity
   [View(@"
 <Container @MouseMove.Global=""OnMouseMove($evt)"" @MouseUp.Global=""OnMouseUp()"">
   <Container ref=""Bar"" Style=""Position: Absolute; WidthPercentage: 1; Height: 4; VerticalAlign: Center; BackgroundColor: 200, 200, 200"" />
-  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; Padding: {{Padding}}; LeftOffset: {{LeftOffset}}"" @MouseDown=""OnMouseDown()"" />
+  <Container Style=""Height: 16; Width: 16; BackgroundColor: 60, 60, 60; Padding: {{Padding}}; Offset: {{LeftOffset}}"" @MouseDown=""OnMouseDown()"" />
 </Container>
     ")]
   public class SliderInput : UIComponent
@@ -71,7 +71,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// <summary>
     /// The left offset of the slider
     /// </summary>
-    public readonly ReactiveProperty<int> LeftOffset;
+    public readonly ReactiveProperty<Directions> Offset;
 
     /// <summary>
     /// The bar of the slider
@@ -92,7 +92,7 @@ namespace BlueJay.UI.Component.Interactivity
       Max = new ReactiveProperty<int>(100);
       Ticks = new ReactiveProperty<int>(20);
       Padding = new ReactiveProperty<int>(3);
-      LeftOffset = new ReactiveProperty<int>(0);
+      Offset = new ReactiveProperty<Directions>(new Directions(0));
     }
 
     /// <summary>
@@ -126,7 +126,9 @@ namespace BlueJay.UI.Component.Interactivity
       if (_selected && _tickOffset != 0)
       {
         var tick = (evt.Position.X - _xOffset) / _tickOffset;
-        LeftOffset.Value = MathHelper.Clamp((int)((int)tick * _tickOffset) + Padding.Value, Padding.Value, _innerWidth);
+        var left = MathHelper.Clamp((int)((int)tick * _tickOffset) + Padding.Value, Padding.Value, _innerWidth);
+
+        Offset.Value = new Directions(0, 0, left, 0);
         Model.Value = MathHelper.Clamp((int)tick * (Max.Value / Ticks.Value), Min.Value, Max.Value);
       }
       return true;

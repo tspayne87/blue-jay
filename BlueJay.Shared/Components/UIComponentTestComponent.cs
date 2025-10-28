@@ -14,25 +14,25 @@ using System.Linq;
 namespace BlueJay.Shared.Components
 {
     [View(@"
-<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default; Padding: 10"">
-  <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
+<Container Style=""Padding: 10"">
+  <Button @Select=""OnBackToTitleClick()"">Back To Title</Button>
   
-  <Texture AssetName=""Sample_Hover_NinePatch"" Style=""Position: Absolute; ZIndex: 51; LeftOffset: 475"" />
-  <Texture AssetName=""BlueJay_Logo"" Style=""Position: Absolute; ZIndex: 50; LeftOffset: 400"" />
+  <Texture AssetName=""Sample_Hover_NinePatch"" Style=""Position: Absolute; ZIndex: 51; Offset: 0, 0, 475, 0"" />
+  <Texture AssetName=""BlueJay_Logo"" Style=""Position: Absolute; ZIndex: 50; Offset: 0, 0, 400, 0"" />
   
-  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13; ColumnSpan: 2; ColumnOffset: 3"" @KeyboardUp.Enter=""ClearTextInput()"" />
-  <Container Style=""ColumnSpan: 2"">{{ComputedExpression}}</Container>
+  <TextInput :Model=""TextInput"" Style=""NinePatch: Sample_NinePatch; Padding: 13"" @KeyboardUp.Enter=""ClearTextInput()"" />
+  <Container>{{ComputedExpression}}</Container>
   <Button @Select=""ClearTextInput()"">Clear</Button>
 
   <SwitchInput Style=""Height: 25"" :Model=""Switch"" />
-  <Container if=""Switch"" Style=""ColumnSpan: 4; TextAlign: Left"">Switch On</Container>
+  <Container if=""Switch"">Switch On</Container>
   <Texture AssetName=""TestTiles"" :Frame=""Frame"" Rows=""2"" Cols=""4"" />
   <Button @Select=""UpdateFrame()"">Update Frame</Button>
 
-  <SliderInput :Model=""Slider"" :Max=""20"" Style=""ColumnSpan: 3"" />
-  <Container Style=""ColumnSpan: 2; TextAlign: Left"">Slider: {{Slider}}</Container>
+  <SliderInput :Model=""Slider"" :Max=""20"" />
+  <Container>Slider: {{Slider}}</Container>
 
-  <DropdownInput Style=""ColumnSpan: 2; NinePatch: Sample_NinePatch; Padding: 13; WidthPercentage: 1; NinePatch::Hover: Sample_Hover_NinePatch"" :Model=""Dropdown"">
+  <DropdownInput Style=""NinePatch: Sample_NinePatch; Padding: 13; Width: 100%; NinePatch::Hover: Sample_Hover_NinePatch"" :Model=""Dropdown"">
     <DropdownMenu Style=""NinePatch: Dropdown_Background_Ninepatch; Padding: 13"">
       <DropdownItem Style=""BackgroundColor: 217, 87, 99"" :Value=""-1"" Text=""Before"" />
       <DropdownItem for=""#item in {{DropdownItems}}"" Style=""BackgroundColor: 217, 87, 99"" :Value=""#item.Id"" :Text=""#item.Name"" />
@@ -40,18 +40,18 @@ namespace BlueJay.Shared.Components
     </DropdownMenu>
   </DropdownInput>
 
-  <Container Style=""ColumnSpan: 2; GridColumns: 1; ColumnGap: 5, 5; NinePatch: Sample_NinePatch; Padding: 5"">
+  <Container Style=""NinePatch: Sample_NinePatch; Padding: 5"">
     <Button @Select=""AddItem()"">Add Item</Button>
     <Button @Select=""InsertItem()"">Insert Item</Button>
     <Button @Select=""SwitchItem()"">Switch Item</Button>
     <Button @Select=""RemoveRandomItem()"">Remove Random</Button>
 
-    <Button for=""#item in {{DropdownItems}}"" Style=""GridColumns: 2; ColumnGap: 5, 5"" @Select=""ToggleItem(#item)"">
+    <Button for=""#item in {{DropdownItems}}"" @Select=""ToggleItem(#item)"">
       <Container @Select=""ToggleItem(#item)"">{{#item.Name}}</Container>
       <Container if=""#item.Toggled"" @Select=""ToggleItem(#item)"">Toggled</Container>
     </Button>
   </Container>
-  <Container Style=""TextAlign: Left"">{{ShowDropdownItem(Dropdown)}}</Container>
+  <Container>{{ShowDropdownItem(Dropdown)}}</Container>
 </Container>
     ")]
   [Component(typeof(Button), typeof(TextInput), typeof(SwitchInput), typeof(SliderInput), typeof(DropdownInput), typeof(DropdownMenu), typeof(DropdownItem))]

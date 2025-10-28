@@ -9,8 +9,8 @@ namespace BlueJay.Shared.Components
   /// The view component for the layout game
   /// </summary>
   [View(@"
-<Container Style=""GridColumns: 5; ColumnGap: 5, 5; TextureFont: Default"">
-  <Button Style=""ColumnSpan: 2"" @Select=""OnBackToTitleClick()"">Back To Title</Button>
+<Container>
+  <Button @Select=""OnBackToTitleClick()"">Back To Title</Button>
 </Container>
     ")]
   [Component(typeof(Button))]

@@ -22,17 +22,12 @@ namespace BlueJay.Shared.Views
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
       serviceProvider.AddSystem<GamepadSystem>();
+      serviceProvider.AddBlueJayUISystems();
 
       // Add Processor Systems
       serviceProvider.AddSystem<ViewportSystem>();
       serviceProvider.AddSystem<ClearSystem>(Color.White);
-      serviceProvider.AddUISystems();
-      serviceProvider.AddUIMouseSupport();
-      serviceProvider.AddUIKeyboardSupport();
-      serviceProvider.AddUITouchSupport();
-      serviceProvider.AddUIComponentSystems();
-
-      serviceProvider.AddUIRenderSystems();
+      serviceProvider.AddBlueJayUIRenderSystems();
       serviceProvider.AddSystem<FPSSystem>("Default");
 
       serviceProvider.AttachComponent<TitleViewComponent>();

@@ -1,7 +1,6 @@
 ﻿using BlueJay.Common.Events.Keyboard;
 using BlueJay.Events;
 using BlueJay.Events.Interfaces;
-using BlueJay.UI.Services;
 
 namespace BlueJay.UI.Events.EventListeners
 {

@@ -6,8 +6,7 @@ using BlueJay.UI.Component.Nodes;
 using BlueJay.UI.Component.Elements;
 using BlueJay.Utils;
 using BlueJay.Events;
-using BlueJay.UI.Component.Events;
-using BlueJay.UI.Component.Events.EventListeners;
+using BlueJay.UI.Component.Generated;
 
 namespace BlueJay.UI.Component
 {
@@ -37,15 +36,6 @@ namespace BlueJay.UI.Component
           collection.Add(node.RootComponent);
         }
       }
-    }
-
-    /// <summary>
-    /// Helper method meant to add systems and event listners meant to be used by the ui component system
-    /// </summary>
-    /// <param name="provider">The service provider to inject systems and event listeners into</param>
-    public static void AddUIComponentSystems(this IServiceProvider provider)
-    {
-      provider.AddEventListener<UpdateNodeWeightEventListener, UpdateNodeWeight>();
     }
 
     /// <summary>

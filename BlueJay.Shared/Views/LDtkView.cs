@@ -18,16 +18,10 @@ namespace BlueJay.Shared.Views
   {
     protected override void ConfigureProvider(IServiceProvider serviceProvider)
     {
-      serviceProvider.AddSystem<ViewportSystem>();
-      serviceProvider.AddUISystems();
-      serviceProvider.AddUIMouseSupport();
-      serviceProvider.AddUIKeyboardSupport();
-      serviceProvider.AddUITouchSupport();
-      serviceProvider.AddUIComponentSystems();
+      serviceProvider.AddBlueJayUISystems();
 
       serviceProvider.AddSystem<ClearSystem>(Color.White);
-
-      serviceProvider.AddUIRenderSystems();
+      serviceProvider.AddBlueJayUIRenderSystems();
 
       serviceProvider.AttachComponent<LayoutViewComponent>();
 

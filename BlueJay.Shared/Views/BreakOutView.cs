@@ -32,19 +32,15 @@ namespace BlueJay.Shared.Views
     {
       // Processing systems
       serviceProvider.AddSystem<KeyboardSystem>();
-      serviceProvider.AddSystem<ViewportSystem>();
       serviceProvider.AddSystem<ClearSystem>(Color.White);
-      serviceProvider.AddUISystems();
-      serviceProvider.AddUITouchSupport();
-      serviceProvider.AddUIKeyboardSupport();
-      serviceProvider.AddUIMouseSupport();
-      serviceProvider.AddUIComponentSystems();
+      serviceProvider.AddBlueJayUISystems();
       serviceProvider.AddSystem<ClampPositionSystem>();
       serviceProvider.AddSystem<BallSystem>();
 
       // Rendering systems
       serviceProvider.AddSystem<BreakoutRenderingSystem>();
       serviceProvider.AddSystem<RenderingSystem>();
+      serviceProvider.AddBlueJayUIRenderSystems();
 
       // Add event listeners that could happen in the system
       serviceProvider.AddEventListener<KeyboardPressEventListener, KeyboardPressEvent>();

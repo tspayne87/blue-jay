@@ -27,7 +27,7 @@ namespace BlueJay.UI.Events.EventListeners
     /// <param name="eventQueue">The current event queue that will be used to update the texture of the bounds if needed</param>
     public UIMouseDownEventListener(IEventQueue eventQueue, IQuery query)
     {
-      _query = query.WhereLayer(UIStatic.LayerName);
+      _query = query.WhereLayer(StaticNames.UILAYER);
       _eventQueue = eventQueue;
     }
 

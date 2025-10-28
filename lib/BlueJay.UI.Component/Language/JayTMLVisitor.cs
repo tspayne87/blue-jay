@@ -5,6 +5,7 @@ using BlueJay.Core;
 using BlueJay.Core.Container;
 using BlueJay.UI.Component.Elements;
 using BlueJay.UI.Component.Elements.Attributes;
+using BlueJay.UI.Component.Generated;
 using BlueJay.UI.Component.Nodes;
 using BlueJay.UI.Component.Reactivity;
 using BlueJay.Utils;
@@ -490,8 +491,11 @@ namespace BlueJay.UI.Component.Language
 
     public override object VisitStyleInteger([NotNull] JayTMLParser.StyleIntegerContext context)
     {
-      if (int.TryParse(context.GetText(), out var integer))
+      var text = context.GetText();
+      if (int.TryParse(text, out var integer))
         return new CallbackExpression((c, e, r) => integer);
+      else if (text.EndsWith("%") && int.TryParse(text.Substring(0, text.Length - 1), out var percent))
+        return new CallbackExpression((c, e, r) => percent + "%");
       throw new ArgumentNullException("Could not parse interger in style");
     }
 
@@ -860,7 +864,7 @@ namespace BlueJay.UI.Component.Language
       for (var i = 3; i < context.ChildCount; i += 2)
         path.Add(context.GetChild(i).GetText());
 
-      var scopeItem = Expression.Property(_scopeParam, "Item", Expression.Constant(context.identifier.Text));
+      var scopeItem = Expression.Property(_scopeParam, "Item", Expression.Constant(context.start.Text));
       var listConstant = Expression.Constant(path);
 
       var method = typeof(Utils).GetMethod(nameof(Utils.GetValue), BindingFlags.Public | BindingFlags.Static);

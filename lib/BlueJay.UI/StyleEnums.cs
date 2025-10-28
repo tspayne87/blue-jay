@@ -1,5 +1,40 @@
 ﻿namespace BlueJay.UI
 {
+  [Flags]
+  public enum StyleDecorator
+  {
+    /// <summary>
+    /// Basic decorator that is used as the base for all effects
+    /// </summary>
+    None = 0,
+
+    /// <summary>
+    /// Basic hover effect that can be used to indicate a UI element is interactable
+    /// </summary>
+    Hover = 1
+  }
+
+  /// <summary>
+  /// Enumeration to determine how the bounds of a UI element should be measured
+  /// </summary>
+  public enum FitType
+  {
+    /// <summary>
+    /// Fits the element based on its child elements
+    /// </summary>
+    Fit,
+
+    /// <summary>
+    /// Fits the element based on its parent
+    /// </summary>
+    Percentage,
+
+    /// <summary>
+    /// Fits the element to a fixed size
+    /// </summary>
+    Fixed
+  }
+
   /// <summary>
   /// Horizontally aligned enum, meant to determine how we should align horizontally
   /// </summary>
@@ -46,6 +81,14 @@
   public enum HeightTemplate
   {
     Stretch
+  }
+
+  /// <summary>
+  /// The direction in which the UI element is laid out
+  /// </summary>
+  public enum Direction
+  {
+    Horizontal, Vertical
   }
 
   /// <summary>

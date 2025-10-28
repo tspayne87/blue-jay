@@ -20,10 +20,8 @@ namespace BlueJay.UI.Component.Elements
     /// <inheritdoc />
     protected override Node? CreateNode()
     {
-      if (Name.Equals("Texture", StringComparison.OrdinalIgnoreCase))
+      if (Name.Equals("Texture", StringComparison.OrdinalIgnoreCase) || Name.Equals("Sprite", StringComparison.OrdinalIgnoreCase))
         return new TextureNode(Scope, Attributes);
-      if (Name.Equals("Sprite", StringComparison.OrdinalIgnoreCase))
-        return new SpriteNode(Scope, Attributes);
       return new ContainerNode(Scope, Attributes);
     }
   }

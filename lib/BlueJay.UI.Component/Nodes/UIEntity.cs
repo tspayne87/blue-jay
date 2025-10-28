@@ -1,6 +1,6 @@
 ﻿using BlueJay.Component.System;
 using BlueJay.Component.System.Interfaces;
-using BlueJay.UI.Addons;
+using BlueJay.UI.Interfaces;
 
 namespace BlueJay.UI.Component.Nodes
 {
@@ -19,7 +19,7 @@ namespace BlueJay.UI.Component.Nodes
     /// <summary>
     /// The stored entity for the UIElement
     /// </summary>
-    private IEntity? _entity;
+    private IElement? _element;
 
     /// <summary>
     /// The parent ui element that was created for this ui element
@@ -55,7 +55,7 @@ namespace BlueJay.UI.Component.Nodes
     /// <summary>
     /// The current entity owned by this ui element
     /// </summary>
-    public IEntity? Entity => _entity ?? Parent?.Entity;
+    public IElement? Element => _element ?? Parent?.Element;
 
     /// <summary>
     /// The list of listeners we want to dispose of when this element is disposed, this is mainly connections
@@ -130,14 +130,14 @@ namespace BlueJay.UI.Component.Nodes
     /// Basic constructor to build out the UI element
     /// </summary>
     /// <param name="node">The current node this element was generated from</param>
-    /// <param name="entity">The current entity owned by this ui element</param>
+    /// <param name="element">The current element owned by this ui element</param>
     /// <param name="disposables">The list of listeners we want to dispose of when this element is disposed, this is mainly connections to reactive properties</param>
-    public UIEntity(IServiceProvider provider, Node node, IEntity entity, List<IDisposable> disposables)
+    public UIEntity(IServiceProvider provider, Node node, IElement element, List<IDisposable> disposables)
     {
       _serviceProvider = provider;
 
       Node = node;
-      _entity = entity;
+      _element = element;
       Disposables = disposables;
       Children = new List<UIEntity>();
     }
@@ -176,17 +176,8 @@ namespace BlueJay.UI.Component.Nodes
           foreach (var child in Children)
             child.Dispose();
 
-          if (_serviceProvider != null && Entity != null)
-          {
-            var la = Entity.GetAddon<LineageAddon>();
-            if (la.Parent != null)
-            {
-              var pla = la.Parent.GetAddon<LineageAddon>();
-              pla.Children.Remove(Entity);
-              la.Parent.Update(pla);
-            }
-            _serviceProvider.RemoveEntity(Entity);
-          }
+          if (_serviceProvider != null && Element != null && Element.Parent != null)
+            Element.Parent.RemoveChild(Element);
 
           foreach (var item in Disposables)
             item.Dispose();

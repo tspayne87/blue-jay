@@ -124,6 +124,7 @@ STYLEDOUBLECOLON            : '::' ;
 STYLECOLON                  : ':' ;
 SEMICOLON                   : ';' ;
 STYLECOMMA                  : ',' ;
+STYLEPERCENT                : '%' ;
 INTEGER                     : Minus? StyleDigit+ ;
 DECIMAL                     : Minus? StyleDigit+ Dot StyleDigit+ ;
 STYLEWS                     : [ \t\r\n]+ -> skip ;

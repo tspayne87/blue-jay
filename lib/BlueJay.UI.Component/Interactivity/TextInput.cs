@@ -7,6 +7,7 @@ using BlueJay.UI.Component.Reactivity;
 using Microsoft.Xna.Framework.Input;
 using BlueJay.UI.Events;
 using BlueJay.Events.Interfaces;
+using BlueJay.UI.Interfaces;
 
 namespace BlueJay.UI.Component.Interactivity
 {
@@ -14,9 +15,9 @@ namespace BlueJay.UI.Component.Interactivity
     /// Text input to give inputs for string input
     /// </summary>
     [View(@"
-<Container Style=""TextAlign: Left"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"" ref=""Root"">
+<Container @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"" ref=""Root"">
   <Container Style=""Height: {{ContainerHeight}}"" @Focus=""OnFocus($evt)"" @Blur=""OnBlur($evt)"" @KeyboardUp=""OnKeyboardUp($evt)"">{{Model}}</Container>
-  <Container if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60; TopOffset: {{CursorTopOffset}}; LeftOffset: {{CursorLeftOffset}}; Height: {{CursorHeight}}; ZIndex: 1"" />
+  <Container if=""ShowCursor"" Style=""Position: Absolute; Width: 2; BackgroundColor: 60, 60, 60; Offset: {{CursorOffset}}; Height: {{CursorHeight}}; ZIndex: 1"" />
 </Container>
     ")]
   public class TextInput : UIComponent
@@ -48,14 +49,9 @@ namespace BlueJay.UI.Component.Interactivity
     public readonly ReactiveProperty<bool> ShowCursor;
 
     /// <summary>
-    /// The top offset for the cursor
+    /// The offset for the cursor
     /// </summary>
-    public ReactiveProperty<int> CursorTopOffset;
-
-    /// <summary>
-    /// The left offset for the cursor
-    /// </summary>
-    public ReactiveProperty<int> CursorLeftOffset;
+    public ReactiveProperty<Directions> CursorOffset;
 
     /// <summary>
     /// The height of the cursor
@@ -70,7 +66,7 @@ namespace BlueJay.UI.Component.Interactivity
     /// <summary>
     /// The root entity found when this compnent is created
     /// </summary>
-    public IEntity? Root;
+    public IElement? Root;
 
     /// <summary>
     /// Constructor is meant to build out the defaults for the text input
@@ -82,8 +78,7 @@ namespace BlueJay.UI.Component.Interactivity
       Model = new ReactiveProperty<Text>("");
       ShowCursor = new ReactiveProperty<bool>(false);
       CursorHeight = new ReactiveProperty<int>(0);
-      CursorLeftOffset = new ReactiveProperty<int>(0);
-      CursorTopOffset = new ReactiveProperty<int>(0);
+      CursorOffset = new ReactiveProperty<Directions>(new Directions(0));
       ContainerHeight = new NullableReactiveProperty<int>(null);
 
       _fonts = fonts;
@@ -133,7 +128,7 @@ namespace BlueJay.UI.Component.Interactivity
     public override void Mounted()
     {
       if (Root != null)
-        CursorHeight.Value = (int)Root.MeasureString(" ", _fonts).Y;
+        CursorHeight.Value = (int)Root.MeasureString(" ").Y;
     }
 
     /// <summary>
@@ -165,7 +160,7 @@ namespace BlueJay.UI.Component.Interactivity
     public void OnModelUpdate(string model)
     {
       if (Root != null)
-        ContainerHeight.Value = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ", _fonts).Y : null;
+        ContainerHeight.Value = string.IsNullOrWhiteSpace(model) ? (int?)Root.MeasureString(" ").Y : null;
 
       if (Model.Value.Length < _position)
       {
@@ -181,17 +176,16 @@ namespace BlueJay.UI.Component.Interactivity
     {
       if (Root != null)
       {
-        var la = Root.GetAddon<LineageAddon>();
-        var sa = la.Children[0].GetAddon<BoundsAddon>();
-        var fitString = Root.FitString(Model.Value.Substring(0, newPosition), sa.Bounds.Width, _fonts);
-        var yOffset = Root.MeasureString(fitString, _fonts);
-        var spaceOffset = Root.MeasureString(" ", _fonts);
-        CursorTopOffset.Value = (int)(yOffset.Y - spaceOffset.Y);
+        var fitString = Root.FitString(Model.Value.Substring(0, newPosition));
+        var yOffset = Root.MeasureString(fitString);
+        var spaceOffset = Root.MeasureString(" ");
+        var top = (int)(yOffset.Y - spaceOffset.Y);
 
         var split = fitString.Split('\n');
-        var xOffset = Root.MeasureString(split[split.Length - 1], _fonts);
-        CursorLeftOffset.Value = (int)xOffset.X;
+        var xOffset = Root.MeasureString(split[split.Length - 1]);
+        var left = (int)xOffset.X;
 
+        CursorOffset.Value = new Directions(top, 0, left, 0);
         _position = newPosition;
       }
     }

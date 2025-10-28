@@ -1,30 +1,16 @@
-﻿using BlueJay.Component.System.Interfaces;
+using System;
+using BlueJay.Component.System.Interfaces;
 
-namespace BlueJay.UI.Addons
+namespace BlueJay.UI.Addons;
+
+/// <summary>
+/// Represents a text addon.
+/// </summary>
+/// <param name="text">The current text that needs to be displayed.</param>
+public struct TextAddon(string text) : IAddon
 {
   /// <summary>
-  /// The text addon for rendering text to the screen
+  /// The current text that needs to be displayed.
   /// </summary>
-  public struct TextAddon : IAddon
-  {
-    /// <summary>
-    /// The text that should be rendered on the screen
-    /// </summary>
-    public string Text { get; set; }
-
-    /// <summary>
-    /// The text that will be used to render to the screen
-    /// </summary>
-    public string RenderText { get; set; }
-
-    /// <summary>
-    /// Constructor to build out the text addon
-    /// </summary>
-    /// <param name="text">The default text</param>
-    public TextAddon(string text)
-    {
-      Text = text;
-      RenderText = string.Empty;
-    }
-  }
+  public string Text = text;
 }

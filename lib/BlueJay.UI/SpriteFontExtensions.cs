@@ -1,5 +1,4 @@
 ﻿using BlueJay.Core.Containers;
-using Microsoft.Xna.Framework.Graphics;
 using System.Text.RegularExpressions;
 
 namespace BlueJay.UI

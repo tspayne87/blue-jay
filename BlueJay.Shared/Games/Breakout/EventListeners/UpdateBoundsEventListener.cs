@@ -33,7 +33,7 @@ namespace BlueJay.Shared.Games.Breakout.EventListeners
     public UpdateBoundsEventListener(IEventQueue eventQueue, IQuery query)
     {
       _eventQueue = eventQueue;
-      _query = query.ExcludeLayer(UIStatic.LayerName);
+      _query = query.ExcludeUILayer();
     }
 
     /// <summary>
